@@ -10,7 +10,11 @@ import ipywidgets as widgets
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from scipy.interpolate import griddata, interp1d
-
+import scipy.sparse as sp
+from scipy.spatial import cKDTree
+from scipy.interpolate.interpnd import _ndim_coords_from_arrays
+from matplotlib.colors import LightSource, Normalize
+from scipy.sparse.linalg import bicgstab
 
 def PFSimulator(prism, survey):
 
@@ -18,14 +22,10 @@ def PFSimulator(prism, survey):
                    Profile_npt, Profile_azm, Profile_len,
                    Profile_ctx, Profile_cty):
 
-        # Get the line extent from the 2D survey for now
-        gaObject = GA.getItem(['pointsXYZ'])
-        xyz = gaObject.locationXYZ
-
-        import pyproj
-        # Reproject coordinates
-        xx, yy = pyproj.transform(Albers, Nad83, locs[:, 0], locs[:, 1])
-
+        # # Get the line extent from the 2D survey for now
+        prob = Mag.problem()
+        prob.prism = prism.result
+        prob.survey = survey.result
 
         return PlotFwrSim(prob, susc, comp, irt, Q, RemInc, RemDec,
                           Profile_azm, Profile_len, Profile_npt,
@@ -334,7 +334,7 @@ def ViewPrism(survey):
         prism.pinc, prism.pdec = prism_inc, prism_dec
 
         # Display the prism and survey points
-        plotObj3D(prism, survey, View_dip, View_azm, View_lim)
+        plotObj3D([prism], survey, View_dip, View_azm, View_lim)
 
         return prism
 
@@ -366,17 +366,12 @@ def ViewPrism(survey):
     return out
 
 
-def plotObj3D(prism, survey, View_dip, View_azm, View_lim, fig=None, axs=None, title=None):
+def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, title=None, colors=None):
 
     """
     Plot the prism in 3D
     """
 
-    depth = prism.z0
-    x1, x2 = prism.xn[0]-prism.xc, prism.xn[1]-prism.xc
-    y1, y2 = prism.yn[0]-prism.yc, prism.yn[1]-prism.yc
-    z1, z2 = prism.zn[0]-prism.zc, prism.zn[1]-prism.zc
-    pinc, pdec = prism.pinc, prism.pdec
     rxLoc = survey.srcField.rxList[0].locs
 
     if fig is None:
@@ -390,61 +385,78 @@ def plotObj3D(prism, survey, View_dip, View_azm, View_lim, fig=None, axs=None, t
 
     plt.rcParams.update({'font.size': 13})
 
-    cntr = [prism.x0, prism.y0]
+    cntr = np.mean(rxLoc[:, :2], axis=0)
+
     axs.set_xlim3d(-View_lim + cntr[0], View_lim + cntr[0])
     axs.set_ylim3d(-View_lim + cntr[1], View_lim + cntr[1])
 #     axs.set_zlim3d(depth+np.array(surveyArea[:2]))
     axs.set_zlim3d(rxLoc[:, 2].max()*1.1-View_lim*2, rxLoc[:, 2].max()*1.1)
 
-    # Create a rectangular prism, rotate and plot
-    block_xyz = np.asarray([[x1, x1, x2, x2, x1, x1, x2, x2],
-                           [y1, y2, y2, y1, y1, y2, y2, y1],
-                           [z1, z1, z1, z1, z2, z2, z2, z2]])
+    if colors is None:
+        colors = ['w']*len(prisms)
 
-    R = MagUtils.rotationMatrix(pinc, pdec)
+    for prism, color in zip(prisms, colors):
+        depth = prism.z0
+        x1, x2 = prism.xn[0]-prism.xc, prism.xn[1]-prism.xc
+        y1, y2 = prism.yn[0]-prism.yc, prism.yn[1]-prism.yc
+        z1, z2 = prism.zn[0]-prism.zc, prism.zn[1]-prism.zc
+        pinc, pdec = prism.pinc, prism.pdec
 
-    xyz = R.dot(block_xyz).T
+        # Create a rectangular prism, rotate and plot
+        block_xyz = np.asarray([[x1, x1, x2, x2, x1, x1, x2, x2],
+                               [y1, y2, y2, y1, y1, y2, y2, y1],
+                               [z1, z1, z1, z1, z2, z2, z2, z2]])
 
-    # Offset the prism to true coordinate
-    offx = prism.xc
-    offy = prism.yc
-    offz = prism.zc
+        R = MagUtils.rotationMatrix(pinc, pdec)
 
-    #print xyz
-    # Face 1
-    axs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0] + offx,
-                                               xyz[:4, 1] + offy,
-                                               xyz[:4, 2] + offz))]))
+        xyz = R.dot(block_xyz).T
 
-    # Face 2
-    axs.add_collection3d(Poly3DCollection([list(zip(xyz[4:, 0] + offx,
-                                               xyz[4:, 1] + offy,
-                                               xyz[4:, 2] + offz))], facecolors='w'))
+        # Offset the prism to true coordinate
+        offx = prism.xc
+        offy = prism.yc
+        offz = prism.zc
 
-    # Face 3
-    axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 5, 4], 0] + offx,
-                                               xyz[[0, 1, 5, 4], 1] + offy,
-                                               xyz[[0, 1, 5, 4], 2] + offz))]))
+        #print xyz
+        # Face 1
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0] + offx,
+                                                   xyz[:4, 1] + offy,
+                                                   xyz[:4, 2] + offz))]))
 
-    # Face 4
-    axs.add_collection3d(Poly3DCollection([list(zip(xyz[[3, 2, 6, 7], 0] + offx,
-                                               xyz[[3, 2, 6, 7], 1] + offy,
-                                               xyz[[3, 2, 6, 7], 2] + offz))]))
+        # Face 2
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[4:, 0] + offx,
+                                                   xyz[4:, 1] + offy,
+                                                   xyz[4:, 2] + offz))], facecolors=color))
 
-   # Face 5
-    axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 4, 7, 3], 0] + offx,
-                                               xyz[[0, 4, 7, 3], 1] + offy,
-                                               xyz[[0, 4, 7, 3], 2] + offz))]))
+        # Face 3
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 5, 4], 0] + offx,
+                                                   xyz[[0, 1, 5, 4], 1] + offy,
+                                                   xyz[[0, 1, 5, 4], 2] + offz))]))
 
-   # Face 6
-    axs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 5, 6, 2], 0] + offx,
-                                               xyz[[1, 5, 6, 2], 1] + offy,
-                                               xyz[[1, 5, 6, 2], 2] + offz))]))
+        # Face 4
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[3, 2, 6, 7], 0] + offx,
+                                                   xyz[[3, 2, 6, 7], 1] + offy,
+                                                   xyz[[3, 2, 6, 7], 2] + offz))]))
+
+       # Face 5
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 4, 7, 3], 0] + offx,
+                                                   xyz[[0, 4, 7, 3], 1] + offy,
+                                                   xyz[[0, 4, 7, 3], 2] + offz))]))
+
+       # Face 6
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 5, 6, 2], 0] + offx,
+                                                   xyz[[1, 5, 6, 2], 1] + offy,
+                                                   xyz[[1, 5, 6, 2], 2] + offz))]))
+
 
     axs.set_xlabel('Easting (X; m)')
     axs.set_ylabel('Northing (Y; m)')
     axs.set_zlabel('Depth (Z; m)')
-    axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], s=20)
+
+    if survey.dobs is not None:
+        color = survey.dobs
+    else:
+        color = 'k'
+    axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], c=color, s=20, cmap='RdBu_r', zorder=100)
     axs.view_init(View_dip, View_azm)
     plt.show()
 
@@ -551,3 +563,284 @@ def fitline(prism, survey):
              update=widgets.ToggleButton(description='Refresh', value=False)
              )
     return Q
+
+def minCurvatureInterp(
+    locs, data,
+    vectorX=None, vectorY=None, vectorZ=None, gridSize=10,
+    tol=1e-5, iterMax=None, method='spline'
+):
+    """
+    Interpolate properties with a minimum curvature interpolation
+    :param locs:  numpy.array of size n-by-3 of point locations
+    :param data: numpy.array of size n-by-m of values to be interpolated
+    :param vectorX: numpy.ndarray Gridded locations along x-axis [Default:None]
+    :param vectorY: numpy.ndarray Gridded locations along y-axis [Default:None]
+    :param vectorZ: numpy.ndarray Gridded locations along z-axis [Default:None]
+    :param gridSize: numpy float Grid point seperation in meters [DEFAULT:10]
+    :param method: 'relaxation' || 'spline' [Default]
+    :param tol: float tol=1e-5 [Default] Convergence criteria
+    :param iterMax: int iterMax=None [Default] Maximum number of iterations
+
+    :return: numpy.array of size nC-by-m of interpolated values
+
+    """
+
+    def av_extrap(n):
+        """Define 1D averaging operator from cell-centers to nodes."""
+        Av = (
+            sp.spdiags(
+                (0.5 * np.ones((n, 1)) * [1, 1]).T,
+                [-1, 0],
+                n + 1, n,
+                format="csr"
+            )
+        )
+        Av[0, 1], Av[-1, -2] = 0.5, 0.5
+        return Av
+
+    def aveCC2F(grid):
+        "Construct the averaging operator on cell cell centers to faces."
+        if grid.ndim == 1:
+            aveCC2F = av_extrap(grid.shape[0])
+        elif grid.ndim == 2:
+            aveCC2F = sp.vstack((
+                sp.kron(speye(grid.shape[1]), av_extrap(grid.shape[0])),
+                sp.kron(av_extrap(grid.shape[1]), speye(grid.shape[0]))
+            ), format="csr")
+        elif grid.ndim == 3:
+            aveCC2F = sp.vstack((
+                kron3(
+                    speye(grid.shape[2]), speye(grid.shape[1]), av_extrap(grid.shape[0])
+                ),
+                kron3(
+                    speye(grid.shape[2]), av_extrap(grid.shape[1]), speye(grid.shape[0])
+                ),
+                kron3(
+                    av_extrap(grid.shape[2]), speye(grid.shape[1]), speye(grid.shape[0])
+                )
+            ), format="csr")
+        return aveCC2F
+
+    assert locs.shape[0] == data.shape[0], ("Number of interpolated locs " +
+                                            "must match number of data")
+
+    if vectorY is not None:
+        assert locs.shape[1] >= 2, (
+                "Found vectorY as an input." +
+                " Point locations must contain X and Y coordinates."
+            )
+
+    if vectorZ is not None:
+        assert locs.shape[1] == 3, (
+                "Found vectorZ as an input." +
+                " Point locations must contain X, Y and Z coordinates."
+            )
+
+    ndim = locs.shape[1]
+
+    # Define a new grid based on data extent
+    if vectorX is None:
+        xmin, xmax = locs[:, 0].min(), locs[:, 0].max()
+        nCx = int((xmax-xmin)/gridSize)
+        vectorX = xmin+np.cumsum(np.ones(nCx) * gridSize)
+
+    if vectorY is None and ndim >= 2:
+        ymin, ymax = locs[:, 1].min(), locs[:, 1].max()
+        nCy = int((ymax-ymin)/gridSize)
+        vectorY = ymin+np.cumsum(np.ones(nCy) * gridSize)
+
+    if vectorZ is None and ndim == 3:
+        zmin, zmax = locs[:, 2].min(), locs[:, 2].max()
+        nCz = int((zmax-zmin)/gridSize)
+        vectorZ = zmin+np.cumsum(np.ones(nCz) * gridSize)
+
+    if ndim == 3:
+        gridCy, gridCx, gridCz = np.meshgrid(vectorY, vectorX, vectorZ)
+        gridCC = np.c_[mkvc(gridCx), mkvc(gridCy), mkvc(gridCz)]
+    elif ndim == 2:
+        gridCy, gridCx = np.meshgrid(vectorY, vectorX)
+        gridCC = np.c_[mkvc(gridCx), mkvc(gridCy)]
+    else:
+        gridCC = vectorX
+
+    # Build the cKDTree for distance lookup
+    tree = cKDTree(locs)
+    # Get the grid location
+    d, ind = tree.query(gridCC, k=1)
+
+    if method == 'relaxation':
+
+        Ave = aveCC2F(gridCx)
+
+        count = 0
+        residual = 1.
+
+        m = np.zeros((gridCC.shape[0], data.shape[1]))
+
+        # Begin with neighrest primers
+        for ii in range(m.shape[1]):
+            # F = NearestNDInterpolator(mesh.gridCC[ijk], data[:, ii])
+            m[:, ii] = data[ind, ii]
+
+        while np.all([count < iterMax, residual > tol]):
+            for ii in range(m.shape[1]):
+                # F = NearestNDInterpolator(mesh.gridCC[ijk], data[:, ii])
+                m[:, ii] = data[ind, ii]
+            mtemp = m
+            m = Ave.T * (Ave * m)
+            residual = np.linalg.norm(m-mtemp)/np.linalg.norm(mtemp)
+            count += 1
+
+        print(count)
+        return gridCC, m
+
+    elif method == 'spline':
+
+        ndat = locs.shape[0]
+        # nC = int(nCx*nCy)
+
+        A = np.zeros((ndat, ndat))
+        for i in range(ndat):
+
+            r = (locs[i, 0] - locs[:, 0])**2. + (locs[i, 1] - locs[:, 1])**2.
+            A[i, :] = r.T * (np.log((r.T + 1e-8)**0.5) - 1.)
+
+        # Solve system for the weights
+        w = bicgstab(A, data, tol=1e-6)
+
+        # Compute new solution
+        # Reformat the line data locations but skip every n points for test
+        nC = gridCC.shape[0]
+        m = np.zeros(nC)
+
+        # We can parallelize this part later
+        for i in range(nC):
+
+            r = (gridCC[i, 0] - locs[:, 0])**2. + (gridCC[i, 1] - locs[:, 1])**2.
+            m[i] = np.sum(w[0] * r.T * (np.log((r.T + 1e-8)**0.5) - 1.))
+
+        return gridCC, m.reshape(gridCx.shape, order='F')
+
+    else:
+
+        NotImplementedError("Only methods 'relaxation' || 'spline' are available" )
+
+
+def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
+                     vmin=None, vmax=None,
+                     clabel=True, cmap='RdBu_r', ve=1., alpha=1., alphaHS=1.,
+                     distMax=1000, midpoint=None, azdeg=315, altdeg=45):
+
+    ls = LightSource(azdeg=azdeg, altdeg=altdeg)
+
+    if x.ndim == 1:
+        # Create grid of points
+        vectorX = np.linspace(x.min(), x.max(), 1000)
+        vectorY = np.linspace(y.min(), y.max(), 1000)
+
+        X, Y = np.meshgrid(vectorX, vectorY)
+
+        # Interpolate
+        d_grid = griddata(np.c_[x, y], z, (X, Y), method='cubic')
+
+        # Remove points beyond treshold
+        tree = cKDTree(np.c_[x, y])
+        xi = _ndim_coords_from_arrays((X, Y), ndim=2)
+        dists, indexes = tree.query(xi)
+
+        # Copy original result but mask missing values with NaNs
+        d_grid[dists > distMax] = np.nan
+
+    else:
+
+        X, Y, d_grid = x, y, z
+
+    class MidPointNorm(Normalize):
+        def __init__(self, midpoint=None, vmin=None, vmax=None, clip=False):
+            Normalize.__init__(self, vmin, vmax, clip)
+            self.midpoint = midpoint
+
+        def __call__(self, value, clip=None):
+            if clip is None:
+                clip = self.clip
+
+            result, is_scalar = self.process_value(value)
+
+            self.autoscale_None(result)
+
+            if self.midpoint is None:
+                self.midpoint = np.mean(value)
+            vmin, vmax, midpoint = self.vmin, self.vmax, self.midpoint
+
+            if not (vmin < midpoint < vmax):
+                raise ValueError("midpoint must be between maxvalue and minvalue.")
+            elif vmin == vmax:
+                result.fill(0) # Or should it be all masked? Or 0.5?
+            elif vmin > vmax:
+                raise ValueError("maxvalue must be bigger than minvalue")
+            else:
+                vmin = float(vmin)
+                vmax = float(vmax)
+                if clip:
+                    mask = np.ma.getmask(result)
+                    result = np.ma.array(np.clip(result.filled(vmax), vmin, vmax),
+                                      mask=mask)
+
+                # ma division is very slow; we can take a shortcut
+                resdat = result.data
+
+                # First scale to -1 to 1 range, than to from 0 to 1.
+                resdat -= midpoint
+                resdat[resdat > 0] /= abs(vmax - midpoint)
+                resdat[resdat < 0] /= abs(vmin - midpoint)
+
+                resdat /= 2.
+                resdat += 0.5
+                result = np.ma.array(resdat, mask=result.mask, copy=False)
+
+            if is_scalar:
+                result = result[0]
+            return result
+
+        def inverse(self, value):
+            if not self.scaled():
+                raise ValueError("Not invertible until scaled")
+            vmin, vmax, midpoint = self.vmin, self.vmax, self.midpoint
+
+            if cbook.iterable(value):
+                val = ma.asarray(value)
+                val = 2 * (val-0.5)
+                val[val > 0] *= abs(vmax - midpoint)
+                val[val < 0] *= abs(vmin - midpoint)
+                val += midpoint
+                return val
+            else:
+                val = 2 * (val - 0.5)
+                if val < 0:
+                    return val*abs(vmin-midpoint) + midpoint
+                else:
+                    return val*abs(vmax-midpoint) + midpoint
+
+    im, CS = [], []
+    if axs is None:
+        axs = plt.subplot()
+
+    if fill:
+        extent = x.min(), x.max(), y.min(), y.max()
+        im = axs.contourf(
+            X, Y, d_grid, 50, vmin=vmin, vmax=vmax,
+            cmap=cmap, norm=MidPointNorm(midpoint=midpoint), alpha=alpha
+        )
+
+        axs.imshow(ls.hillshade(d_grid.T, vert_exag=ve, dx=5., dy=5.),
+                   cmap='gray_r', alpha=alphaHS,
+                   extent=extent, origin='lower')
+
+    if contour > 0:
+        CS = axs.contour(
+            X, Y, d_grid, int(contour), colors='k', linewidths=0.5
+        )
+
+        if clabel:
+            plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
+    return im, CS

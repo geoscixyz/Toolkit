@@ -23,6 +23,12 @@ class problem(object):
     prism = None
     survey = None
 
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+        return
+
     @property
     def Mind(self):
         # Define magnetization direction as sum of induced and remanence
