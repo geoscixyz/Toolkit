@@ -1,0 +1,3 @@
+- Dr. Dianne Mitchinson, (`@demitch <https://github.com/demitch/>`_)
+- Dr. Seogi Kang, (`@sgkang <https://github.com/sgkang/>`_)
+- Dom Fournier, (`@fourndo <https://github.com/fourndo/>`_)
