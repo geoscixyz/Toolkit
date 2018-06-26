@@ -72,7 +72,7 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
         Profile_azm /= 180./np.pi
         Profile_len /= 2.*0.98
 
-        dx = np.cos(-Profile_azm)*Profile_len
+        dx = np.cos(-Profile_azm)*Profile_lenf
         dy = np.sin(-Profile_azm)*Profile_len
 
         a = [Profile_ctx - dx, Profile_cty - dy]
@@ -457,7 +457,11 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
     else:
         color = 'k'
     axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], c=color, s=20, cmap='RdBu_r', zorder=100)
-    axs.view_init(View_dip, View_azm)
+
+    # Convert from geographic 
+    azmDeg = (450 - View_azm) % 360 + 180
+
+    axs.view_init(View_dip, azmDeg)
     plt.show()
 
     return True
