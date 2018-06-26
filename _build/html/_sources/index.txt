@@ -1,17 +1,18 @@
 Geophysics for Practicing Geoscientists
 =======================================
 
- .. image:: intro.png
-   :width: 200 px
-   :alt: intro
-   :align: right
+ .. .. image:: ./images/intro.png
+ ..   :width: 200 px
+ ..   :alt: intro
+ ..   :align: right
+
+
 
 The Geop4Geog Toolkit is a learning resource for applied geophysics and its
 applications to help solve problems of relevance to society including those in
 resource exploration, environmental applications, and geotechnical projects.
-github_.
 
-.. _github: https://github.com/ubcgif/gpg
+
 
 
 Contents:
@@ -27,14 +28,34 @@ Feedback:
 ^^^^^^^^^
 
 Have comments or suggestions? Submit feedback here_.
+All the content can be found on our github_ repository.
 
 .. _here: https://docs.google.com/forms/d/1Bv43lKncKaTQY3_J_B1DrPQr0ft0Qt1x6IjqM7iDbnc/viewform?usp=send_form>`.
 
+
+.. _github: https://github.com/ubcgif/gpg
 
 Contributors:
 ^^^^^^^^^^^^^
 
 .. include:: AUTHORS.rst
+
+
+.. image:: ./images/MDRU.png
+   :scale: 100%
+   :align: left
+
+.. image:: ./images/GIF.png
+   :scale: 100%
+   :align: right
+
+|
+|
+|
+|
+|
+|
+|
 
 .. Indices and tables
 .. ==================

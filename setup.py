@@ -26,14 +26,14 @@ CLASSIFIERS = [
     'Natural Language :: English',
 ]
 
-with open('README.rst') as f:
+with open('README.md') as f:
     LONG_DESCRIPTION = ''.join(f.readlines())
 
 setup(
-    name = 'library',
-    version = '0.0.1',
-    packages = find_packages(),
-    install_requires = [
+    name='library',
+    version='0.0.1',
+    packages=find_packages(),
+    install_requires=[
         'numpy>=1.7',
         'scipy>=0.13',
         'matplotlib',
@@ -43,15 +43,15 @@ setup(
         'discretize',
         'em_examples'
     ],
-    author = 'GeoSci Developers',
-    author_email = 'fourndo@gmail.com',
-    description = 'toolkit',
-    long_description = LONG_DESCRIPTION,
-    keywords = 'geophysics, geologists',
-    url = 'http://toolkit.geosci.xyz',
-    download_url = 'https://github.com/geoscixyz/Toolkit',
+    author='GeoSci Developers',
+    author_email='fourndo@gmail.com',
+    description='toolkit',
+    long_description=LONG_DESCRIPTION,
+    keywords='geophysics, geologists',
+    url='http://toolkit.geosci.xyz',
+    download_url='https://github.com/geoscixyz/Toolkit',
     classifiers=CLASSIFIERS,
-    platforms = ['Windows', 'Linux', 'Solaris', 'Mac OS-X', 'Unix'],
+    platforms=['Windows', 'Linux', 'Solaris', 'Mac OS-X', 'Unix'],
     license='MIT License',
-    use_2to3 = False,
+    use_2to3=False,
 )

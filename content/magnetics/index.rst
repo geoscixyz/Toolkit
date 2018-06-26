@@ -3,9 +3,9 @@
 Magnetics
 =========
 
-.. figure:: ./images/icon_mag.gif
-   :align: right
-   :scale: 100 %
+.. .. figure:: ./images/icon_mag.gif
+..    :align: right
+..    :scale: 100 %
 
 Measurements of the magnetic field contain information about subsurface
 variations in **magnetic susceptibility**. Data can
