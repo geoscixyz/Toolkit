@@ -32,7 +32,7 @@ class problem(object):
     @property
     def Mind(self):
         # Define magnetization direction as sum of induced and remanence
-        mind = MagUtils.dipazm_2_xyz(self.survey.srcField.param[1], self.survey.srcField.param[2])
+        mind = MagUtils.dipazm_2_xyz(self.Hinc, self.Hdec)
         R = MagUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
         Mind = self.susc*self.Higrf*R.dot(mind.T)
         # Mind = self.susc*self.Higrf*PF.Magnetics.dipazm_2_xyz(self.Binc - self.prism.pinc,
@@ -50,9 +50,27 @@ class problem(object):
 
     @property
     def Higrf(self):
-        Higrf = self.survey.srcField.param[0] * 1e-9 / mu_0
 
-        return Higrf
+        if getattr(self, '_Higrf', None) is None:
+            self._Higrf = self.survey.srcField.param[0]
+
+        return self._Higrf * 1e-9 / mu_0
+
+    @property
+    def Hinc(self):
+
+        if getattr(self, '_Hinc', None) is None:
+            self._Hinc = self.survey.srcField.param[1]
+
+        return self._Hinc
+
+    @property
+    def Hdec(self):
+
+        if getattr(self, '_Hdec', None) is None:
+            self._Hdec = self.survey.srcField.param[2]
+
+        return self._Hdec
 
     @property
     def G(self):
@@ -115,8 +133,8 @@ class problem(object):
 
         if self.uType == 'tf':
             # Projection matrix
-            Ptmi = MagUtils.dipazm_2_xyz(self.survey.srcField.param[1],
-                                      self.survey.srcField.param[2])
+            Ptmi = MagUtils.dipazm_2_xyz(self.Hinc,
+                                         self.Hdec)
 
             u = Utils.mkvc(Ptmi.dot(bvec))
 
@@ -175,6 +193,6 @@ def createMagSurvey(xyzd, B):
     rxLoc = PF.BaseMag.RxObs(xyzd[:, :3])
     srcField = PF.BaseMag.SrcField([rxLoc], param=B)
     survey = PF.BaseMag.LinearSurvey(srcField)
-    survey.dobs = xyzd[:, 3]
+    survey.dobs = np.zeros_like(xyzd[:, 3])
 
     return survey

@@ -1,5 +1,11 @@
-README.rst
+README.md
 setup.py
+_ext/Add2Build.py
+_ext/__init__.py
+_ext/autodoc.py
+_ext/edit_on_github.py
+_ext/environmentSetup.py
+_ext/fetch_gae_sdk.py
 library/__init__.py
 library.egg-info/PKG-INFO
 library.egg-info/SOURCES.txt

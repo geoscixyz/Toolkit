@@ -57,7 +57,6 @@ def PFSimulator(prism, survey):
                               Profile_cty=widgets.FloatSlider(value=cty, min=ylim[0], max=ylim[1], step=0.1, continuous_update=False, color='black'), )
     return out
 
-    # Create problem
 
 def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
                Profile_azm, Profile_len, Profile_npt,
@@ -135,42 +134,43 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
 
 def ViewMagSurvey2D(survey):
 
-    def MagSurvey2D(East, North, Width, Height, Azimuth, Length, Npts, Profile):
+    def MagSurvey2D(East, North, Azimuth, Length, Npts):
 
         # Get the line extent from the 2D survey for now
-        Azimuth /= 180./np.pi
-        Length /= 2.*0.98
-        a = [East - np.cos(-Azimuth)*Length, North - np.sin(-Azimuth)*Length]
-        b = [East + np.cos(-Azimuth)*Length, North + np.sin(-Azimuth)*Length]
 
-        xlim = East + np.asarray([-Width/2., Width/2.])
-        ylim = North + np.asarray([-Height/2., Height/2.])
+        Azimuth = np.deg2rad((450 - Azimuth) % 360)
+        Length /= 2.*0.98
+        a = [East - np.cos(Azimuth)*Length, North - np.sin(Azimuth)*Length]
+        b = [East + np.cos(Azimuth)*Length, North + np.sin(Azimuth)*Length]
+
+        # xlim = East + np.asarray([-Width/2., Width/2.])
+        # ylim = North + np.asarray([-Height/2., Height/2.])
 
         # Re-sample the survey within the region
         rxLoc = survey.srcField.rxList[0].locs
 
-        ind = np.all([rxLoc[:, 0] > xlim[0], rxLoc[:, 0] < xlim[1],
-                      rxLoc[:, 1] > ylim[0], rxLoc[:, 1] < ylim[1]], axis=0)
+        # ind = np.all([rxLoc[:, 0] > xlim[0], rxLoc[:, 0] < xlim[1],
+        #               rxLoc[:, 1] > ylim[0], rxLoc[:, 1] < ylim[1]], axis=0)
 
-        rxLoc = PF.BaseMag.RxObs(rxLoc[ind, :])
+        rxLoc = PF.BaseMag.RxObs(rxLoc)
         srcField = PF.BaseMag.SrcField([rxLoc], param=survey.srcField.param)
         surveySim = PF.BaseMag.LinearSurvey(srcField)
-        surveySim.dobs = survey.dobs[ind]
+        surveySim.dobs = survey.dobs
 
-        fig = plt.figure(figsize=(6, 9))
-        ax1 = plt.subplot(2, 1, 1)
+        fig = plt.figure(figsize=(9, 6))
+        ax1 = plt.subplot(1, 2, 1)
 
         plotMagSurvey2D(surveySim, a, b, Npts, fig=fig, ax=ax1)
 
-        if Profile:
+        # if Profile:
+        ax2 = plt.subplot(1, 2, 2)
 
-            ax2 = plt.subplot(2, 1, 2)
+        xyz = surveySim.srcField.rxList[0].locs
+        dobs = surveySim.dobs
+        plotProfile(xyz, dobs, a, b, Npts, data=None,
+                    fig=fig, ax=ax2)
 
-            xyz = surveySim.srcField.rxList[0].locs
-            dobs = surveySim.dobs
-            plotProfile(xyz, dobs, a, b, Npts, data=None,
-                        fig=fig, ax=ax2)
-
+        plt.show()
         return surveySim
 
     # Calculate the original map extents
@@ -182,19 +182,16 @@ def ViewMagSurvey2D(survey):
     Ly = ylim[1] - ylim[0]
     diag = (Lx**2. + Ly**2.)**0.5 /2.
 
-    East = np.mean(xlim)
-    North = np.mean(ylim)
-    cntr = [East, North]
+    cntr = [np.mean(xlim), np.mean(ylim)]
 
-    out = widgets.interactive(MagSurvey2D,
-                    East=widgets.FloatSlider(min=cntr[0]-Lx, max=cntr[0]+Lx, step=10, value=cntr[0],continuous_update=False),
-                    North=widgets.FloatSlider(min=cntr[1]-Ly, max=cntr[1]+Ly, step=10, value=cntr[1],continuous_update=False),
-                    Width=widgets.FloatSlider(min=10, max=Lx*1.05, step=10, value=Lx*1.05, continuous_update=False),
-                    Height=widgets.FloatSlider(min=10, max=Ly*1.05, step=10, value=Ly*1.05, continuous_update=False),
-                    Azimuth=widgets.FloatSlider(min=-90, max=90, step=5, value=0, continuous_update=False),
-                    Length=widgets.FloatSlider(min=10, max=diag, step=10, value= Ly, continuous_update=False),
-                    Npts=widgets.BoundedFloatText(min=10, max=100, step=1, value=20, continuous_update=False),
-                    Profile=widgets.ToggleButton(description='Profile', value=False))
+    out = widgets.interactive(
+        MagSurvey2D,
+        East=widgets.FloatSlider(min=cntr[0]-Lx, max=cntr[0]+Lx, step=10, value=cntr[0],continuous_update=False),
+        North=widgets.FloatSlider(min=cntr[1]-Ly, max=cntr[1]+Ly, step=10, value=cntr[1],continuous_update=False),
+        Azimuth=widgets.FloatSlider(min=-90, max=90, step=5, value=0, continuous_update=False),
+        Length=widgets.FloatSlider(min=10, max=diag, step=10, value= Ly, continuous_update=False),
+        Npts=widgets.BoundedFloatText(min=10, max=100, step=1, value=20, continuous_update=False),
+    )
 
     return out
 
@@ -218,11 +215,15 @@ def plotMagSurvey2D(survey, a, b, npts, data=None, pred=None,
         data = survey.dobs
 
     # Use SimPEG.PF ploting function
-    PF.Magnetics.plot_obs_2D(rxLoc, d=data, fig=fig,  ax=ax,
-                             vmin=vmin, vmax=vmax,
-                             marker=False, cmap='RdBu_r')
+    fig, im = plotData2D(rxLoc, d=data, fig=fig,  ax=ax,
+                         vmin=vmin, vmax=vmax,
+                         marker=False, cmap='RdBu_r',
+                         colorbar=False)
 
     ax.plot(x, y, 'w.', ms=10)
+    plt.colorbar(im, orientation='horizontal')
+    ax.set_xlim([rxLoc[:, 0].min(), rxLoc[:, 0].max()])
+    ax.set_ylim([rxLoc[:, 1].min(), rxLoc[:, 1].max()])
     ax.text(x[0], y[0], 'A', fontsize=16, color='w', ha='left')
     ax.text(x[-1], y[-1], 'B', fontsize=16,
             color='w', ha='right')
@@ -232,24 +233,23 @@ def plotMagSurvey2D(survey, a, b, npts, data=None, pred=None,
         ax2 = plt.subplot(1, 2, 2)
 
         if pred.min() != pred.max():
-            PF.Magnetics.plot_obs_2D(rxLoc, d=pred, fig=fig,  ax=ax2,
-                                     vmin=vmin, vmax=vmax,
-                                     marker=False, cmap='RdBu_r')
+            plotData2D(rxLoc, d=pred, fig=fig,  ax=ax2,
+                       vmin=vmin, vmax=vmax,
+                       marker=False, cmap='RdBu_r')
 
         else:
-            PF.Magnetics.plot_obs_2D(rxLoc, d=pred, fig=fig,  ax=ax2,
-                                     vmin=pred.min(), vmax=pred.max(),
-                                     marker=False, cmap='RdBu_r')
+            plotData2D(rxLoc, d=pred, fig=fig,  ax=ax2,
+                       vmin=pred.min(), vmax=pred.max(),
+                       marker=False, cmap='RdBu_r')
         ax2.plot(x, y, 'w.', ms=10)
         ax2.text(x[0], y[0], 'A', fontsize=16, color='w',
-                ha='left')
+                 ha='left')
         ax2.text(x[-1], y[-1], 'B', fontsize=16,
-                color='w', ha='right')
+                 color='w', ha='right')
         ax2.set_yticks([])
         ax2.set_yticklabels("")
         ax2.grid(True)
 
-    plt.show()
     return
 
 
@@ -297,12 +297,11 @@ def plotProfile(xyz, dobs, a, b, npts, data=None,
 
     ax.set_xlabel("Distance (m)")
     ax.set_ylabel("Magnetic field (nT)")
-
+    ax.yaxis.set_label_position("right")
     #ax.text(distance.min(), dline.max()*0.8, 'A', fontsize = 16)
     # ax.text(distance.max()*0.97, out_linei.max()*0.8, 'B', fontsize = 16)
-    ax.legend(("survey", "simulated"), bbox_to_anchor=(0.5, -0.3))
+    ax.legend(("survey", "simulated"))
     ax.grid(True)
-    plt.show()
 
     return True
 
@@ -458,7 +457,7 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
         color = 'k'
     axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], c=color, s=20, cmap='RdBu_r', zorder=100)
 
-    # Convert from geographic 
+    # Convert from geographic
     azmDeg = (450 - View_azm) % 360 + 180
 
     axs.view_init(View_dip, azmDeg)
@@ -848,3 +847,74 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
         if clabel:
             plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
     return im, CS
+
+
+def plotData2D(rxLoc, d=None, title=None,
+               vmin=None, vmax=None, contours=None, fig=None, ax=None,
+               colorbar=True, marker=True, cmap="plasma_r"):
+    """ Function plot_obs(rxLoc,d)
+    Generate a 2d interpolated plot from scatter points of data
+
+    INPUT
+    rxLoc       : Observation locations [x,y,z]
+    d           : Data vector
+
+    OUTPUT
+    figure()
+
+    Created on Dec, 27th 2015
+
+    @author: dominiquef
+
+    """
+
+    from scipy.interpolate import griddata
+    import pylab as plt
+
+    # Plot result
+    if fig is None:
+        fig = plt.figure()
+
+    if ax is None:
+        ax = plt.subplot()
+
+    plt.sca(ax)
+    if marker:
+        plt.scatter(rxLoc[:, 0], rxLoc[:, 1], c='k', s=10)
+
+    if d is not None:
+
+        if (vmin is None):
+            vmin = d.min()
+
+        if (vmax is None):
+            vmax = d.max()
+
+
+        # Create grid of points
+        x = np.linspace(rxLoc[:, 0].min(), rxLoc[:, 0].max(), 100)
+        y = np.linspace(rxLoc[:, 1].min(), rxLoc[:, 1].max(), 100)
+
+        X, Y = np.meshgrid(x, y)
+
+        # Interpolate
+        d_grid = griddata(rxLoc[:, 0:2], d, (X, Y), method='linear')
+        im = plt.imshow(d_grid, extent=[x.min(), x.max(), y.min(), y.max()],
+                   origin='lower', vmin=vmin, vmax=vmax, cmap=cmap)
+
+        if colorbar:
+            plt.colorbar(fraction=0.02)
+
+        if contours is None:
+
+            if vmin != vmax:
+                plt.contour(X, Y, d_grid, 10, vmin=vmin, vmax=vmax, cmap=cmap)
+        else:
+            plt.contour(X, Y, d_grid, levels=contours, colors='k',
+                        vmin=vmin, vmax=vmax)
+
+    if title is not None:
+        plt.title(title)
+    plt.gca().set_aspect('equal', adjustable='box')
+
+    return fig, im

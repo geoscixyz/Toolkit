@@ -458,9 +458,9 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
         color = 'k'
     axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], c=color, s=20, cmap='RdBu_r', zorder=100)
 
-    # Convert from geographic 
+    # Convert from geographic
     azmDeg = (450 - View_azm) % 360 + 180
-
+    print(azmDeg)
     axs.view_init(View_dip, azmDeg)
     plt.show()
 
