@@ -1,5 +1,5 @@
-Geophysics for Practicing Geoscientists
-=======================================
+MDRU-GIF Geophysical Toolkit for Geologists
+===========================================
 
  .. .. image:: ./images/intro.png
  ..   :width: 200 px
@@ -7,10 +7,22 @@ Geophysics for Practicing Geoscientists
  ..   :align: right
 
 
+Welcome geoscientists looking to get more from their magnetic data!
 
-The Geop4Geog Toolkit is a learning resource for applied geophysics and its
-applications to help solve problems of relevance to society including those in
-resource exploration, environmental applications, and geotechnical projects.
+MDRU-GIF’s Geophysical Toolkit for Geologists was developed to provide guidance and an easy entryway for geoscientists to explore magnetic data.
+
+Geological knowledge is vital to meaningful interpretation of geophysical data. Therefore, geophysicists and geologists must work together to gain the maximum value from geophysical data! Neither the geophysicist nor the geologist needs to be an expert in the other’s field, they simply need to bring their respective skills and knowledge to the table and start a conversation. 
+
+This site provides a portal to a suite of basic geophysical tools or applications that can aid geological interpretation of magnetic data. The content and applications here were assembled as part of a project initiated between UBC’s Mineral Deposit Research Unit and Geophysical Inversion Facility. Magnetic data was focused on for this particular Toolkit, due to the usefulness and common availability of this type of geophysical data. However, applications for analysis of other geophysical data types may be added in the future. 
+
+Magnetic data can provide great insight into geology at and below the Earth’s surface. Magnetic data is of particular use where geology is concealed by weathering or overburden, as this cover material is often magnetically ‘transparent’. The distribution of lithological units, and geologic structure can be interpreted helping geoscientists piece together a more complete picture of the Earth’s subsurface.
+
+The aim of the Geophysical Toolkit is two-fold: to educate geoscientists on common geophysical tools used for magnetic data interpretation, and to provide quick and free access to some of these tools. 
+
+Some background information, references, and resources, related to the Earth’s magnetic field, magnetic response of rocks, and magnetic data collection are provided in an introductory section. 
+
+To get initiated with the tools in the Geophysical Toolkit, we have set up both synthetic and real-life examples that can be walked through by interested geoscientists looking to understand how the tools function. Users can also directly upload their own data to apply and explore the same applications. 
+
 
 
 
@@ -21,7 +33,11 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
-   content/magnetics/index
+   content/Magnetics/index
+   content/Demos/demos
+   content/Tools/tools
+   content/Interp/interp
+
 
 
 Feedback:

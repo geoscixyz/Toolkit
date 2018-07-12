@@ -1,7 +1,7 @@
 .. _magnetics_index:
 
-Magnetics
-=========
+1. Magnetic Data - Background
+=============================
 
 .. .. figure:: ./images/icon_mag.gif
 ..    :align: right
@@ -12,12 +12,26 @@ variations in **magnetic susceptibility**. Data can
 be acquired in the air (planes, satellites), on the ground (stationary, moving
 platforms, marine) and underground (boreholes, tunnels).
 
-Contents:
 
-.. toctree::
-   :maxdepth: 1
+Magnetic Susceptibility of Rocks and Minerals
+---------------------------------------------
 
-   magnetics_introduction
+Earth's Magnetic Field
+----------------------
 
+Magnetic Induction
+------------------
+
+Magnetic Dipoles
+----------------
+
+Magnetic Data
+-------------
+
+Magnetic Remanence
+------------------
+
+Data Processing
+---------------
 
 
