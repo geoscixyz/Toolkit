@@ -1,4 +1,4 @@
-.. _interp
+.. _interp:
 
 4. Magnetic Data Interpretation - Considerations
 ================================================

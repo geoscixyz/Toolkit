@@ -1,14 +1,14 @@
-.. _synth_example
+.. _synth_example:
 
 2.1. Analysis of Simple Bodies
 ==============================
 
-As a primer to interpreting magnetic data, let’s get familiar with the magnetic responses of some simple geologic bodies. We will then grid the magnetic data, and investigate different visual enhancements of the data, and apply several tools that will aid us in our geological interpretation of the magnetic data.  
+As a primer to interpreting magnetic data, let’s get familiar with the magnetic responses of some simple geologic bodies. We will then grid the magnetic data, and investigate different visual enhancements of the data, and apply several tools that will aid us in our geological interpretation of the magnetic data.
 
 The geologic model
 ------------------
 
-For this demonstration, a simple 3D geologic model was built attempting to capture several different types of geologic bodies. 
+For this demonstration, a simple 3D geologic model was built attempting to capture several different types of geologic bodies.
 
 The geologic bodies are represented by three different blocks superimposed on a background:
 

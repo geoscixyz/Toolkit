@@ -1,4 +1,4 @@
-.. _tools
+.. _tools:
 
 3. Library of 2D Magnetic Data Analysis Tools
 =============================================
