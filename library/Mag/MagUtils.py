@@ -57,3 +57,23 @@ def dipazm_2_xyz(dip, azm_N):
     M[2] = np.sin(D)
 
     return M
+
+
+def rotate(xyz, center, theta, phi):
+    """
+      Rotate scatter points in column format around a center location
+
+      INPUT
+      :param: xyz nDx3 matrix
+      :param: center xyz location of rotation
+      :param: theta angle rotation around x-axis
+      :param: phi angle rotation around z-axis
+
+    """
+    xyz -= np.kron(np.ones((xyz.shape[0], 1)), np.r_[center])
+
+    R = rotationMatrix(-theta, phi)
+
+    xyzRot = R.dot(xyz.T).T + np.kron(np.ones((xyz.shape[0], 1)), np.r_[center])
+
+    return xyzRot

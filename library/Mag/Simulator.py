@@ -395,10 +395,10 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
         colors = ['w']*len(prisms)
 
     for prism, color in zip(prisms, colors):
-        depth = prism.z0
-        x1, x2 = prism.xn[0]-prism.xc, prism.xn[1]-prism.xc
-        y1, y2 = prism.yn[0]-prism.yc, prism.yn[1]-prism.yc
-        z1, z2 = prism.zn[0]-prism.zc, prism.zn[1]-prism.zc
+
+        x1, x2 = prism.xn[0], prism.xn[1]
+        y1, y2 = prism.yn[0], prism.yn[1]
+        z1, z2 = prism.zn[0], prism.zn[1]
         pinc, pdec = prism.pinc, prism.pdec
 
         # Create a rectangular prism, rotate and plot
@@ -406,45 +406,46 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
                                [y1, y2, y2, y1, y1, y2, y2, y1],
                                [z1, z1, z1, z1, z2, z2, z2, z2]])
 
-        R = MagUtils.rotationMatrix(pinc, pdec)
+        xyz = MagUtils.rotate(block_xyz.T, np.r_[prism.xc, prism.yc, prism.zc], pinc, pdec)
+        # R = MagUtils.rotationMatrix(pinc, pdec)
 
-        xyz = R.dot(block_xyz).T
+        # xyz = R.dot(block_xyz).T
 
         # Offset the prism to true coordinate
-        offx = prism.xc
-        offy = prism.yc
-        offz = prism.zc
+        # offx = prism.xc
+        # offy = prism.yc
+        # offz = prism.zc
 
         #print xyz
         # Face 1
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0] + offx,
-                                                   xyz[:4, 1] + offy,
-                                                   xyz[:4, 2] + offz))]))
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0],
+                                                   xyz[:4, 1],
+                                                   xyz[:4, 2]))]))
 
         # Face 2
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[4:, 0] + offx,
-                                                   xyz[4:, 1] + offy,
-                                                   xyz[4:, 2] + offz))], facecolors=color))
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[4:, 0],
+                                                   xyz[4:, 1],
+                                                   xyz[4:, 2]))], facecolors=color))
 
         # Face 3
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 5, 4], 0] + offx,
-                                                   xyz[[0, 1, 5, 4], 1] + offy,
-                                                   xyz[[0, 1, 5, 4], 2] + offz))]))
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 5, 4], 0],
+                                                   xyz[[0, 1, 5, 4], 1],
+                                                   xyz[[0, 1, 5, 4], 2]))]))
 
         # Face 4
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[3, 2, 6, 7], 0] + offx,
-                                                   xyz[[3, 2, 6, 7], 1] + offy,
-                                                   xyz[[3, 2, 6, 7], 2] + offz))]))
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[3, 2, 6, 7], 0],
+                                                   xyz[[3, 2, 6, 7], 1],
+                                                   xyz[[3, 2, 6, 7], 2]))]))
 
        # Face 5
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 4, 7, 3], 0] + offx,
-                                                   xyz[[0, 4, 7, 3], 1] + offy,
-                                                   xyz[[0, 4, 7, 3], 2] + offz))]))
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 4, 7, 3], 0],
+                                                   xyz[[0, 4, 7, 3], 1],
+                                                   xyz[[0, 4, 7, 3], 2]))]))
 
        # Face 6
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 5, 6, 2], 0] + offx,
-                                                   xyz[[1, 5, 6, 2], 1] + offy,
-                                                   xyz[[1, 5, 6, 2], 2] + offz))]))
+        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 5, 6, 2], 0],
+                                                   xyz[[1, 5, 6, 2], 1],
+                                                   xyz[[1, 5, 6, 2], 2]))]))
 
 
     axs.set_xlabel('Easting (X; m)')
