@@ -20,14 +20,19 @@ def setSyntheticProblem():
 
     # Create the survey
     xyzd = np.genfromtxt(fileName, skip_header=3)
+    # Shift everything centered at origin
+    cntr = np.mean(xyzd[:, :3], axis=0)
+    xyzd[:, :3] -= np.kron(np.ones((xyzd.shape[0], 1)), cntr)
+    topo -= np.kron(np.ones((topo.shape[0], 1)), cntr)
     xyzd[:, -2] = 0
+
+    # Create survey
     B = np.r_[60308, 83.8, 25.4]
     survey = Mag.createMagSurvey(xyzd, B)
-    cntr = np.mean(xyzd[:, :2], axis=0)
     rxLocs = survey.srcField.rxList[0].locs
+    cntr = np.mean(rxLocs, axis=0)
 
     # User defined parameters for the blocks
-
     params = [[2000, 500, -100, 5000,  4000,  500, 60, 0],
               [-500, 0, -100, 300, 300, 300, -30, 0],
               [200, 100, -100, 4000, 100, 500, 55, 10],
@@ -60,7 +65,6 @@ def setSyntheticProblem():
         prism.x0, prism.y0, prism.z0 = cntr[0]+param[0], cntr[1]+param[1], xyzd[:, 2].min() +param[2]
         prism.dx, prism.dy, prism.dz = param[3], param[4], param[5]
         prism.pdec, prism.pinc = param[6], param[7]
-
         prisms.append(prism)
 
         # Forward model data
@@ -72,10 +76,13 @@ def setSyntheticProblem():
         X, Y, Z = np.meshgrid(prism.xn, prism.yn, prism.zn)
         pts = np.c_[Utils.mkvc(X), Utils.mkvc(Y), Utils.mkvc(Z)]
 
-        xyz = MagUtils.rotate(pts, np.r_[prism.xc, prism.yc, prism.zc], prism.pinc, prism.pdec)
+        xyz = MagUtils.rotate(
+            pts, np.r_[prism.xc, prism.yc, prism.zc],
+            prism.pinc, prism.pdec
+        )
         ind = Utils.ModelBuilder.PolygonInd(mesh, xyz)
 
-        model[ind] = susc
+        model[ind] += susc
 
     model = model[actv]
 
@@ -86,14 +93,22 @@ def setSyntheticProblem():
     indz = -40
 
     # Plot horizontal section
-    im = mesh.plotSlice(actvMap*model, normal='Z', ax=axs, ind=indz,clim=[-0.1, 0.1], pcolorOpts={'cmap':'jet'})
+    im = mesh.plotSlice(
+        actvMap*model, normal='Z', ax=axs,
+        ind=indz, clim=[0.0, 0.1], pcolorOpts={'cmap': 'jet'}
+    )
 
-    a, b = np.r_[rxLocs[:, 0].min(), mesh.vectorCCy[indy]], np.r_[rxLocs[:, 0].max(), mesh.vectorCCy[indy]]
+    a = np.r_[rxLocs[:, 0].min(), mesh.vectorCCy[indy]]
+    b = np.r_[rxLocs[:, 0].max(), mesh.vectorCCy[indy]]
 
     plt.scatter(rxLocs[:, 0], rxLocs[:, 1], 10, c='k', marker='.')
-    plt.plot(np.r_[a[0], b[0]], np.r_[a[1], b[1]], 'r--')    # Simulator.plotProfile2D(topo, np.r_[rxLocs[:, 0].min(), mesh.vectorCCy[indy]], np.r_[rxLocs[:, 0].max(), mesh.vectorCCy[indy]], 10, ax=axs, plotStr='k-', coordinate_system = 'xProfile')
+    plt.plot(np.r_[a[0], b[0]], np.r_[a[1], b[1]], 'r--')
 
-    axs.set_title('Plan view: ' + str(int(mesh.vectorCCz[indz]))+ " m depth")
+    axs.set_title(
+        'Plan view'
+    )
+    axs.set_xlabel('Easting (m)')
+    axs.set_ylabel('Northing (m)')
     axs.set_aspect('equal')
     axs.set_xlim(rxLocs[:, 0].min()-100, rxLocs[:, 0].max()+100)
     axs.set_ylim(rxLocs[:, 1].min()-100, rxLocs[:, 1].max()+100)
@@ -101,17 +116,35 @@ def setSyntheticProblem():
     # Plot vertical section
     axs = plt.subplot(1, 2, 2)
     indy = int(mesh.vnC[1]/2)-18
-    im = mesh.plotSlice(actvMap*model, normal='Y', ax=axs, ind=indy,clim=[-0.1, 0.1], pcolorOpts={'cmap':'jet'})
-    plt.colorbar(im[0], orientation='horizontal')
+    im = mesh.plotSlice(
+        actvMap*model, normal='Y', ax=axs,
+        ind=indy, clim=[0.0, 0.1], pcolorOpts={'cmap': 'jet'}
+    )
+
+    cbar = plt.colorbar(im[0], orientation='horizontal')
+    cbar.set_label('SI')
+
     rxLocs = survey.srcField.rxList[0].locs
-    Simulator.plotProfile2D(rxLocs, a, b, 10, ax=axs, coordinate_system = 'xProfile')
-    # Simulator.plotProfile2D(topo, np.r_[rxLocs[:, 0].min(), mesh.vectorCCy[indy]], np.r_[rxLocs[:, 0].max(), mesh.vectorCCy[indy]], 10, ax=axs, plotStr='k-', coordinate_system = 'xProfile')
+    Simulator.plotProfile2D(
+        rxLocs, a, b, 10, ax=axs,
+        coordinate_system='xProfile'
+    )
 
-    axs.set_title('EW Section: ' + str(int(mesh.vectorCCy[indy]))+ " N")
+    Simulator.plotProfile2D(
+        topo, a, b, 10, ax=axs,
+        plotStr=['k-'],
+        coordinate_system='xProfile'
+    )
+
+    axs.set_title(
+        'EW Section'
+    )
+    axs.set_ylim(-500, 100)
     axs.set_aspect('equal')
-
-    # plt.show()
-
+    axs.set_xlabel('Easting (m)')
+    axs.set_ylabel('Depth (m)')
+    axs.yaxis.set_label_position("right")
     fig.savefig('./images/SyntheticModel.png', bbox_inches='tight')
 
+    plt.close()
     return survey

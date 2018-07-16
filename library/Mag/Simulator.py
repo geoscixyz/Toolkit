@@ -134,7 +134,7 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
 
 def ViewMagSurvey2D(survey):
 
-    def MagSurvey2D(East, North, Azimuth, Length, Npts):
+    def MagSurvey2D(East, North, Azimuth, Length, Sampling, ColorMap):
 
         # Get the line extent from the 2D survey for now
 
@@ -157,18 +157,24 @@ def ViewMagSurvey2D(survey):
         surveySim = PF.BaseMag.LinearSurvey(srcField)
         surveySim.dobs = survey.dobs
 
-        fig = plt.figure(figsize=(9, 6))
+        fig = plt.figure(figsize=(10, 6))
         ax1 = plt.subplot(1, 2, 1)
 
-        plotMagSurvey2D(surveySim, a, b, Npts, fig=fig, ax=ax1)
+        plotMagSurvey2D(surveySim, a, b, Sampling, fig=fig, ax=ax1, cmap=ColorMap)
 
         # if Profile:
         ax2 = plt.subplot(1, 2, 2)
 
         xyz = surveySim.srcField.rxList[0].locs
         dobs = surveySim.dobs
-        plotProfile(xyz, dobs, a, b, Npts, data=None,
+        plotProfile(xyz, dobs, a, b, Sampling, data=None,
                     fig=fig, ax=ax2)
+
+        ax2.set_aspect(0.5)
+        pos = ax2.get_position()
+        ax2.set_position([pos.x0, pos.y0, pos.width*1.5, pos.height*1.5])
+        ax2.set_title('A', loc='left', fontsize=14)
+        ax2.set_title("A'", loc='right', fontsize=14)
 
         plt.show()
         return surveySim
@@ -180,24 +186,32 @@ def ViewMagSurvey2D(survey):
 
     Lx = xlim[1] - xlim[0]
     Ly = ylim[1] - ylim[0]
-    diag = (Lx**2. + Ly**2.)**0.5 /2.
+    diag = (Lx**2. + Ly**2.)**0.5
 
     cntr = [np.mean(xlim), np.mean(ylim)]
 
+    cmaps = ['viridis', 'plasma', 'RdBu_r', 'Greys_r', 'jet', 'hsv', 'rainbow', 'gnuplot']
     out = widgets.interactive(
         MagSurvey2D,
         East=widgets.FloatSlider(min=cntr[0]-Lx, max=cntr[0]+Lx, step=10, value=cntr[0],continuous_update=False),
         North=widgets.FloatSlider(min=cntr[1]-Ly, max=cntr[1]+Ly, step=10, value=cntr[1],continuous_update=False),
-        Azimuth=widgets.FloatSlider(min=-90, max=90, step=5, value=0, continuous_update=False),
-        Length=widgets.FloatSlider(min=10, max=diag, step=10, value= Ly, continuous_update=False),
-        Npts=widgets.BoundedFloatText(min=10, max=100, step=1, value=20, continuous_update=False),
+        Azimuth=widgets.FloatSlider(min=0, max=180, step=5, value=90, continuous_update=False),
+        Length=widgets.FloatSlider(min=10, max=diag, step=10, value=2000, continuous_update=False),
+        Sampling=widgets.BoundedFloatText(min=10, max=100, step=1, value=20, continuous_update=False),
+        ColorMap=widgets.Dropdown(
+                  options=cmaps,
+                  value='RdBu_r',
+                  description='ColorMap',
+                  disabled=False,
+                )
     )
 
     return out
 
 
 def plotMagSurvey2D(survey, a, b, npts, data=None, pred=None,
-                    fig=None, ax=None, vmin=None, vmax=None):
+                    fig=None, ax=None, vmin=None, vmax=None,
+                    cmap='RdBu_r'):
     """
     Plot the data and line profile inside the spcified limits
     """
@@ -217,15 +231,16 @@ def plotMagSurvey2D(survey, a, b, npts, data=None, pred=None,
     # Use SimPEG.PF ploting function
     fig, im = plotData2D(rxLoc, d=data, fig=fig,  ax=ax,
                          vmin=vmin, vmax=vmax,
-                         marker=False, cmap='RdBu_r',
+                         marker=False, cmap=cmap,
                          colorbar=False)
 
     ax.plot(x, y, 'w.', ms=10)
-    plt.colorbar(im, orientation='horizontal')
+    cbar = plt.colorbar(im, orientation='horizontal')
+    cbar.set_label('nT')
     ax.set_xlim([rxLoc[:, 0].min(), rxLoc[:, 0].max()])
     ax.set_ylim([rxLoc[:, 1].min(), rxLoc[:, 1].max()])
     ax.text(x[0], y[0], 'A', fontsize=16, color='w', ha='left')
-    ax.text(x[-1], y[-1], 'B', fontsize=16,
+    ax.text(x[-1], y[-1], "A'", fontsize=16,
             color='w', ha='right')
     ax.grid(True)
 
@@ -235,16 +250,16 @@ def plotMagSurvey2D(survey, a, b, npts, data=None, pred=None,
         if pred.min() != pred.max():
             plotData2D(rxLoc, d=pred, fig=fig,  ax=ax2,
                        vmin=vmin, vmax=vmax,
-                       marker=False, cmap='RdBu_r')
+                       marker=False, cmap=cmap)
 
         else:
             plotData2D(rxLoc, d=pred, fig=fig,  ax=ax2,
                        vmin=pred.min(), vmax=pred.max(),
-                       marker=False, cmap='RdBu_r')
+                       marker=False, cmap=cmap)
         ax2.plot(x, y, 'w.', ms=10)
         ax2.text(x[0], y[0], 'A', fontsize=16, color='w',
                  ha='left')
-        ax2.text(x[-1], y[-1], 'B', fontsize=16,
+        ax2.text(x[-1], y[-1], "A'", fontsize=16,
                  color='w', ha='right')
         ax2.set_yticks([])
         ax2.set_yticklabels("")
@@ -296,7 +311,7 @@ def plotProfile(xyz, dobs, a, b, npts, data=None,
     ax.set_xlim(distance.min(), distance.max())
 
     ax.set_xlabel("Distance (m)")
-    ax.set_ylabel("Magnetic field (nT)")
+    ax.set_ylabel("(nT)")
     ax.yaxis.set_label_position("right")
     #ax.text(distance.min(), dline.max()*0.8, 'A', fontsize = 16)
     # ax.text(distance.max()*0.97, out_linei.max()*0.8, 'B', fontsize = 16)
@@ -552,21 +567,25 @@ def fitline(prism, survey):
 
         a = np.r_[xyzLoc[:, 0].min(), 0]
         b = np.r_[xyzLoc[:, 0].max(), 0]
-        return plotProfile(xyzLoc, survey2D.dobs, a, b, 10, data=dpred, dType='2D')
+        return plotProfile(
+                  xyzLoc, survey2D.dobs, a, b, 10, data=dpred, dType='2D'
+                )
 
-    Q = widgets.interactive(profiledata, Binc=widgets.FloatSlider(min=-90., max=90, step=5, value=90, continuous_update=False),
-             Bdec=widgets.FloatSlider(min=-90., max=90, step=5, value=0, continuous_update=False),
-             Bigrf=widgets.FloatSlider(min=54000., max=55000, step=10, value=54500, continuous_update=False),
-             depth=widgets.FloatSlider(min=0., max=2., step=0.05, value=0.5),
-             susc=widgets.FloatSlider(min=0.,  max=800., step=5.,  value=1.),
-             comp=widgets.ToggleButtons(options=['tf', 'bx', 'by', 'bz']),
-             irt=widgets.ToggleButtons(options=['induced', 'remanent', 'total']),
-             Q=widgets.FloatSlider(min=0.,  max=10., step=0.1,  value=0.),
-             rinc=widgets.FloatSlider(min=-180.,  max=180., step=1.,  value=0.),
-             rdec=widgets.FloatSlider(min=-180.,  max=180., step=1.,  value=0.),
-             update=widgets.ToggleButton(description='Refresh', value=False)
-             )
+    Q = widgets.interactive(
+        profiledata, Binc=widgets.FloatSlider(min=-90., max=90, step=5, value=90, continuous_update=False),
+        Bdec=widgets.FloatSlider(min=-90., max=90, step=5, value=0, continuous_update=False),
+        Bigrf=widgets.FloatSlider(min=54000., max=55000, step=10, value=54500, continuous_update=False),
+        depth=widgets.FloatSlider(min=0., max=2., step=0.05, value=0.5),
+        susc=widgets.FloatSlider(min=0.,  max=800., step=5.,  value=1.),
+        comp=widgets.ToggleButtons(options=['tf', 'bx', 'by', 'bz']),
+        irt=widgets.ToggleButtons(options=['induced', 'remanent', 'total']),
+        Q=widgets.FloatSlider(min=0.,  max=10., step=0.1,  value=0.),
+        rinc=widgets.FloatSlider(min=-180.,  max=180., step=1.,  value=0.),
+        rdec=widgets.FloatSlider(min=-180.,  max=180., step=1.,  value=0.),
+        update=widgets.ToggleButton(description='Refresh', value=False)
+    )
     return Q
+
 
 def minCurvatureInterp(
     locs, data,
@@ -900,8 +919,10 @@ def plotData2D(rxLoc, d=None, title=None,
 
         # Interpolate
         d_grid = griddata(rxLoc[:, 0:2], d, (X, Y), method='linear')
-        im = plt.imshow(d_grid, extent=[x.min(), x.max(), y.min(), y.max()],
-                   origin='lower', vmin=vmin, vmax=vmax, cmap=cmap)
+        im = plt.imshow(
+                d_grid, extent=[x.min(), x.max(), y.min(), y.max()],
+                origin='lower', vmin=vmin, vmax=vmax, cmap=cmap
+              )
 
         if colorbar:
             plt.colorbar(fraction=0.02)
@@ -922,8 +943,8 @@ def plotData2D(rxLoc, d=None, title=None,
 
 
 def plotProfile2D(xyzd, a, b, npts, data=None,
-                fig=None, ax=None, plotStr=['k:'],
-                coordinate_system='local'):
+                  fig=None, ax=None, plotStr=['k:'],
+                  coordinate_system='local'):
     """
     Plot the data and line profile inside the spcified limits
     """
@@ -977,14 +998,6 @@ def plotProfile2D(xyzd, a, b, npts, data=None,
                 ax.plot(distance[ind], dline[ind])
 
     ax.set_xlim(distance.min(), distance.max())
-
-    # ax.set_xlabel("Distance (m)")
-    # ax.set_ylabel("Magnetic field (nT)")
-
-    #ax.text(distance.min(), dline.max()*0.8, 'A', fontsize = 16)
-    # ax.text(distance.max()*0.97, out_linei.max()*0.8, 'B', fontsize = 16)
-    # ax.legend(("Observed", "Simulated"), bbox_to_anchor=(0.5, -0.3))
-    # ax.grid(True)
 
     return ax
 
