@@ -919,3 +919,72 @@ def plotData2D(rxLoc, d=None, title=None,
     plt.gca().set_aspect('equal', adjustable='box')
 
     return fig, im
+
+
+def plotProfile2D(xyzd, a, b, npts, data=None,
+                fig=None, ax=None, plotStr=['k:'],
+                coordinate_system='local'):
+    """
+    Plot the data and line profile inside the spcified limits
+    """
+    def linefun(x1, x2, y1, y2, nx, tol=1e-3):
+        dx = x2-x1
+        dy = y2-y1
+
+        if np.abs(dx) <= tol:
+            y = np.linspace(y1, y2, nx)
+            x = np.ones_like(y)*x1
+        elif np.abs(dy) <= tol:
+            x = np.linspace(x1, x2, nx)
+            y = np.ones_like(x)*y1
+        else:
+            x = np.linspace(x1, x2, nx)
+            slope = (y2-y1)/(x2-x1)
+            y = slope*(x-x1)+y1
+        return x, y
+
+    if fig is None:
+        fig = plt.figure(figsize=(6, 9))
+
+        plt.rcParams.update({'font.size': 14})
+
+    if ax is None:
+        ax = plt.subplot()
+
+    x, y = linefun(a[0], b[0], a[1], b[1], npts)
+    distance = np.sqrt((x-a[0])**2.+(y-a[1])**2.)
+    dline = griddata(xyzd[:, :2], xyzd[:, -1], (x, y), method='linear')
+
+    if coordinate_system == 'xProfile':
+        distance += a[0]
+    elif coordinate_system == 'yProfile':
+        distance += a[1]
+
+    # Check for nan
+    ind = np.isnan(dline) == False
+    ax.plot(distance[ind], dline[ind], plotStr[0])
+
+    if data is not None:
+
+        # if len(plotStr) == len(data):
+        for ii, d in enumerate(data):
+
+            dline = griddata(xyzd[:, :2], d, (x, y), method='linear')
+
+            if plotStr[ii]:
+                ax.plot(distance[ind], dline[ind], plotStr[ii])
+            else:
+                ax.plot(distance[ind], dline[ind])
+
+    ax.set_xlim(distance.min(), distance.max())
+
+    # ax.set_xlabel("Distance (m)")
+    # ax.set_ylabel("Magnetic field (nT)")
+
+    #ax.text(distance.min(), dline.max()*0.8, 'A', fontsize = 16)
+    # ax.text(distance.max()*0.97, out_linei.max()*0.8, 'B', fontsize = 16)
+    # ax.legend(("Observed", "Simulated"), bbox_to_anchor=(0.5, -0.3))
+    # ax.grid(True)
+
+    return ax
+
