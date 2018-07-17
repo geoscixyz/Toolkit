@@ -145,7 +145,7 @@ def setSyntheticProblem(
 
         Simulator.plotProfile2D(
             rxLocs, rxLocs[:, -1], a, b, 10, ax=axs,
-            coordinate_system='xProfile', ylabel=''
+            coordinate_system='xProfile', ylabel='k:'
         )
 
         if topo is not None:
