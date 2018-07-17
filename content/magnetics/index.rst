@@ -8,9 +8,9 @@
 ..    :scale: 100 %
 
 
-This page will provide some basic background information on magnetism and magnetic data, concepts that must be broadly understood before embarking on interpretation or modelling of magnetic data. 
+This page will provide some basic background information on magnetism and magnetic data, concepts that must be broadly understood before embarking on interpretation or modelling of magnetic data.
 
-The material presented here are extracted from UBC-GIF’s `Geophysics for Practicing Geoscientists`_ (GPG) Website. It provides a summary of the fundamentals of magnetic data and modelling, including information on Earth’s magnetic field, magnetic induction, and magnetic remanence. More detailed reviews on these topics can be found on the GPG website. Follow the embedded links in each section for expanded discussions. 
+The material presented here are extracted from UBC-GIF’s `Geophysics for Practicing Geoscientists`_ (GPG) Website. It provides a summary of the fundamentals of magnetic data and modelling, including information on Earth’s magnetic field, magnetic induction, and magnetic remanence. More detailed reviews on these topics can be found on the GPG website. Follow the embedded links in each section for expanded discussions.
 
 
 
@@ -23,7 +23,7 @@ susceptible) materials have stronger induced fields. Removing Earth's field
 from the observations yields anomalous fields that can be interpreted in terms
 of where magnetic material lies and also its susceptiblity and shape. Processed data are
 presented as maps or profiles, and advanced processing such as inversion can provide 3D models of subsurface magnetic susceptibility
-distributions. 
+distributions.
 
 .. figure:: ./images/Intro_Response.png
     :align: center
@@ -39,7 +39,7 @@ Magnetic Susceptibility of Rocks and Minerals
 
 From the GPG `magnetic susceptibility page`_
 
-Interpretation of magnetic data cannot be successful without an understanding of the magnetic susceptibility of the rock types common within a given project area. Ideally, a suite of rock samples from the project area are collected and susceptibility measured to provide confidence in interpretations of the magnetic data and related models. 
+Interpretation of magnetic data cannot be successful without an understanding of the magnetic susceptibility of the rock types common within a given project area. Ideally, a suite of rock samples from the project area are collected and susceptibility measured to provide confidence in interpretations of the magnetic data and related models.
 
 Magnetic susceptibility (:math:`\kappa`) quantifies the magnetization (:math:`\vec M`) a rock or mineral experiences when it is subjected to an applied magnetic field (:math:`\vec H`). This relationship takes the form:
 
@@ -65,7 +65,7 @@ A chart showing the range of magnetic susceptibility values for common rock type
 
 
 
-The very large range in mag sus per rock type means that magnetic susceptibility values cannot be assumed based on lithology, which is why collecting and measuring mag sus data from representative field samples is so important. 
+The very large range in mag sus per rock type means that magnetic susceptibility values cannot be assumed based on lithology, which is why collecting and measuring mag sus data from representative field samples is so important.
 
 other references:
 
@@ -125,7 +125,7 @@ magnetization :math:`\mathbf{M}` and the source
 where :math:`\kappa` is the magnetic susceptibility. Thus the magnetization has the
 same direction as the earth's field. Because Earth's field is different
 at different locations on the earth, then the same object gets magnetized
-differently depending upon where it is situated.  
+differently depending upon where it is situated.
 
 
 figure (or animation) showing induction
@@ -144,7 +144,7 @@ The magnetic field that results from the magnetized earth commonly referred to a
 
 where :math:`\mathbf{B}^{obs}` is the combined signal from the Earth's field :math:`\mathbf{B}_0` and from the ground :math:`\mathbf{B}_A`.
 
-The basic ideas behind the induced magnetization process, going from source to data, are illustrated below. 
+The basic ideas behind the induced magnetization process, going from source to data, are illustrated below.
 
  .. raw:: html
     :file: ./images/buried_dipole.html
@@ -174,6 +174,25 @@ Data Processing
 
 Prior to interpretation, magnetic data may have several corrections applied. In most cases, these processing steps are completed by the geophysical data acquisition team, providing both the raw and processed data as a final product, however some may need to be applied by the geoscientist working with the data. Some of these corrections are listed below:
 
+
+
+.. Just a trick to force sphinx moving the figures for the html
+
+.. figure:: ./images/inducing_field.gif
+            :align: center
+            :scale: 0%
+
+.. figure:: ./images/magnetic_anomaly.gif
+            :align: center
+            :scale: 0%
+
+.. figure:: ./images/measurements.gif
+            :align: center
+            :scale: 0%
+
+.. figure:: ./images/no_field.gif
+            :align: center
+            :scale: 0%
 
 .. links:
 .. _Geophysics for Practicing Geoscientists: https://gpg.geosci.xyz/index.html
