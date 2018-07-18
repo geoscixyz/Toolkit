@@ -17,7 +17,7 @@ def blockModel():
     parameters = [
             [2000, 500, -100, 5000,  4000,  1000, 60, 0],
             [-500, 0, -100, 300, 300, 300, -30, 0],
-            [200, 100, -100, 4000, 100, 1000, 55, 10],
+            [400, 100, -100, 4000, 100, 1000, 55, 10],
            ]
 
     susceptibility = [0.075, 0.1, -0.05,  0.005]
@@ -53,9 +53,9 @@ def setSyntheticProblem(
         # Mesh discretization for plotting
         hx = [(10, 320)]
         hy = [(10, 320)]
-        hz = [(10, 80)]
+        hz = [(10, 120)]
         x0 = np.min(rxLocs, axis=0)
-        x0[2] -= 600
+        x0[2] -= 1000
 
         # Create a mesh
         mesh = Mesh.TensorMesh([hx, hy, hz], x0=x0)
@@ -109,7 +109,7 @@ def setSyntheticProblem(
         fig = plt.figure(figsize=(10, 6))
         axs = plt.subplot(1, 2, 1)
         indy = int(mesh.vnC[1]/2)-18
-        indz = -40
+        indz = -32
 
         # Plot horizontal section
         im = mesh.plotSlice(
@@ -158,7 +158,7 @@ def setSyntheticProblem(
         axs.set_title(
             'EW Section'
         )
-        axs.set_ylim(-1500, 100)
+        axs.set_ylim(-1000, 100)
         axs.set_aspect('equal')
         axs.set_xlabel('Easting (m)')
         axs.set_ylabel('Depth (m)')

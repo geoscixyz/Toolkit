@@ -145,12 +145,12 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
     plt.show()
 
 
-def ViewMagSurvey2D(survey):
+def ViewMagSurveyWidget(survey):
 
-    def MagSurvey2D(East, North, Azimuth, Length, Sampling, ColorMap):
+    def MagSurvey2D(East, North, Azimuth, Length, Sampling, ):
 
         # Get the line extent from the 2D survey for now
-
+        ColorMap = "RdBu_r"
         Azimuth = np.deg2rad((450 - Azimuth) % 360)
         Length /= 2.*0.98
         a = [East - np.cos(Azimuth)*Length, North - np.sin(Azimuth)*Length]
@@ -209,13 +209,13 @@ def ViewMagSurvey2D(survey):
         North=widgets.FloatSlider(min=cntr[1]-Ly, max=cntr[1]+Ly, step=10, value=cntr[1],continuous_update=False),
         Azimuth=widgets.FloatSlider(min=0, max=180, step=5, value=90, continuous_update=False),
         Length=widgets.FloatSlider(min=10, max=diag, step=10, value=2000, continuous_update=False),
-        Sampling=widgets.BoundedFloatText(min=10, max=100, step=1, value=20, continuous_update=False),
-        ColorMap=widgets.Dropdown(
-                  options=cmaps(),
-                  value='RdBu_r',
-                  description='ColorMap',
-                  disabled=False,
-                )
+        Sampling=widgets.BoundedFloatText(min=10, max=100, step=1, value=20, continuous_update=False)
+        # ColorMap=widgets.Dropdown(
+        #           options=cmaps(),
+        #           value='RdBu_r',
+        #           description='ColorMap',
+        #           disabled=False,
+        #         )
     )
 
     return out
@@ -855,6 +855,7 @@ def plotProfile2D(xyz, data, a, b, npts,
 
     ax.set_xlim(distance.min(), distance.max())
     ax.set_ylabel(ylabel)
+    ax.grid(True)
     return ax
 
 
@@ -922,8 +923,6 @@ def worldViewerWidget(worldFile, data, locs):
 
         for ii, part in enumerate(shape.shape.parts):
 
-    #             if ii > 10:
-    #                 continue
             if ii != len(shape.shape.parts)-1:
                 x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]:50]]
                 y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]:50]]
@@ -938,22 +937,24 @@ def worldViewerWidget(worldFile, data, locs):
 
     def plotCountry(X, Y, ax=None, fill=True, linewidth=1):
 
-        for x,y in zip(X,Y):
-            ax.plot(x, y, 0,'k', linewidth=linewidth)
+        for x, y in zip(X, Y):
+            ax.plot(x, y, 0, 'k', linewidth=linewidth)
 
         return ax
 
     def plotLocs(placeID):
 
-        selection =int(np.r_[[ii for ii, s in enumerate(list(data.keys())) if placeID in s]])
+        selection = int(np.r_[[ii for ii, s in enumerate(list(data.keys())) if placeID in s]])
         dataVals = list(data.values())[selection]
 
         survey = ProblemSetter.setSyntheticProblem(locs, EarthField=dataVals[-3:])
 
-        plt.figure(figsize=(10,8))
-        ax1 = plt.subplot(1,2,1)
-        fig, im = plotData2D(survey.srcField.rxList[0].locs, d=survey.dobs,
-                                 ax=ax1, cmap='RdBu_r', marker=False, colorbar=False)
+        plt.figure(figsize=(10, 8))
+        ax1 = plt.subplot(1, 2, 1)
+        fig, im = plotData2D(
+          survey.srcField.rxList[0].locs, d=survey.dobs,
+          ax=ax1, cmap='RdBu_r', marker=False, colorbar=False
+        )
 
         ax1.set_xticks([0])
         ax1.set_xticklabels([MathUtils.decimalDegrees2DMS(dataVals[1], "Longitude")])
@@ -964,8 +965,8 @@ def worldViewerWidget(worldFile, data, locs):
         ax1.grid(True)
         plt.colorbar(im, orientation='horizontal')
 
-        axs = plt.subplot(1,2,2, projection='3d')
-        axs = plotCountry(X,Y, ax=axs, fill=False)
+        axs = plt.subplot(1, 2, 2, projection='3d')
+        axs = plotCountry(X, Y, ax=axs, fill=False)
         # axs.set_axis_off()
         axs.set_zticklabels([])
         axs.set_aspect('equal')
@@ -973,9 +974,8 @@ def worldViewerWidget(worldFile, data, locs):
         axs.set_position([pos.x0-0.2, pos.y0-0.75, pos.width*3., pos.height*3.])
         axs.patch.set_alpha(0.0)
         # xydata = np.loadtxt("./assets/country-capitals.csv", delimiter=",")
-        for key, entry in zip(list(data.keys()),list(data.values())):
-            axs.scatter(entry[1],entry[0], c='k')
-
+        for key, entry in zip(list(data.keys()), list(data.values())):
+            axs.scatter(entry[1], entry[0], c='k')
 
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
@@ -1014,12 +1014,14 @@ def worldViewerWidget(worldFile, data, locs):
                                                xyz[[0, 3, 4], 1]+90,
                                                xyz[[0, 3, 4], 2]/800. + 0.05))], facecolors='k'))
 
-
-
-
-        axs.scatter(dataVals[1],dataVals[0], s = 50, c='r', marker='s', )
+        axs.scatter(dataVals[1], dataVals[0], s=50, c='r', marker='s', )
         axs.view_init(60, -90)
         axs.set_aspect('equal')
+        axs.set_title(
+          "Earth's Field: " + str(int(dataVals[-3])) + "nT, "
+          "Inc: " + str(int(dataVals[-2])) + "$^\circ$, "
+          "Dec: " + str(int(dataVals[-1])) + "$^\circ$"
+        )
         plt.show()
 
         return axs
@@ -1028,7 +1030,7 @@ def worldViewerWidget(worldFile, data, locs):
                         placeID = widgets.Dropdown(
                         options=list(data.keys()),
                         value=list(data.keys())[0],
-                        description='Number:',
+                        description='Location:',
                         disabled=False,
                         ))
 
