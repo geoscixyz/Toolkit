@@ -24,7 +24,7 @@ The extents of the survey area are approximately 3 km x 3 km.
 
 
 
-Figure, plan view, cross-section
+.. image:: ../../Notebooks/images/SyntheticModel.png
 
 
 

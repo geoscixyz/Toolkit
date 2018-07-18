@@ -98,18 +98,20 @@ The field at any location on (or above or within) the Earth are generally descri
 * :math:`\mathbf{D}`: Declination is the angle that *H* makes with respect to geographic north (positive angle clockwise).
 * :math:`\mathbf{I}`: Inclination is the angle between **B** and the horizontal. It can vary between -90° and +90° (positive angle down).
 
-Earth’s field at any location is approximately that provided by a global reference model called the IGRF or International Geomagnetic Reference Field. The IGRF is a mathematical model that describes the field and its secular changes, that is, how it changes with time. The IGRF is a product of the International Association of Geomagnetism and Aeronomy (IAGA), and the original version was defined in 1968. It is updated every five years, and later versions may re-define the field at earlier times. This is important to remember if you are comparing old maps to new ones.
-Earth’s field has a strength of approximately 70,000 nanoTeslas (nT) at the magnetic poles and approximately 25,000 nT at the magnetic equator. Field orientation and strength varies around the world (see NOAA link).
+Earth’s field at any location is approximately that provided by a global reference model called the IGRF or International Geomagnetic Reference Field. The IGRF is a mathematical model that describes the field and its secular changes, that is, how it changes with time. The IGRF is a product of the International Association of Geomagnetism and Aeronomy (IAGA_), and the original version was defined in 1968. It is updated every five years, and later versions may re-define the field at earlier times. This is important to remember if you are comparing old maps to new ones.
+Earth’s field has a strength of approximately 70,000 nanoTeslas (nT) at the magnetic poles and approximately 25,000 nT at the magnetic equator. Field orientation and strength varies around the world.
 
 figure of earths fields
 
 Slow changes in the exact location of the magnetic north pole occur over long periods (months-years). These changes are thought to be caused by internal changes in mantle convection. Knowing the acquisition date of a magnetic survey is important in order to understand the observed magnetic anomalies.
 
+Details about Earth's field can be found at government geoscience websites such as the `NOAA`_ geomagnetism home page, or the `Canadian National Geomagnetism Program`_ home page. An overview of Earth's magnetic field (with good images, graphs, etc.) can be found on the British Geological Survey's `geomagnetics website`_.
+
 .. _magnetics basic principles page: https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#
 
 
-Magnetic Induction
-------------------
+Magnetization
+-------------
 From the GPG `magnetics basic principles page`_
 
 When the source field is applied to earth materials it causes the to become
@@ -127,10 +129,7 @@ same direction as the earth's field. Because Earth's field is different
 at different locations on the earth, then the same object gets magnetized
 differently depending upon where it is situated.
 
-
-figure (or animation) showing induction
-
-The final net magnetization of an object, when it is buried at any location on the earth will be the sum of the induced and remanent magnetizations. This is an important topic and it is further investigated here.
+The final net magnetization of an object, when it is buried at any location on the earth will be the sum of the induced and remanent magnetizations. Remanence is an important topic and it is further investigated :ref:`here<magnetic_remanence>`.
 
 
 
@@ -149,6 +148,8 @@ The basic ideas behind the induced magnetization process, going from source to d
  .. raw:: html
     :file: ./images/buried_dipole.html
 
+
+.. _magnetic_remanence:
 
 Magnetic Remanence
 ------------------
@@ -196,3 +197,7 @@ Prior to interpretation, magnetic data may have several corrections applied. In 
 
 .. links:
 .. _Geophysics for Practicing Geoscientists: https://gpg.geosci.xyz/index.html
+.. _IAGA: http://www.ngdc.noaa.gov/IAGA/vmod/
+.. _NOAA: http://www.ngdc.noaa.gov/geomag/geomag.shtml
+.. _Canadian National Geomagnetism Program: http://www.geomag.nrcan.gc.ca/index-eng.php
+.. _geomagnetics website: http://www.geomag.bgs.ac.uk/
