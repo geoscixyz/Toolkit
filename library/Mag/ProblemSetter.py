@@ -3,8 +3,10 @@ import numpy as np
 from . import Mag
 from . import MathUtils
 from . import Simulator
+from . import DataIO
 from SimPEG import PF, Utils, Mesh, Maps
-
+import ipywidgets as widgets
+from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
 
 
@@ -144,13 +146,13 @@ def setSyntheticProblem(
         cbar.set_label('SI')
 
         Simulator.plotProfile2D(
-            rxLocs, rxLocs[:, -1], a, b, 10, ax=axs,
+            rxLocs[:, 0], rxLocs[:, 1], rxLocs[:, -1], a, b, 10, ax=axs,
             coordinate_system='xProfile', ylabel='k:'
         )
 
         if topo is not None:
             Simulator.plotProfile2D(
-                topo, topo[:, -1], a, b, 10, ax=axs,
+                topo[:, 0], topo[:, 1], topo[:, -1], a, b, 10, ax=axs,
                 plotStr=['k-'],
                 coordinate_system='xProfile', ylabel=''
             )
@@ -167,3 +169,80 @@ def setSyntheticProblem(
 
         plt.close()
     return survey
+
+
+def setDataExtentWidget(survey):
+    """
+        Small application to carve out a subset of a larger data set
+    """
+
+    def dataSelector(East, North, Width, Height):
+
+        lims = np.r_[
+            East-Width/2, East+Width/2,
+            North-Height/2, North+Height/2
+        ]
+
+        fig, axs = plt.figure(figsize=(12, 6)), plt.subplot(1, 2, 1)
+        Simulator.plotData2D(
+            xLoc, yLoc, data, marker=False, fig=fig, ax=axs,
+            colorbar=False
+        )
+
+        axs.scatter(East, North, 20, marker='+')
+        axs.add_patch(
+            Rectangle(
+                (East-Width/2, North-Height/2),
+                Width,
+                Height,
+                facecolor='none', edgecolor='k',
+                zorder=3
+                )
+            )
+
+        # Extract data within window and plot
+        indx = (xLoc > lims[0]) * (xLoc < lims[1])
+        indy = (yLoc > lims[2]) * (yLoc < lims[3])
+
+        subData = data[:, indx]
+        subData = subData[indy, :]
+
+        # Create new dataGrid object
+        dataSub = DataIO.dataGrid()
+        dataSub.limits = lims
+        # coordinate_system = grid.coordinate_system
+        dataSub.values = subData
+        dataSub.nx, dataSub.ny = subData.shape[0], subData.shape[1]
+        dataSub.dx, dataSub.dy = survey.dx, survey.dy
+        dataSub.x0, dataSub.y0 = East-Width/2, North-Height/2
+
+        # fig,
+        axs = plt.subplot(1, 2, 2)
+        Simulator.plotData2D(
+            xLoc[indx], yLoc[indy], subData, marker=False, fig=fig, ax=axs
+        )
+
+        return dataSub
+
+    if isinstance(survey, DataIO.dataGrid):
+        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.x0
+        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.y0
+        xlim = survey.limits[:2]
+        ylim = survey.limits[2:]
+        data = survey.values
+    else:
+        xLoc = survey.srcField.rxList[0].locs[:, 0]
+        yLoc = survey.srcField.rxList[0].locs[:, 1]
+        xlim = np.asarray([xLoc.min(), xLoc.max()])
+        ylim = np.asarray([yLoc.min(), yLoc.max()])
+        data = survey.dobs
+
+    out = widgets.interactive(
+            dataSelector,
+            East=widgets.FloatSlider(min=xlim[0], max=xlim[1], step=500, value=669500, continuous_update=False),
+            North=widgets.FloatSlider(min=ylim[0], max=ylim[1], step=10, value=6069500, continuous_update=False),
+            Width=widgets.FloatSlider(min=1000, max=100000, step=1000, value=40000, continuous_update=False),
+            Height=widgets.FloatSlider(min=1000, max=100000, step=1000, value=40000, continuous_update=False)
+            )
+
+    return out

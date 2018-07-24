@@ -174,10 +174,10 @@ def minCurvatureInterp(
         vectorZ = zmin+np.cumsum(np.ones(nCz) * gridSize)
 
     if ndim == 3:
-        gridCy, gridCx, gridCz = np.meshgrid(vectorY, vectorX, vectorZ)
+        gridCx, gridCy, gridCz = np.meshgrid(vectorX, vectorY, vectorZ)
         gridCC = np.c_[mkvc(gridCx), mkvc(gridCy), mkvc(gridCz)]
     elif ndim == 2:
-        gridCy, gridCx = np.meshgrid(vectorY, vectorX)
+        gridCx, gridCy = np.meshgrid(vectorX, vectorY)
         gridCC = np.c_[mkvc(gridCx), mkvc(gridCy)]
     else:
         gridCC = vectorX

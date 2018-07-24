@@ -1,4 +1,3 @@
-from . import Mag
 from . import graphics
 
 
