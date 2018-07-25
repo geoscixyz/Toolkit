@@ -29,7 +29,7 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
-   content/Magnetics/index
+   content/Magnetics/Mag_index
    content/Demos/demos
    content/Tools/tools
    content/Interp/interp

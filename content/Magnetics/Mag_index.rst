@@ -1,4 +1,4 @@
-.. _index:
+.. _Mag_index:
 
 1. Magnetic Data - Background
 =============================
