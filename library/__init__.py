@@ -1,5 +1,5 @@
 from . import Mag
-
+from . import graphics
 
 
 __version__ = '0.0.1'

@@ -1,11 +1,12 @@
-from . import MagUtils
+from . import MathUtils
 from scipy.constants import mu_0
 import re
 import numpy as np
 from SimPEG import Utils, PF
+from SimPEG.PF import BaseMag
 
 
-class problem(object):
+class Problem(object):
     """
             Earth's field:
             - Binc, Bdec : inclination and declination of Earth's mag field
@@ -32,8 +33,8 @@ class problem(object):
     @property
     def Mind(self):
         # Define magnetization direction as sum of induced and remanence
-        mind = MagUtils.dipazm_2_xyz(self.survey.srcField.param[1], self.survey.srcField.param[2])
-        R = MagUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
+        mind = MathUtils.dipazm_2_xyz(self.Hinc, self.Hdec)
+        R = MathUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
         Mind = self.susc*self.Higrf*R.dot(mind.T)
         # Mind = self.susc*self.Higrf*PF.Magnetics.dipazm_2_xyz(self.Binc - self.prism.pinc,
         #                                                self.Bdec - self.prism.pdec)
@@ -42,17 +43,35 @@ class problem(object):
     @property
     def Mrem(self):
 
-        mrem = MagUtils.dipazm_2_xyz(self.rinc, self.rdec)
-        R = MagUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
+        mrem = MathUtils.dipazm_2_xyz(self.rinc, self.rdec)
+        R = MathUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
         Mrem = self.Q*self.susc*self.Higrf * R.dot(mrem.T)
 
         return Mrem
 
     @property
     def Higrf(self):
-        Higrf = self.survey.srcField.param[0] * 1e-9 / mu_0
 
-        return Higrf
+        if getattr(self, '_Higrf', None) is None:
+            self._Higrf = self.survey.srcField.param[0]
+
+        return self._Higrf * 1e-9 / mu_0
+
+    @property
+    def Hinc(self):
+
+        if getattr(self, '_Hinc', None) is None:
+            self._Hinc = self.survey.srcField.param[1]
+
+        return self._Hinc
+
+    @property
+    def Hdec(self):
+
+        if getattr(self, '_Hdec', None) is None:
+            self._Hdec = self.survey.srcField.param[2]
+
+        return self._Hdec
 
     @property
     def G(self):
@@ -65,7 +84,7 @@ class problem(object):
             yLoc = rxLoc[:, 1] - self.prism.yc
             zLoc = rxLoc[:, 2] - self.prism.zc
 
-            R = MagUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
+            R = MathUtils.rotationMatrix(-self.prism.pinc, -self.prism.pdec, normal=False)
 
             rxLoc = R.dot(np.c_[xLoc, yLoc, zLoc].T).T
 
@@ -101,7 +120,7 @@ class problem(object):
         nD = int(bvec.shape[0]/3)
         bvec = np.reshape(bvec, (3, nD))
 
-        R = MagUtils.rotationMatrix(self.prism.pinc, self.prism.pdec)
+        R = MathUtils.rotationMatrix(self.prism.pinc, self.prism.pdec)
         bvec = R.dot(bvec)
 
         if self.uType == 'bx':
@@ -115,8 +134,8 @@ class problem(object):
 
         if self.uType == 'tf':
             # Projection matrix
-            Ptmi = MagUtils.dipazm_2_xyz(self.survey.srcField.param[1],
-                                      self.survey.srcField.param[2])
+            Ptmi = MathUtils.dipazm_2_xyz(self.Hinc,
+                                         self.Hdec)
 
             u = Utils.mkvc(Ptmi.dot(bvec))
 
@@ -163,18 +182,80 @@ def Intrgl_Fwr_Op(xn, yn, zn, rxLoc):
     return G
 
 
-def createMagSurvey(xyzd, B):
+def createMagSurvey(xyz, EarthField=np.r_[50000, 90, 0], data=None):
     """
         Create SimPEG magnetic survey pbject
 
         INPUT
-        :param array: xyzd, n-by-4 array of observation points and data
-        :param array: B, 1-by-3 array of inducing field param [|B|, Inc, Dec]
+        :param array: xyz, n-by-4 array of observation locations
+        :param array: EarthField [Default 50000,90,0], 1-by-3 array of inducing field param [|B|, Inc, Dec]
+
+        OPTIONAL
+        :param array: data, n-by-4 array of data
     """
 
-    rxLoc = PF.BaseMag.RxObs(xyzd[:, :3])
-    srcField = PF.BaseMag.SrcField([rxLoc], param=B)
-    survey = PF.BaseMag.LinearSurvey(srcField)
-    survey.dobs = xyzd[:, 3]
+    rxLoc = BaseMag.RxObs(xyz)
+    srcField = BaseMag.SrcField([rxLoc], param=EarthField)
+    survey = BaseMag.LinearSurvey(srcField)
+
+    if data is not None:
+        survey.dobs = data
+    else:
+        survey.dobs = np.zeros(xyz.shape[0])
 
     return survey
+
+
+def readMagneticsObservations(obs_file):
+        """
+            Read and write UBC mag file format
+
+            INPUT:
+            :param fileName, path to the UBC obs mag file
+
+            OUTPUT:
+            :param survey
+            :param M, magnetization orentiaton (MI, MD)
+        """
+
+        fid = open(obs_file, 'r')
+
+        # First line has the inclination,declination and amplitude of B0
+        line = fid.readline()
+        B = np.array(line.split(), dtype=float)
+
+        # Second line has the magnetization orientation and a flag
+        line = fid.readline()
+        M = np.array(line.split(), dtype=float)
+
+        # Third line has the number of rows
+        line = fid.readline()
+        ndat = int(line.strip())
+
+        # Pre-allocate space for obsx, obsy, obsz, data, uncert
+        line = fid.readline()
+        temp = np.array(line.split(), dtype=float)
+
+        d = np.zeros(ndat, dtype=float)
+        wd = np.zeros(ndat, dtype=float)
+        locXYZ = np.zeros((ndat, 3), dtype=float)
+
+        for ii in range(ndat):
+
+            temp = np.array(line.split(), dtype=float)
+            locXYZ[ii, :] = temp[:3]
+
+            if len(temp) > 3:
+                d[ii] = temp[3]
+
+                if len(temp) == 5:
+                    wd[ii] = temp[4]
+
+            line = fid.readline()
+
+        rxLoc = BaseMag.RxObs(locXYZ)
+        srcField = BaseMag.SrcField([rxLoc], param=(B[2], B[0], B[1]))
+        survey = BaseMag.LinearSurvey(srcField)
+        survey.dobs = d
+        survey.std = wd
+        return survey
