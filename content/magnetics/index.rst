@@ -1,4 +1,4 @@
-.. _magnetics_index:
+.. _index:
 
 1. Magnetic Data - Background
 =============================
