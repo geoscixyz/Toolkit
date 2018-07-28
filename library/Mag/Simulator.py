@@ -70,8 +70,9 @@ def cmaps():
     """
 
     return [
-              'viridis', 'plasma', 'RdBu_r',
-              'Greys_r', 'jet', 'hsv', 'rainbow', 'gnuplot'
+              'viridis', 'plasma', 'magma', 'RdBu_r',
+              'Greys_r', 'jet', 'hsv', 'rainbow', 'pink',
+               'bone', 'hsv', 'nipy_spectral'
             ]
 
 
@@ -171,8 +172,8 @@ def ViewMagSurveyWidget(survey):
                       fig=fig, ax=ax2, ylabel='nT')
 
         # ax2.set_aspect(0.5)
-        # pos = ax2.get_position()
-        # ax2.set_position([pos.x0, pos.y0, pos.width*1.5, pos.height*1.5])
+        pos = ax2.get_position()
+        ax2.set_position([pos.x0, pos.y0+0.25, pos.width*2.0, pos.height*0.5])
         ax2.set_title('A', loc='left', fontsize=14)
         ax2.set_title("A'", loc='right', fontsize=14)
 
@@ -233,14 +234,14 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None,
     xLine, yLine = linefun(a[0], b[0], a[1], b[1], npts)
 
     # Use SimPEG.PF ploting function
-    fig, im = plotData2D(x, y, data, fig=fig,  ax=ax,
+    fig, im, cbar = plotData2D(x, y, data, fig=fig,  ax=ax,
                          vmin=vmin, vmax=vmax,
                          marker=False, cmap=cmap,
                          colorbar=False, equalizeHist=equalizeHist)
 
     ax.plot(xLine, yLine, 'w.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
-    cbar.set_label('nT')
+    cbar.set_label('TMI (nT)')
     ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='w', ha='left')
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
             color='w', ha='right')
@@ -641,8 +642,16 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
             my_cmap = cmap
 
         extent = x.min(), x.max(), y.min(), y.max()
+
+        if vmin is None:
+            vmin = d_grid.min()
+
+        if vmax is None:
+            vmax = d_grid.max()
+
+        levels = np.linspace(vmin, vmax, contour)
         im = axs.contourf(
-            X, Y, d_grid, 50, vmin=vmin, vmax=vmax,
+            X, Y, d_grid, 50, vmin=vmin, vmax=vmax, levels=levels,
             cmap=my_cmap, norm=MidPointNorm(midpoint=midpoint), alpha=alpha
         )
 
@@ -691,10 +700,10 @@ def plotData2D(x, y, d, title=None,
         ax = plt.subplot()
 
     if d.ndim == 1:
-        assert(
-            np.all([x.shape[0] == d.shape[0], y.shape[0] == d.shape[0]]),
-            "Data and locations must be consistant"
-        )
+        assert x.shape[0] == d.shape[0], "Data and x locations must be consistant"
+
+        assert y.shape[0] == d.shape[0], "Data and y locations must be consistant"
+
 
     plt.sca(ax)
     if marker:
@@ -736,8 +745,9 @@ def plotData2D(x, y, d, title=None,
                 origin='lower', vmin=vmin, vmax=vmax, cmap=my_cmap
               )
 
+        cbar = []
         if colorbar:
-            plt.colorbar(fraction=0.02)
+            cbar = plt.colorbar(fraction=0.02)
 
         if contours is None:
 
@@ -766,7 +776,7 @@ def plotData2D(x, y, d, title=None,
     ax.set_aspect('equal')
     # plt.gca().set_aspect('equal', adjustable='box')
 
-    return fig, im
+    return fig, im, cbar
 
 
 def plotProfile2D(x, y, data, a, b, npts,
@@ -847,7 +857,7 @@ def dataHillsideWidget(survey):
             MagContour, ColorMap, Equalize
          ):
 
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(12, 12))
         axs = plt.subplot()
 
         # Add shading
@@ -860,8 +870,9 @@ def dataHillsideWidget(survey):
 
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
-        cbar = plt.colorbar(im)
-        cbar.set_label('nT')
+        axs.set_aspect('auto')
+        cbar = plt.colorbar(im,fraction=0.02)
+        cbar.set_label('TMI (nT)')
 
         axs.set_xlabel("Easting (m)", size=14)
         axs.set_ylabel("Northing (m)", size=14)
@@ -885,11 +896,11 @@ def dataHillsideWidget(survey):
 
     out = widgets.interactive(plotWidget,
                               SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
-                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=45, continuous_update=False),
-                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.5, continuous_update=False),
+                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
+                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
                               Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
-                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=1.0, continuous_update=False),
-                              MagContour=widgets.FloatSlider(min=0, max=20, step=1, value=10, continuous_update=False),
+                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=4.0, continuous_update=False),
+                              MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
                               ColorMap=widgets.Dropdown(
                                   options=cmaps(),
                                   value='RdBu_r',
@@ -930,7 +941,7 @@ def worldViewerWidget(worldFile, data, locs):
     def plotCountry(X, Y, ax=None, fill=True, linewidth=1):
 
         for x, y in zip(X, Y):
-            ax.plot(x, y, 0, 'k', linewidth=linewidth)
+            ax.plot(x, y, 'k', linewidth=linewidth)
 
         return ax
 
@@ -944,7 +955,7 @@ def worldViewerWidget(worldFile, data, locs):
         xyz = survey.srcField.rxList[0].locs
         plt.figure(figsize=(10, 8))
         ax1 = plt.subplot(1, 2, 1)
-        fig, im = plotData2D(
+        fig, im, cbar = plotData2D(
           xyz[:, 0], xyz[:, 1], survey.dobs,
           ax=ax1, cmap='RdBu_r', marker=False, colorbar=False
         )
@@ -956,25 +967,35 @@ def worldViewerWidget(worldFile, data, locs):
         ax1.set_yticklabels([MathUtils.decimalDegrees2DMS(dataVals[0], "Latitude")])
         ax1.set_ylabel('Latitude')
         ax1.grid(True)
-        plt.colorbar(im, orientation='horizontal')
+        cbar = plt.colorbar(im, orientation='horizontal')
+        cbar.set_label('TMI (nT)')
 
-        axs = plt.subplot(1, 2, 2, projection='3d')
+        axs = plt.subplot(1, 2, 2)
         axs = plotCountry(X, Y, ax=axs, fill=False)
+        axs.scatter(dataVals[1], dataVals[0], s=50, c='r', marker='s', )
         # axs.set_axis_off()
-        axs.set_zticklabels([])
         axs.set_aspect('equal')
         pos = axs.get_position()
-        axs.set_position([pos.x0-0.2, pos.y0-0.75, pos.width*3., pos.height*3.])
+        axs.set_position([pos.x0, pos.y0,  pos.width*1.5, pos.height*1.5])
         axs.patch.set_alpha(0.0)
         # xydata = np.loadtxt("./assets/country-capitals.csv", delimiter=",")
         for key, entry in zip(list(data.keys()), list(data.values())):
             axs.scatter(entry[1], entry[0], c='k')
 
+        axs.set_title(
+          "Earth's Field: " + str(int(dataVals[-3])) + "nT, "
+          "Inc: " + str(int(dataVals[-2])) + "$^\circ$, "
+          "Dec: " + str(int(dataVals[-1])) + "$^\circ$"
+        )
+
+        # Add axes with rotating arrow
+        pos = axs.get_position()
+        arrowAxs = fig.add_axes([10, 10 ,  pos.width*.5, pos.height*0.5], projection='3d')
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
                         [-.25, -.25, -.25, -.25, 0.5],
                         [-.2, .2, .2, -.2, 0]
-                    ])*30.
+                    ])
 
         # rot = Utils.mkvc(Utils.dipazm_2_xyz(pinc, pdec))
 
@@ -987,34 +1008,35 @@ def worldViewerWidget(worldFile, data, locs):
 
         #print xyz
         # Face 1
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0]+dataVals[1],
-                                                   xyz[:4, 1]+90,
-                                                   xyz[:4, 2]/800. + 0.05))], facecolors='r'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 2, 4], 0],
+                                                   xyz[[1, 2, 4], 1],
+                                                   xyz[[1, 2, 4], 2]))], facecolors='w'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 2, 4], 0]+dataVals[1],
-                                                   xyz[[1, 2, 4], 1]+90,
-                                                   xyz[[1, 2, 4], 2]/800. + 0.05))], facecolors='w'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 4], 0],
+                                                   xyz[[0, 1, 4], 1],
+                                                   xyz[[0, 1, 4], 2]))], facecolors='k'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 4], 0]+dataVals[1],
-                                                   xyz[[0, 1, 4], 1]+90,
-                                                   xyz[[0, 1, 4], 2]/800. + 0.05))], facecolors='k'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[2, 3, 4], 0],
+                                                   xyz[[2, 3, 4], 1],
+                                                   xyz[[2, 3, 4], 2]))], facecolors='w'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[2, 3, 4], 0]+dataVals[1],
-                                                   xyz[[2, 3, 4], 1]+90,
-                                                   xyz[[2, 3, 4], 2]/800. + 0.05))], facecolors='w'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 3, 4], 0],
+                                               xyz[[0, 3, 4], 1],
+                                               xyz[[0, 3, 4], 2]))], facecolors='k'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 3, 4], 0]+dataVals[1],
-                                               xyz[[0, 3, 4], 1]+90,
-                                               xyz[[0, 3, 4], 2]/800. + 0.05))], facecolors='k'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0],
+                                                   xyz[:4, 1],
+                                                   xyz[:4, 2]))], facecolors='r'))
 
-        axs.scatter(dataVals[1], dataVals[0], s=50, c='r', marker='s', )
-        axs.view_init(60, -90)
-        axs.set_aspect('equal')
-        axs.set_title(
-          "Earth's Field: " + str(int(dataVals[-3])) + "nT, "
-          "Inc: " + str(int(dataVals[-2])) + "$^\circ$, "
-          "Dec: " + str(int(dataVals[-1])) + "$^\circ$"
-        )
+        arrowAxs.view_init(30, -90)
+        arrowAxs.set_xlim([-0.5, 0.5])
+        arrowAxs.set_ylim([-0.5, 0.5])
+        arrowAxs.set_zlim([-0.5, 0.5])
+        arrowAxs.set_xticks([])
+        arrowAxs.set_yticks([])
+        arrowAxs.set_zticks([])
+        # arrowAxs.set_aspect('equal')
+
         plt.show()
 
         return axs

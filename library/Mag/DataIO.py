@@ -31,11 +31,12 @@ def loadGRDFile(fileName, plotIt=True):
         yLoc = np.asarray(range(data.ny))*data.dy+data.y0
 
         fig, axs = plt.figure(figsize=(8, 8)), plt.subplot()
-        Simulator.plotData2D(
-            xLoc, yLoc, data.values, marker=False, fig=fig, ax=axs
+        fig, im, cbar = Simulator.plotData2D(
+            xLoc, yLoc, data.values, marker=False, fig=fig, ax=axs,
+            colorbar=True
         )
         axs.grid(True)
-
+        cbar.set_label('TMI (nT)')
         plt.show()
         fig.savefig('./images/SearchQuestII.png', bbox_inches='tight')
 

@@ -218,10 +218,10 @@ def setDataExtentWidget(survey):
 
         # fig,
         axs = plt.subplot(1, 2, 2)
-        Simulator.plotData2D(
+        fig, im, cbar = Simulator.plotData2D(
             xLoc[indx], yLoc[indy], subData, marker=False, fig=fig, ax=axs
         )
-
+        cbar.set_label('TMI (nT)')
         return dataSub
 
     if isinstance(survey, DataIO.dataGrid):
