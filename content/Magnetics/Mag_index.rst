@@ -1,4 +1,4 @@
-.. _magnetics_index:
+.. _Mag_index:
 
 1. Magnetic Data - Background
 =============================
@@ -146,7 +146,7 @@ where :math:`\mathbf{B}^{obs}` is the combined signal from the Earth's field :ma
 The basic ideas behind the induced magnetization process, going from source to data, are illustrated below.
 
  .. raw:: html
-    :file: ./images/buried_dipole.html
+    :file: ./buried_dipole.html
 
 
 .. _magnetic_remanence:
