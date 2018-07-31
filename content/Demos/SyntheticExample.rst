@@ -36,10 +36,17 @@ Synthetic model case study notebooks
 
 **Magnetic data visualization**
 
+This notebook discusses first-pass observations and image processing of magnetic data calculated from a simple 3D geologic model. It represents the initial steps an interpreter might take toward building an understanding of their magnetic dataset. In this notebook, the magnetic response of the model is calculated, magnetic profiles are viewed, the Earth's magnetic field is varied to explore the effect on response, and various color scales and stretches are applied to enhance data visualization.  
 
 
 **2D magnetic data filters**
 
+Total field magnetic data, viewed with sun shading or various color enhancements, is a great approach to initially exploring a magnetic dataset. Subtle variations within the magnetic data can be obscured however, usually by larger or deeper magnetic bodies. Deeper or shallower sources, and more subtle features in the magnetic data can be emphasized through the use of magnetic data filters. This notebook describes and demonstrates the effect of several commonly used magnetic data filters, including upward continuation, horizontal and vertical derivatives, analytic signal, and tilt angle.         
+
+
 **Edge detection**
+
+Interpretation of magnetic data is ideally done by geoscientists with knowledge of the geology, lithology, and physical rock properties of typical rock types within a project area. Commonly this is done manually, through analysis of various magnetic data products discussed in the two previous notebooks, and alongside other available geoscientific data. There are however, some quick tools at our disposal to automatically pick 'edges' within magnetic data, and which may provide guidance for geologic interpretations. This notebook explains and applies one such edge detection method to magnetic data calculated from the synthetic 3D model.   
+
 
 **Depth to source**
