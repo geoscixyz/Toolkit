@@ -278,3 +278,164 @@ def decimalDegrees2DMS(value,type):
     notation = str(degrees) + ":" + str(minutes) + ":" +\
                str(subseconds)[0:5] + "" + direction
     return notation
+
+
+class gridFilter(object):
+
+    grid = None
+    dx = 1.
+    dy = 1.
+    gridPadded = None
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+        return
+
+    @property
+    def npadx(self):
+
+        if getattr(self, '_npadx', None) is None:
+            self._npadx = int(np.floor(self.grid.shape[1]))
+
+        return self._npadx
+
+    @property
+    def npady(self):
+        print('npady')
+        if getattr(self, '_npady', None) is None:
+            self._npady = int(np.floor(self.grid.shape[0]))
+
+        return self._npady
+
+    @property
+    def gridPadded(self):
+        print('gridPad')
+        if getattr(self, '_gridPadded', None) is None:
+            # Add paddings
+            dpad = np.c_[
+                np.fliplr(self.grid[:, 0:self.npadx]),
+                self.grid,
+                np.fliplr(self.grid[:, -self.npadx:])
+                ]
+
+            dpad = np.r_[
+                np.flipud(dpad[0:self.npady, :]),
+                dpad,
+                np.flipud(dpad[-self.npady:, :])
+                ]
+
+            # Tapper the paddings
+            rampx = -np.cos(np.pi*np.asarray(range(self.npadx))/self.npadx)
+            rampx = np.r_[rampx, np.ones(self.grid.shape[1]), -rampx]/2. + 0.5
+            # tapperx,_ = meshgrid(rampx,np.ones(dpad.shape[1]))
+            # tapperx[padx:-padx,:] = 1.
+
+            rampy = -np.cos(np.pi*np.asarray(range(self.npady))/self.npady)
+            rampy = np.r_[rampy, np.ones(self.grid.shape[0]), -rampy]/2. + 0.5
+            tapperx, tappery = np.meshgrid(rampx, rampy)
+
+            self._gridPadded = tapperx*tappery*dpad
+
+        return self._gridPadded
+
+    @property
+    def Kx(self):
+        print('Kx')
+        if getattr(self, '_Kx', None) is None:
+
+            dx = (self.dx)/(self.gridPadded.shape[1]-1)
+            dy = (self.dy)/(self.gridPadded.shape[0]-1)
+
+            kx = np.fft.fftfreq(self.gridPadded.shape[1], dx)
+            ky = np.fft.fftfreq(self.gridPadded.shape[0], dy)
+
+            Ky, Kx = np.meshgrid(ky, kx)
+            self._Ky, self._Kx = Ky.T, Kx.T
+
+        return self._Kx
+
+    @property
+    def Ky(self):
+        print('Ky')
+        if getattr(self, '_Ky', None) is None:
+
+            dx = (self.dx)/(self.gridPadded.shape[1]-1)
+            dy = (self.dy)/(self.gridPadded.shape[0]-1)
+
+            kx = np.fft.fftfreq(self.gridPadded.shape[1], dx)
+            ky = np.fft.fftfreq(self.gridPadded.shape[0], dy)
+
+            Ky, Kx = np.meshgrid(ky, kx)
+            self._Ky, self._Kx = Ky.T, Kx.T
+
+        return self._Ky
+
+    @property
+    def gridFFT(self):
+        print('gridFFt')
+        if getattr(self, '_gridFFT', None) is None:
+
+            self._gridFFT = np.fft.fft2(self.gridPadded)
+
+        return self._gridFFT
+
+    @property
+    def derivativeX(self):
+        print('derivativeX')
+        if getattr(self, '_derivativeX', None) is None:
+
+            FHxD = (self.Kx*1j)*self.gridFFT
+            fhxd_pad = np.fft.ifft2(FHxD)
+            self._derivativeX = np.real(
+                fhxd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+        return self._derivativeX
+
+    @property
+    def derivativeY(self):
+        print('derivativeY')
+        if getattr(self, '_derivativeY', None) is None:
+
+            FHyD = (self.Ky*1j)*self.gridFFT
+
+            fhyd_pad = np.fft.ifft2(FHyD)
+            self._derivativeY = np.real(
+                fhyd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+        return self._derivativeY
+
+    @property
+    def firstVertical(self):
+        print('firstVertical')
+        if getattr(self, '_firstVertical', None) is None:
+
+            FHzD = self.gridFFT*np.sqrt(self.Kx**2 + self.Ky**2)
+            fhzd_pad = np.fft.ifft2(FHzD)
+            self._firstVertical = np.real(
+                fhzd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+        return self._firstVertical
+
+    @property
+    def totalHorizontal(self):
+
+        if getattr(self, '_totalHorizontal', None) is None:
+
+            self._totalHorizontal = np.sqrt(self.derivativeX**2 + self.derivativeY**2)
+
+        return self._totalHorizontal
+
+    @property
+    def tiltAngle(self):
+
+        if getattr(self, '_tiltAngle', None) is None:
+
+            Ftilt = self.gridFFT*np.sqrt(self.Kx**2 + self.Ky**2)
+            tilt_pad = np.fft.ifft2(Ftilt)
+            tilt = np.real(
+                tilt_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+            self._tiltAngle = np.arctan2(tilt, self.totalHorizontal)
+
+        return self._tiltAngle
