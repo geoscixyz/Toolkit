@@ -917,6 +917,80 @@ def dataHillsideWidget(survey):
     return out
 
 
+def gridFiltersWidget(survey):
+
+    def plotWidget(
+            SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters
+         ):
+
+        fig = plt.figure(figsize=(12, 12))
+        axs = plt.subplot()
+
+        data = getattr(filters, '{}'.format(Filters))
+        # Add shading
+        im, CS = plotDataHillside(xLoc, yLoc, data,
+                                  axs=axs, cmap=ColorMap,
+                                  clabel=False,
+                                  alpha=Saturation, alphaHS=Transparency,
+                                  ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
+                                  equalizeHist=False)
+
+        # Add points at the survey locations
+        # plt.scatter(xLoc, yLoc, s=2, c='k')
+        axs.set_aspect('auto')
+        cbar = plt.colorbar(im,fraction=0.02)
+        cbar.set_label('TMI (nT)')
+
+        axs.set_xlabel("Easting (m)", size=14)
+        axs.set_ylabel("Northing (m)", size=14)
+        axs.grid('on', color='k', linestyle='--')
+        plt.show()
+
+    # Calculate the original map extents
+    if isinstance(survey, DataIO.dataGrid):
+        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.limits[0]
+        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.limits[2]
+        xlim = survey.limits[:2]
+        ylim = survey.limits[2:]
+
+        filters = MathUtils.gridFilter()
+        filters.grid = survey.values
+
+    else:
+
+        assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
+
+
+
+    out = widgets.interactive(plotWidget,
+                              SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
+                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
+                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
+                              Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
+                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=4.0, continuous_update=False),
+                              MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
+                              ColorMap=widgets.Dropdown(
+                                  options=cmaps(),
+                                  value='RdBu_r',
+                                  description='ColorMap',
+                                  disabled=False,
+                                ),
+                              Filters=widgets.Dropdown(
+                                  options=[
+                                    'derivativeX',
+                                    'derivativeY',
+                                    'firstVertical',
+                                    'totalHorizontal',
+                                    'tiltAngle'],
+                                  value='derivativeX',
+                                  description='Grid Filters',
+                                  disabled=False,
+                                )
+                              )
+    return out
+
 def worldViewerWidget(worldFile, data, locs):
 
     world = shapefile.Reader(worldFile)
