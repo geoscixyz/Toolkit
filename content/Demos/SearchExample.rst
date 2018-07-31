@@ -20,15 +20,15 @@ The links below will redirect you to Jupyter notebooks for exploring the Geophys
 Search II data case study notebooks
 -----------------------------------
 
-**Magnetic data visualization**
+**2.2.1. Magnetic data visualization**
 
 
 
-**2D magnetic data filters**
+**2.2.2. 2D magnetic data filters**
 
-**Edge detection**
+**2.2.3. Edge detection**
 
-**Depth to source**
+**2.2.4. Depth to source**
 
 
 .. links:
