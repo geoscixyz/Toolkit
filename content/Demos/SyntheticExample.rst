@@ -33,3 +33,13 @@ This geological model will be used to both demonstrate magnetic response and to 
 
 Synthetic model case study notebooks
 ------------------------------------
+
+**Magnetic data visualization**
+
+
+
+**2D magnetic data filters**
+
+**Edge detection**
+
+**Depth to source**

@@ -587,7 +587,7 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
+def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
                      vmin=None, vmax=None,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=1., alphaHS=1.,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
@@ -649,12 +649,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
         if vmax is None:
             vmax = d_grid.max()
 
-        if contour is not None:
-            levels = np.linspace(vmin, vmax, contour)
-
-        else:
-            levels = None
-
+        levels = np.linspace(vmin, vmax, contour)
         im = axs.contourf(
             X, Y, d_grid, 50, vmin=vmin, vmax=vmax, levels=levels,
             cmap=my_cmap, norm=MidPointNorm(midpoint=midpoint), alpha=alpha
@@ -664,7 +659,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
                    cmap='gray_r', alpha=alphaHS,
                    extent=extent, origin='lower')
 
-    if contour is not None:
+    if contour > 0:
         CS = axs.contour(
             X, Y, d_grid, int(contour), colors='k', linewidths=0.5
         )
@@ -858,18 +853,18 @@ def dataHillsideWidget(survey):
 
     def plotWidget(
             SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
-            ColorMap, Equalize
+            ColorTransp, HSTransp, vScale,
+            MagContour, ColorMap, Equalize
          ):
 
-        fig = plt.figure(figsize=(12, 12))
+        fig = plt.figure(figsize=(9, 9))
         axs = plt.subplot()
 
         # Add shading
         im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
-                                  clabel=False,
-                                  alpha=Saturation, alphaHS=Transparency,
+                                  clabel=False, contour=MagContour,
+                                  alpha=ColorTransp, alphaHS=HSTransp,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
                                   equalizeHist=Equalize)
 
@@ -902,9 +897,10 @@ def dataHillsideWidget(survey):
     out = widgets.interactive(plotWidget,
                               SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
                               SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
-                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
-                              Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
-                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=4.0, continuous_update=False),
+                              ColorTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
+                              HSTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
+                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=1.0, continuous_update=False),
+                              MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
                               ColorMap=widgets.Dropdown(
                                   options=cmaps(),
                                   value='RdBu_r',
@@ -919,82 +915,6 @@ def dataHillsideWidget(survey):
                                 )
                               )
     return out
-
-
-def gridFiltersWidget(survey):
-
-    def plotWidget(
-            SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
-            ColorMap, Filters
-         ):
-
-        fig = plt.figure(figsize=(12, 12))
-        axs = plt.subplot()
-
-        data = getattr(filters, '{}'.format(Filters))
-        # Add shading
-        im, CS = plotDataHillside(xLoc, yLoc, data,
-                                  axs=axs, cmap=ColorMap,
-                                  clabel=False,
-                                  alpha=Saturation, alphaHS=Transparency,
-                                  ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-                                  equalizeHist=False)
-
-        # Add points at the survey locations
-        # plt.scatter(xLoc, yLoc, s=2, c='k')
-        axs.set_aspect('auto')
-        cbar = plt.colorbar(im,fraction=0.02)
-        cbar.set_label('TMI (nT)')
-
-        axs.set_xlabel("Easting (m)", size=14)
-        axs.set_ylabel("Northing (m)", size=14)
-        axs.grid('on', color='k', linestyle='--')
-        plt.show()
-
-    # Calculate the original map extents
-    if isinstance(survey, DataIO.dataGrid):
-        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.limits[0]
-        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.limits[2]
-        xlim = survey.limits[:2]
-        ylim = survey.limits[2:]
-
-        filters = MathUtils.gridFilter()
-        filters.grid = survey.values
-
-    else:
-
-        assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
-
-
-
-    out = widgets.interactive(plotWidget,
-                              SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
-                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
-                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
-                              Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
-                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=4.0, continuous_update=False),
-                              MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
-                              ColorMap=widgets.Dropdown(
-                                  options=cmaps(),
-                                  value='RdBu_r',
-                                  description='ColorMap',
-                                  disabled=False,
-                                ),
-                              Filters=widgets.Dropdown(
-                                  options=[
-                                    'derivativeX',
-                                    'derivativeY',
-                                    'firstVertical',
-                                    'totalHorizontal',
-                                    'tiltAngle'],
-                                  value='derivativeX',
-                                  description='Grid Filters',
-                                  disabled=False,
-                                )
-                              )
-    return out
-
 
 
 def worldViewerWidget(worldFile, data, locs):

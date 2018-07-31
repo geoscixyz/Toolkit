@@ -297,6 +297,7 @@
         
         \PY{c+c1}{\PYZsh{} Load data in grid format}
         \PY{n}{workDir} \PY{o}{=}\PY{l+s+sa}{r}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{C:}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{Dianne}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{Data}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{Public}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{GBC\PYZus{}Search}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{Phase2}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{Mag}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{AnomalousMagneticField\PYZus{}updatedApr17}\PY{l+s+s2}{\PYZdq{}}
+        \PY{c+c1}{\PYZsh{} workDir =r\PYZdq{}C:\PYZbs{}Dianne\PYZbs{}Data\PYZbs{}Public\PYZbs{}GBC\PYZus{}Search\PYZbs{}Phase2\PYZbs{}Mag\PYZbs{}AnomalousMagneticField\PYZus{}updatedApr17\PYZdq{}}
         \PY{n}{fName} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{MAG\PYZus{}UTM09.grd}\PY{l+s+s1}{\PYZsq{}}
         
         \PY{n}{dataGrid} \PY{o}{=} \PY{n}{DataIO}\PY{o}{.}\PY{n}{loadGRDFile}\PY{p}{(}\PY{n}{workDir}\PY{o}{+}\PY{n}{fName}\PY{p}{)}
@@ -305,7 +306,7 @@
 
     
     \begin{verbatim}
-<matplotlib.figure.Figure at 0x15a777d2a90>
+<matplotlib.figure.Figure at 0x2d7aabf6940>
     \end{verbatim}
 
     
@@ -317,12 +318,12 @@ area}\label{magnetic-response-over-the-search-phase-ii-project-area}
 
 Gridded residual magnetic data from Geoscience BC's Search Phase II
 project (Anomalous Magnetic Field) were downloaded from Geoscience BC's
-website. The magnetic data is interpolated onto a 50 m2 grid. The data
-are shown using coordinate system NAD 83 UTM Zone 9.
+website. The magnetic data is interpolated onto a 50 \(m^2\) grid. The
+data are shown using coordinate system NAD 83 UTM Zone 9.
 
-lims = np.r\_{[}649000, 690000, 6049000, 6090000{]}
+    \subsection{Define a project area}\label{define-a-project-area}
 
-    Let's choose a subset of data to view more closely. The map on the left
+Let's choose a subset of data to view more closely. The map on the left
 shows the full Search Phase II magnetic dataset with a movable 'window'
 outlined in black, and the map on the right shows just the data
 encompassed by the window. The window can be resized and moved anywhere
@@ -331,7 +332,7 @@ in size, a size typical of surveys flown to explore magnetic responses
 at the exploration property, or district scale.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{selection} \PY{o}{=} \PY{n}{ProblemSetter}\PY{o}{.}\PY{n}{setDataExtentWidget}\PY{p}{(}\PY{n}{dataGrid}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}2}]:} \PY{n}{selection} \PY{o}{=} \PY{n}{ProblemSetter}\PY{o}{.}\PY{n}{setDataExtentWidget}\PY{p}{(}\PY{n}{dataGrid}\PY{p}{)}
         \PY{n}{display}\PY{p}{(}\PY{n}{selection}\PY{p}{)}
 \end{Verbatim}
 
@@ -342,12 +343,14 @@ interactive(children=(FloatSlider(value=669500.0, continuous_update=False, descr
     \end{verbatim}
 
     
-    We can then view a profile through the magnetic data. Use the slider
+    \subsection{Profile the data}\label{profile-the-data}
+
+We can then view a profile through the magnetic data. Use the slider
 bars to change the location, orientation, and length of the profile. The
 sampling rate along the profile can also be changed.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{param} \PY{o}{=} \PY{n}{Simulator}\PY{o}{.}\PY{n}{ViewMagSurveyWidget}\PY{p}{(}\PY{n}{selection}\PY{o}{.}\PY{n}{result}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}3}]:} \PY{n}{param} \PY{o}{=} \PY{n}{Simulator}\PY{o}{.}\PY{n}{ViewMagSurveyWidget}\PY{p}{(}\PY{n}{selection}\PY{o}{.}\PY{n}{result}\PY{p}{)}
         \PY{n}{display}\PY{p}{(}\PY{n}{param}\PY{p}{)}
 \end{Verbatim}
 
@@ -366,56 +369,24 @@ different ways of presenting and enhancing the magnetic image to find
 optimal visual parameters for interpreting features of interest.
 
 Use the slider bars below to change the direction (SunAzimuth) and angle
-(SunAngle) of sun shading, to vary color saturation and transparency,
-change the vertical scale (vScale) and to manipulate magnetic contours
-lines (MagContour).
+(SunAngle) of sun shading, to vary color transparency (ColorTransp) and
+hillshade transparency (HSTransp), change the vertical scale (vScale)
+and to manipulate magnetic contours lines (MagContour).
 
-The color map or color 'look-up table' can also be changed. Some look-up
-tables will do an obviously better job of enhancing features (those with
-a larger color range for example), while others may be used simply
-because of an interpreters personal preference. Several look-up tables
-are available in the drop down menu for trying:
+Again, we have the option to change the color map, or the color stretch.
 
-Choice of color map is an often debated topic in geophysics! One
-important point to consider is that some color maps have the 'brightest'
-colors (e.g. grey scale, viridis) at the top of the scale, whereas
-others have the brightest color in the mid-ranges (e.g. rainbow, jet,
-red-blue). This color ordering can be deceptive to the eye of an
-interpreter who is sensitive to color contrast. A color map with the
-brightest color in the mid-ranges and may cause problems if a map is
-printed in greyscale, suddenly mid-range values are the most brightest
-and clear features. Having bright colors in the mid-range however, may
-be useful for visually separating areas of high versus low magnetic
-response.
-
-Finally, the color stretch can be changed. Here we've allowed two
-options, a Linear stretch (Linear), and a histogram equalized
-(HistEqualized) stretch. Using a linear stretch, the values within a
-range of magnetic data are mapped to 256 classes or bins within a chosen
-color map in a linear manner, meaning if there are few anomalously high
-values (outliers) in the range, the 'strongest' color values will be
-mapped rarely. If there are many middle-range values, the image may be
-flooded with mid range color values. While a linear color stretch will
-highlight the most anomalous values, it can wash out subtler features in
-the data. Histogram equialization will vary the color bin sizes to map
-an equal number of data points per bin, essentially giving equal weight
-to low, mid-range, and high magnetic values.\\
-references...
-
-Try these two different combinations of settings to see how the image
-and visibilty of different features is affected.
-
-SunAziumth
+Try different combinations of sun-shading and color settings to see how
+the image and visibilty of different features is affected.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}6}]:} \PY{n}{view} \PY{o}{=} \PY{n}{Simulator}\PY{o}{.}\PY{n}{dataHillsideWidget}\PY{p}{(}\PY{n}{selection}\PY{o}{.}\PY{n}{result}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}4}]:} \PY{n}{view} \PY{o}{=} \PY{n}{Simulator}\PY{o}{.}\PY{n}{dataHillsideWidget}\PY{p}{(}\PY{n}{selection}\PY{o}{.}\PY{n}{result}\PY{p}{)}
         \PY{n}{display}\PY{p}{(}\PY{n}{view}\PY{p}{)}
 \end{Verbatim}
 
 
     
     \begin{verbatim}
-interactive(children=(FloatSlider(value=0.0, continuous_update=False, description='SunAzimuth', max=360.0, step=5.0), FloatSlider(value=45.0, continuous_update=False, description='SunAngle', max=90.0, step=5.0), FloatSlider(value=0.5, continuous_update=False, description='Saturation', max=1.0), FloatSlider(value=1.0, continuous_update=False, description='Transparency', max=1.0), FloatSlider(value=1.0, continuous_update=False, description='vScale', max=4.0, min=1.0, step=1.0), FloatSlider(value=10.0, continuous_update=False, description='MagContour', max=20.0, step=1.0), Dropdown(description='ColorMap', index=2, options=('viridis', 'plasma', 'RdBu_r', 'Greys_r', 'jet', 'hsv', 'rainbow', 'gnuplot'), value='RdBu_r'), Dropdown(description='Color Normalization', index=1, options=('Linear', 'HistEqualized'), value='HistEqualized'), Output()), _dom_classes=('widget-interact',))
+interactive(children=(FloatSlider(value=0.0, continuous_update=False, description='SunAzimuth', max=360.0, step=5.0), FloatSlider(value=15.0, continuous_update=False, description='SunAngle', max=90.0, step=5.0), FloatSlider(value=0.3, continuous_update=False, description='ColorTransp', max=1.0), FloatSlider(value=1.0, continuous_update=False, description='HillshadeTransp', max=1.0), FloatSlider(value=1.0, continuous_update=False, description='vScale', max=4.0, min=1.0, step=1.0), FloatSlider(value=50.0, continuous_update=False, description='MagContour', min=10.0, step=10.0), Dropdown(description='ColorMap', index=3, options=('viridis', 'plasma', 'magma', 'RdBu_r', 'Greys_r', 'jet', 'hsv', 'rainbow', 'pink', 'bone', 'hsv', 'nipy_spectral'), value='RdBu_r'), Dropdown(description='Color Normalization', index=1, options=('Linear', 'HistEqualized'), value='HistEqualized'), Output()), _dom_classes=('widget-interact',))
     \end{verbatim}
 
     
