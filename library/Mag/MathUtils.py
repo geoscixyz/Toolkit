@@ -210,7 +210,6 @@ def minCurvatureInterp(
             residual = np.linalg.norm(m-mtemp)/np.linalg.norm(mtemp)
             count += 1
 
-        print(count)
         return gridCC, m
 
     elif method == 'spline':
@@ -303,7 +302,7 @@ class gridFilter(object):
 
     @property
     def npady(self):
-        print('npady')
+
         if getattr(self, '_npady', None) is None:
             self._npady = int(np.floor(self.grid.shape[0]))
 
@@ -311,7 +310,7 @@ class gridFilter(object):
 
     @property
     def gridPadded(self):
-        print('gridPad')
+
         if getattr(self, '_gridPadded', None) is None:
             # Add paddings
             dpad = np.c_[
@@ -342,7 +341,7 @@ class gridFilter(object):
 
     @property
     def Kx(self):
-        print('Kx')
+
         if getattr(self, '_Kx', None) is None:
 
             dx = (self.dx)/(self.gridPadded.shape[1]-1)
@@ -358,7 +357,7 @@ class gridFilter(object):
 
     @property
     def Ky(self):
-        print('Ky')
+
         if getattr(self, '_Ky', None) is None:
 
             dx = (self.dx)/(self.gridPadded.shape[1]-1)
@@ -374,7 +373,7 @@ class gridFilter(object):
 
     @property
     def gridFFT(self):
-        print('gridFFt')
+
         if getattr(self, '_gridFFT', None) is None:
 
             self._gridFFT = np.fft.fft2(self.gridPadded)
@@ -383,7 +382,7 @@ class gridFilter(object):
 
     @property
     def derivativeX(self):
-        print('derivativeX')
+
         if getattr(self, '_derivativeX', None) is None:
 
             FHxD = (self.Kx*1j)*self.gridFFT
@@ -395,7 +394,7 @@ class gridFilter(object):
 
     @property
     def derivativeY(self):
-        print('derivativeY')
+
         if getattr(self, '_derivativeY', None) is None:
 
             FHyD = (self.Ky*1j)*self.gridFFT
@@ -408,7 +407,7 @@ class gridFilter(object):
 
     @property
     def firstVertical(self):
-        print('firstVertical')
+
         if getattr(self, '_firstVertical', None) is None:
 
             FHzD = self.gridFFT*np.sqrt(self.Kx**2 + self.Ky**2)
