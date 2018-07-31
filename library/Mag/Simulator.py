@@ -534,7 +534,7 @@ class MidPointNorm(Normalize):
         self.autoscale_None(result)
 
         if self.midpoint is None:
-            self.midpoint = np.mean(value)
+            self.midpoint = (self.vmin + self.vmax)/2.
         vmin, vmax, midpoint = self.vmin, self.vmax, self.midpoint
 
         if not (vmin < midpoint < vmax):
@@ -587,7 +587,7 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
+def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
                      vmin=None, vmax=None,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=1., alphaHS=1.,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
@@ -649,7 +649,12 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
         if vmax is None:
             vmax = d_grid.max()
 
-        levels = np.linspace(vmin, vmax, contour)
+        if contour is not None:
+            levels = np.linspace(vmin, vmax, contour)
+
+        else:
+            levels = None
+
         im = axs.contourf(
             X, Y, d_grid, 50, vmin=vmin, vmax=vmax, levels=levels,
             cmap=my_cmap, norm=MidPointNorm(midpoint=midpoint), alpha=alpha
@@ -659,7 +664,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
                    cmap='gray_r', alpha=alphaHS,
                    extent=extent, origin='lower')
 
-    if contour > 0:
+    if contour is not None:
         CS = axs.contour(
             X, Y, d_grid, int(contour), colors='k', linewidths=0.5
         )
@@ -854,7 +859,7 @@ def dataHillsideWidget(survey):
     def plotWidget(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            MagContour, ColorMap, Equalize
+            MagContour, ColorMap, VminVmax, Equalize
          ):
 
         fig = plt.figure(figsize=(9, 9))
@@ -864,6 +869,7 @@ def dataHillsideWidget(survey):
         im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
                                   clabel=False, contour=MagContour,
+                                  vmax=VminVmax[1], vmin=VminVmax[0],
                                   alpha=ColorTransp, alphaHS=HSTransp,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
                                   equalizeHist=Equalize)
@@ -907,6 +913,18 @@ def dataHillsideWidget(survey):
                                   description='ColorMap',
                                   disabled=False,
                                 ),
+                              VminVmax=widgets.FloatRangeSlider(
+                                    value=[data.min(), data.max()],
+                                    min=data.min(),
+                                    max=data.max(),
+                                    step=1.0,
+                                    description='Color Range',
+                                    disabled=False,
+                                    continuous_update=False,
+                                    orientation='horizontal',
+                                    readout=True,
+                                    readout_format='.1f',
+                                ),
                               Equalize=widgets.Dropdown(
                                   options=['Linear', 'HistEqualized'],
                                   value='HistEqualized',
@@ -922,7 +940,7 @@ def gridFiltersWidget(survey):
     def plotWidget(
             SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters
+            ColorMap, VminVmax, Filters
          ):
 
         fig = plt.figure(figsize=(12, 12))
@@ -932,7 +950,7 @@ def gridFiltersWidget(survey):
         # Add shading
         im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
-                                  clabel=False,
+                                  clabel=False, vmax=VminVmax[1], vmin=VminVmax[0],
                                   alpha=Saturation, alphaHS=Transparency,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
                                   equalizeHist=False)
@@ -976,6 +994,18 @@ def gridFiltersWidget(survey):
                                   value='RdBu_r',
                                   description='ColorMap',
                                   disabled=False,
+                                ),
+                              VminVmax=widgets.FloatRangeSlider(
+                                    value=[-10000, 10000],
+                                    min=-10000,
+                                    max=10000,
+                                    step=0.1,
+                                    description='Color Range',
+                                    disabled=False,
+                                    continuous_update=False,
+                                    orientation='horizontal',
+                                    readout=True,
+                                    readout_format='.1f',
                                 ),
                               Filters=widgets.Dropdown(
                                   options=[
