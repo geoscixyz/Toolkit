@@ -7,7 +7,13 @@ In this section, we provide examples and interactive demonstrations to introduce
 
 The first example provided considers a simple geological scenario from which a magnetic response is calculated and analyzed. This section will help familiarize users with magnetic responses over compact and planar geologic bodies, demonstrate how the response can vary depending on the local magnetic field, and provide an introduction to several magnetic data visualization and analysis tools.
 
+.. image:: ./images/synthetic_profile.PNG
+  :align: center
+
 The Toolkit tools are then applied to analyze a real-life magnetic data set from Geoscience BC’s SeArch Phase II project area.
+
+.. image:: ./images/search_profile.PNG
+  :align: center
 
 
 Contents:
@@ -17,3 +23,5 @@ Contents:
 
    SyntheticExample
    SearchExample
+
+

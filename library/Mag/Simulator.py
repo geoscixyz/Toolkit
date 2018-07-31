@@ -853,18 +853,18 @@ def dataHillsideWidget(survey):
 
     def plotWidget(
             SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             MagContour, ColorMap, Equalize
          ):
 
-        fig = plt.figure(figsize=(12, 12))
+        fig = plt.figure(figsize=(9, 9))
         axs = plt.subplot()
 
         # Add shading
         im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
                                   clabel=False, contour=MagContour,
-                                  alpha=Saturation, alphaHS=Transparency,
+                                  alpha=ColorTransp, alphaHS=HSTransp,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
                                   equalizeHist=Equalize)
 
@@ -897,9 +897,9 @@ def dataHillsideWidget(survey):
     out = widgets.interactive(plotWidget,
                               SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
                               SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
-                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
-                              Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
-                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=4.0, continuous_update=False),
+                              ColorTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
+                              HSTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
+                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=1.0, continuous_update=False),
                               MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
                               ColorMap=widgets.Dropdown(
                                   options=cmaps(),
