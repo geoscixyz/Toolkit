@@ -29,15 +29,15 @@ def PFSimulator(prism, survey):
                    Profile_ctx, Profile_cty):
 
         # # Get the line extent from the 2D survey for now
-        prob = Mag.problem()
-        prob.prism = prism.result
-        prob.survey = survey.result
+        prob = Mag.Problem()
+        prob.prism = prism
+        prob.survey = survey
 
         return PlotFwrSim(prob, susc, comp, irt, Q, RemInc, RemDec,
                           Profile_azm, Profile_len, Profile_npt,
                           Profile_ctx, Profile_cty)
 
-    locs = survey.result.srcField.rxList[0].locs
+    locs = survey.srcField.rxList[0].locs
     xlim = np.asarray([locs[:, 0].min(), locs[:, 0].max()])
     ylim = np.asarray([locs[:, 1].min(), locs[:, 1].max()])
 
@@ -80,23 +80,24 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
                Profile_azm, Profile_len, Profile_npt,
                Profile_ctx, Profile_cty):
 
-    def MagSurvey2D(survey, Profile_ctx, Profile_cty, Profile_azm,
+    def MagSurvey2D(x, y, data, Profile_ctx, Profile_cty, Profile_azm,
                     Profile_len, Profile_npt,
-                    data=None, fig=None, ax=None,
+                    fig=None, ax=None,
                     vmin=None, vmax=None, pred=None):
 
         # Get the line extent from the 2D survey for now
         Profile_azm /= 180./np.pi
         Profile_len /= 2.*0.98
 
-        dx = np.cos(-Profile_azm)*Profile_lenf
+        dx = np.cos(-Profile_azm)*Profile_len
         dy = np.sin(-Profile_azm)*Profile_len
 
         a = [Profile_ctx - dx, Profile_cty - dy]
         b = [Profile_ctx + dx, Profile_cty + dy]
 
-        return plotMagSurvey2D(survey, a, b, Profile_npt,
-                               data=data, fig=fig, ax=ax,
+        return plotMagSurvey2D(x, y,
+                               data, a, b, Profile_npt,
+                               fig=fig, ax=ax,
                                vmin=vmin, vmax=vmax, pred=pred)
 
     def MagSurveyProfile(survey, Profile_ctx, Profile_cty, Profile_azm,
@@ -116,7 +117,7 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
         xyz = survey.srcField.rxList[0].locs
         dobs = survey.dobs
 
-        return plotProfile2D(xyz, [dobs, data], a, b, Profile_npt,
+        return plotProfile2D(xyz[:, 0], xyz[:, 1], [dobs, data], a, b, Profile_npt,
                              fig=fig, ax=ax, ylabel='nT')
 
     survey = prob.survey
@@ -134,11 +135,18 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
 
     vmin = survey.dobs.min()
     vmax = survey.dobs.max()
+    rxLoc = survey.srcField.rxList[0].locs
+    x, y = rxLoc[:, 0], rxLoc[:, 1]
 
     f = plt.figure(figsize=(8, 8))
 
     ax0 = plt.subplot(1, 2, 1)
-    MagSurvey2D(survey, Profile_ctx, Profile_cty, Profile_azm,
+    MagSurvey2D(x, y, survey.dobs, Profile_ctx, Profile_cty, Profile_azm,
+                Profile_len, Profile_npt, fig=f, ax=ax0, pred=dpred,
+                vmin=survey.dobs.min(), vmax=survey.dobs.max())
+
+    ax0 = plt.subplot(1, 2, 2)
+    MagSurvey2D(x, y, dpred, Profile_ctx, Profile_cty, Profile_azm,
                 Profile_len, Profile_npt, fig=f, ax=ax0, pred=dpred,
                 vmin=survey.dobs.min(), vmax=survey.dobs.max())
 
@@ -300,7 +308,7 @@ def ViewPrism(survey):
                               prism_inc=(-90., 90., 5.),
                               prism_dec=(-90., 90., 5.),
                               View_dip=widgets.FloatSlider(min=0, max=90, step=1, value=30, continuous_update=False),
-                              View_azm=widgets.FloatSlider(min=0, max=360, step=1, value=220, continuous_update=False),
+                              View_azm=widgets.FloatSlider(min=0, max=360, step=1, value=0, continuous_update=False),
                               View_lim=widgets.FloatSlider(min=1, max=2*lim, step=1, value=lim, continuous_update=False),
                               )
 
@@ -348,7 +356,7 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
                                [y1, y2, y2, y1, y1, y2, y2, y1],
                                [z1, z1, z1, z1, z2, z2, z2, z2]])
 
-        xyz = MagUtils.rotate(block_xyz.T, np.r_[prism.xc, prism.yc, prism.zc], pinc, pdec)
+        xyz = MathUtils.rotate(block_xyz.T, np.r_[prism.xc, prism.yc, prism.zc], pinc, pdec)
         # R = MagUtils.rotationMatrix(pinc, pdec)
 
         # xyz = R.dot(block_xyz).T
@@ -831,21 +839,21 @@ def plotProfile2D(x, y, data, a, b, npts,
     if not isinstance(data, list):
         data = [data]
 
-        for ii, d in enumerate(data):
-            if d.ndim == 1:
-                dline = griddata(np.c_[x, y], d, (xLine, yLine), method='linear')
+    for ii, d in enumerate(data):
+        if d.ndim == 1:
+            dline = griddata(np.c_[x, y], d, (xLine, yLine), method='linear')
 
-            else:
-                F = RegularGridInterpolator((x, y), d.T)
-                dline = F(np.c_[xLine, yLine])
+        else:
+            F = RegularGridInterpolator((x, y), d.T)
+            dline = F(np.c_[xLine, yLine])
 
-            # Check for nan
-            ind = np.isnan(dline) == False
+        # Check for nan
+        ind = np.isnan(dline) == False
 
-            if plotStr[ii]:
-                ax.plot(distance[ind], dline[ind], plotStr[ii])
-            else:
-                ax.plot(distance[ind], dline[ind])
+        if plotStr[ii]:
+            ax.plot(distance[ind], dline[ind], plotStr[ii])
+        else:
+            ax.plot(distance[ind], dline[ind])
 
     # ax.set_xlim(distance.min(), distance.max())
     ax.set_ylabel(ylabel)
