@@ -596,7 +596,7 @@ class MidPointNorm(Normalize):
 
 
 def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
-                     vmin=None, vmax=None,
+                     vmin=None, vmax=None, levels=10,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=1., alphaHS=1.,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
                      equalizeHist='HistEqualized', minCurvature=True):
@@ -641,9 +641,15 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
 
     if fill:
 
+        if vmin is None:
+            vmin = d_grid[~np.isnan(d_grid)].min()
+
+        if vmax is None:
+            vmax = d_grid[~np.isnan(d_grid)].max()
+
         if equalizeHist == 'HistEqualized':
             cdf, bins = exposure.cumulative_distribution(
-                z[~np.isnan(z)].flatten(), nbins=256
+                d_grid[~np.isnan(d_grid) * (d_grid<vmax) * (d_grid>vmin) ].flatten(), nbins=256
             )
             my_cmap = graphics.equalizeColormap(cmap, bins, cdf)
         else:
@@ -651,17 +657,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
 
         extent = x.min(), x.max(), y.min(), y.max()
 
-        if vmin is None:
-            vmin = d_grid.min()
-
-        if vmax is None:
-            vmax = d_grid.max()
-
-        if contour is not None:
-            levels = np.linspace(vmin, vmax, contour)
-
-        else:
-            levels = None
+        levels = np.linspace(vmin, vmax, levels)
 
         im = axs.contourf(
             X, Y, d_grid, 50, vmin=vmin, vmax=vmax, levels=levels,
@@ -765,7 +761,7 @@ def plotData2D(x, y, d, title=None,
         if contours is None:
 
             if vmin != vmax:
-                plt.contour(X, Y, d_grid, 10, vmin=vmin, vmax=vmax, cmap=cmap)
+                plt.contour(X, Y, d_grid, 10, vmin=vmin, vmax=vmax, cmap=my_cmap)
         else:
             plt.contour(X, Y, d_grid, levels=contours, colors='k',
                         vmin=vmin, vmax=vmax)
@@ -848,7 +844,7 @@ def plotProfile2D(x, y, data, a, b, npts,
             dline = F(np.c_[xLine, yLine])
 
         # Check for nan
-        ind = np.isnan(dline) == False
+        ind = np.isnan(dline)==False
 
         if plotStr[ii]:
             ax.plot(distance[ind], dline[ind], plotStr[ii])
@@ -885,7 +881,7 @@ def dataHillsideWidget(survey):
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
         axs.set_aspect('auto')
-        cbar = plt.colorbar(im,fraction=0.02)
+        cbar = plt.colorbar(im, fraction=0.02)
         cbar.set_label('TMI (nT)')
 
         axs.set_xlabel("Easting (m)", size=14)
@@ -943,31 +939,93 @@ def dataHillsideWidget(survey):
     return out
 
 
-def gridFiltersWidget(survey):
+def gridFiltersWidget(survey, gridFilter='derivativeX'):
 
     def plotWidget(
             SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, VminVmax, Filters
+            ColorMap, Filters
+         ):
+
+        if Filters == 'TMI':
+            data = survey.values
+            vmin, vmax = data.min(), data.max()
+            equalizeHist = 'HistEqualized'
+
+        else:
+            data = getattr(filters, '{}'.format(Filters))
+            vmin, vmax = np.percentile(data, 5), np.percentile(data, 95)
+            equalizeHist = 'HistEqualized'
+
+        plotIt(
+            data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, equalizeHist
+        )
+
+    def plotWidgetUpC(
+            SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, UpwardDistance
+         ):
+        if Filters == 'TMI':
+            data = survey.values
+            vmin, vmax = data.min(), data.max()
+
+        else:
+            data = filters.upwardContinuation(z=UpwardDistance)
+            vmin, vmax = data.min(), data.max()
+
+        plotIt(
+            data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, 'HistEqualized'
+        )
+
+    def plotWidgetRTP(
+            SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, inc, dec
+         ):
+        if Filters == 'TMI':
+            data = survey.values
+            vmin, vmax = data.min(), data.max()
+
+        else:
+            filters._RTP = None
+            filters.inc = inc
+            filters.dec = dec
+            data = filters.RTP
+            vmin, vmax = data.min(), data.max()
+
+        plotIt(
+            data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, 'HistEqualized'
+        )
+
+    def plotIt(
+            data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, equalizeHist
          ):
 
         fig = plt.figure(figsize=(12, 12))
         axs = plt.subplot()
-
-        data = getattr(filters, '{}'.format(Filters))
         # Add shading
         im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
-                                  clabel=False, vmax=VminVmax[1], vmin=VminVmax[0],
+                                  clabel=False,
+                                  vmin=vmin, vmax=vmax, levels=50,
                                   alpha=Saturation, alphaHS=Transparency,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-                                  equalizeHist=False)
+                                  equalizeHist=equalizeHist)
 
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
         axs.set_aspect('auto')
-        cbar = plt.colorbar(im,fraction=0.02)
-        cbar.set_label('TMI (nT)')
+        cbar = plt.colorbar(im, fraction=0.02)
+        cbar.set_label(gridFilter)
 
         axs.set_xlabel("Easting (m)", size=14)
         axs.set_ylabel("Northing (m)", size=14)
@@ -983,57 +1041,133 @@ def gridFiltersWidget(survey):
 
         filters = MathUtils.gridFilter()
         filters.grid = survey.values
+        filters.dx = survey.dx
+        filters.dy = survey.dy
 
+        data = getattr(filters, '{}'.format(gridFilter))
     else:
 
         assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
 
+    if gridFilter == 'upwardContinuation':
+        out = widgets.interactive(plotWidgetUpC,
+                                  SunAzimuth=widgets.FloatSlider(
+                                    min=0, max=360, step=5, value=0,
+                                    continuous_update=False),
+                                  SunAngle=widgets.FloatSlider(
+                                    min=0, max=90, step=5, value=15,
+                                    continuous_update=False),
+                                  Saturation=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=0.3,
+                                    continuous_update=False),
+                                  Transparency=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=1.0,
+                                    continuous_update=False),
+                                  vScale=widgets.FloatSlider(
+                                    min=1, max=4, step=1., value=4.0,
+                                    continuous_update=False),
+                                  ColorMap=widgets.Dropdown(
+                                      options=cmaps(),
+                                      value='RdBu_r',
+                                      description='ColorMap',
+                                      disabled=False,
+                                    ),
+                                  Filters=widgets.Dropdown(
+                                      options=[
+                                        gridFilter,
+                                        'TMI'],
+                                      value=gridFilter,
+                                      description='Grid Filters',
+                                      disabled=False,
+                                    ),
+                                  UpwardDistance=widgets.FloatSlider(
+                                    min=0, max=500, step=10, value=0,
+                                    continuous_update=False),
 
+                                  )
+    elif gridFilter == 'RTP':
+        out = widgets.interactive(plotWidgetRTP,
+                                  SunAzimuth=widgets.FloatSlider(
+                                    min=0, max=360, step=5, value=0,
+                                    continuous_update=False),
+                                  SunAngle=widgets.FloatSlider(
+                                    min=0, max=90, step=5, value=15,
+                                    continuous_update=False),
+                                  Saturation=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=0.3,
+                                    continuous_update=False),
+                                  Transparency=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=1.0,
+                                    continuous_update=False),
+                                  vScale=widgets.FloatSlider(
+                                    min=1, max=4, step=1., value=4.0,
+                                    continuous_update=False),
+                                  ColorMap=widgets.Dropdown(
+                                      options=cmaps(),
+                                      value='RdBu_r',
+                                      description='ColorMap',
+                                      disabled=False,
+                                    ),
+                                  Filters=widgets.Dropdown(
+                                      options=[
+                                        gridFilter,
+                                        'TMI'],
+                                      value=gridFilter,
+                                      description='Grid Filters',
+                                      disabled=False,
+                                    ),
+                                  inc=widgets.FloatText(
+                                        value=73,
+                                        description='Inclination:',
+                                        disabled=False
+                                    ),
+                                  dec=widgets.FloatText(
+                                        value=17,
+                                        description='Declination:',
+                                        disabled=False
+                                    )
+                                  )
+    else:
+        out = widgets.interactive(plotWidget,
+                                  SunAzimuth=widgets.FloatSlider(
+                                    min=0, max=360, step=5, value=0,
+                                    continuous_update=False),
+                                  SunAngle=widgets.FloatSlider(
+                                    min=0, max=90, step=5, value=15,
+                                    continuous_update=False),
+                                  Saturation=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=0.3,
+                                    continuous_update=False),
+                                  Transparency=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=1.0,
+                                    continuous_update=False),
+                                  vScale=widgets.FloatSlider(
+                                    min=1, max=4, step=1., value=4.0,
+                                    continuous_update=False),
+                                  ColorMap=widgets.Dropdown(
+                                      options=cmaps(),
+                                      value='RdBu_r',
+                                      description='ColorMap',
+                                      disabled=False,
+                                    ),
+                                  Filters=widgets.Dropdown(
+                                      options=[
+                                        gridFilter,
+                                        'TMI'],
+                                      value=gridFilter,
+                                      description='Grid Filters',
+                                      disabled=False,
+                                    ),
+                                  )
 
-    out = widgets.interactive(plotWidget,
-                              SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
-                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
-                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
-                              Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
-                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=4.0, continuous_update=False),
-                              MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
-                              ColorMap=widgets.Dropdown(
-                                  options=cmaps(),
-                                  value='RdBu_r',
-                                  description='ColorMap',
-                                  disabled=False,
-                                ),
-                              VminVmax=widgets.FloatRangeSlider(
-                                    value=[-10000, 10000],
-                                    min=-10000,
-                                    max=10000,
-                                    step=0.1,
-                                    description='Color Range',
-                                    disabled=False,
-                                    continuous_update=False,
-                                    orientation='horizontal',
-                                    readout=True,
-                                    readout_format='.1f',
-                                ),
-                              Filters=widgets.Dropdown(
-                                  options=[
-                                    'derivativeX',
-                                    'derivativeY',
-                                    'firstVertical',
-                                    'totalHorizontal',
-                                    'tiltAngle'],
-                                  value='derivativeX',
-                                  description='Grid Filters',
-                                  disabled=False,
-                                )
-                              )
     return out
+
 
 def worldViewerWidget(worldFile, data, locs):
 
     world = shapefile.Reader(worldFile)
     # Extract lines from shape file
-    X, Y = [],[]
+    X, Y = [], []
     for shape in world.shapeRecords():
 
         for ii, part in enumerate(shape.shape.parts):

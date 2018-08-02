@@ -284,6 +284,8 @@ class gridFilter(object):
     grid = None
     dx = 1.
     dy = 1.
+    inc = 90.
+    dec = 90.
     gridPadded = None
 
     def __init__(self, **kwargs):
@@ -410,7 +412,7 @@ class gridFilter(object):
 
         if getattr(self, '_firstVertical', None) is None:
 
-            FHzD = self.gridFFT*np.sqrt(self.Kx**2 + self.Ky**2)
+            FHzD = self.gridFFT*np.sqrt(self.Kx**2. + self.Ky**2.)
             fhzd_pad = np.fft.ifft2(FHzD)
             self._firstVertical = np.real(
                 fhzd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
@@ -422,7 +424,7 @@ class gridFilter(object):
 
         if getattr(self, '_totalHorizontal', None) is None:
 
-            self._totalHorizontal = np.sqrt(self.derivativeX**2 + self.derivativeY**2)
+            self._totalHorizontal = np.sqrt(self.derivativeX**2. + self.derivativeY**2. + 1e-8)
 
         return self._totalHorizontal
 
@@ -431,10 +433,47 @@ class gridFilter(object):
 
         if getattr(self, '_tiltAngle', None) is None:
 
-            Ftilt = self.gridFFT*np.sqrt(self.Kx**2 + self.Ky**2)
+            Ftilt = self.gridFFT*np.sqrt(self.Kx**2. + self.Ky**2. + 1e-8)
             tilt_pad = np.fft.ifft2(Ftilt)
             tilt = np.real(
                 tilt_pad[self.npady:-self.npady, self.npadx:-self.npadx])
             self._tiltAngle = np.arctan2(tilt, self.totalHorizontal)
 
         return self._tiltAngle
+
+    @property
+    def analyticSignal(self):
+
+        if getattr(self, '_analyticSignal', None) is None:
+
+            self._analyticSignal = np.sqrt(self.derivativeX**2. + self.derivativeY**2. + self.firstVertical**2. + 1e-8)
+
+        return self._analyticSignal
+
+    @property
+    def RTP(self):
+
+        if getattr(self, '_RTP', None) is None:
+
+            h0_xyz = dipazm_2_xyz(self.inc, self.dec)
+            Frtp = self.gridFFT / (
+                (h0_xyz[2] + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2.
+            )
+            rtp_pad = np.fft.ifft2(Frtp)
+            self._RTP = np.real(
+                rtp_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+        return self._RTP
+
+    def upwardContinuation(self, z=0):
+        """
+            Function to calculate upward continued data
+        """
+
+        upFact = -np.sqrt(self.Kx**2. + self.Ky**2.)*z/np.sqrt(self.dx**2. + self.dy**2.)
+        FzUpw = self.gridFFT*np.exp(upFact)
+        zUpw_pad = np.fft.ifft2(FzUpw)
+        zUpw = np.real(
+            zUpw_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+        return zUpw
