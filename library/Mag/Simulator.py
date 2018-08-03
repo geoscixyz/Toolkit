@@ -20,7 +20,7 @@ from matplotlib.colors import LightSource, Normalize
 from library.graphics import graphics
 from matplotlib.ticker import FormatStrFormatter
 from skimage import exposure
-
+import PIL
 
 def PFSimulator(prism, survey):
 
@@ -172,7 +172,10 @@ def ViewMagSurveyWidget(survey):
         fig = plt.figure(figsize=(10, 6))
         ax1 = plt.subplot(1, 2, 1)
 
-        plotMagSurvey2D(xLoc, yLoc, data, a, b, Sampling, fig=fig, ax=ax1, cmap=ColorMap)
+        plotMagSurvey2D(
+         xLoc, yLoc, data, a, b, Sampling,
+         fig=fig, ax=ax1, cmap=ColorMap, marker=False
+        )
 
         # if Profile:
         ax2 = plt.subplot(1, 2, 2)
@@ -226,7 +229,7 @@ def ViewMagSurveyWidget(survey):
     return out
 
 
-def plotMagSurvey2D(x, y, data, a, b, npts, pred=None,
+def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
                     fig=None, ax=None, vmin=None, vmax=None,
                     cmap='RdBu_r', equalizeHist='HistEqualized'):
     """
@@ -244,15 +247,15 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None,
     # Use SimPEG.PF ploting function
     fig, im, cbar = plotData2D(x, y, data, fig=fig,  ax=ax,
                          vmin=vmin, vmax=vmax,
-                         marker=False, cmap=cmap,
+                         marker=marker, cmap=cmap,
                          colorbar=False, equalizeHist=equalizeHist)
 
-    ax.plot(xLine, yLine, 'w.', ms=5)
+    ax.plot(xLine, yLine, 'k.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
     cbar.set_label('TMI (nT)')
-    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='w', ha='left')
+    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='left')
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
-            color='w', ha='right')
+            color='k', ha='right')
     ax.grid(True)
 
     return
@@ -595,9 +598,9 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
-                     vmin=None, vmax=None, levels=10,
-                     clabel=True, cmap='RdBu_r', ve=1., alpha=1., alphaHS=1.,
+def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
+                     vmin=None, vmax=None, levels=None, resolution=25,
+                     clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
                      equalizeHist='HistEqualized', minCurvature=True):
 
@@ -608,16 +611,18 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
         if minCurvature:
             gridCC, d_grid = MathUtils.minCurvatureInterp(
                 np.c_[x, y], z,
-                vectorX=None, vectorY=None, vectorZ=None, gridSize=25,
+                vectorX=None, vectorY=None, vectorZ=None, gridSize=resolution,
                 tol=1e-5, iterMax=None, method='spline',
             )
             X = gridCC[:, 0].reshape(d_grid.shape, order='F')
             Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
 
         else:
+            npts_x = int((x.max() - x.min())/Resolution)
+            npts_y = int((y.max() - y.min())/Resolution)
             # Create grid of points
-            vectorX = np.linspace(x.min(), x.max(), 1000)
-            vectorY = np.linspace(y.min(), y.max(), 1000)
+            vectorX = np.linspace(x.min(), x.max(), npts_x)
+            vectorY = np.linspace(y.min(), y.max(), npts_y)
 
             Y, X = np.meshgrid(vectorY, vectorX)
 
@@ -648,8 +653,13 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
             vmax = d_grid[~np.isnan(d_grid)].max()
 
         if equalizeHist == 'HistEqualized':
+
+            subGrid = d_grid[~np.isnan(d_grid)]
             cdf, bins = exposure.cumulative_distribution(
-                d_grid[~np.isnan(d_grid) * (d_grid<vmax) * (d_grid>vmin) ].flatten(), nbins=256
+                    subGrid[
+                       (subGrid < vmax) *
+                       (subGrid > vmin)
+                       ].flatten(), nbins=256
             )
             my_cmap = graphics.equalizeColormap(cmap, bins, cdf)
         else:
@@ -657,25 +667,27 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=None,
 
         extent = x.min(), x.max(), y.min(), y.max()
 
-        levels = np.linspace(vmin, vmax, levels)
-
+        clevels = np.linspace(vmin, vmax, contours)
         im = axs.contourf(
-            X, Y, d_grid, 50, vmin=vmin, vmax=vmax, levels=levels,
-            cmap=my_cmap, norm=MidPointNorm(midpoint=midpoint), alpha=alpha
+            X, Y, d_grid, contours, vmin=vmin, vmax=vmax, levels=clevels,
+            cmap=my_cmap, alpha=alpha
         )
 
-        axs.imshow(ls.hillshade(d_grid, vert_exag=ve, dx=5., dy=5.),
-                   cmap='gray_r', alpha=alphaHS,
-                   extent=extent, origin='lower')
+        if np.all([alpha != 1, alphaHS != 0]):
+            axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
+                       dx=resolution, dy=resolution),
+                       cmap='gray_r', alpha=alphaHS,
+                       extent=extent, origin='lower')
 
-    if contour is not None:
+    if levels is not None:
         CS = axs.contour(
-            X, Y, d_grid, int(contour), colors='k', linewidths=0.5
+            X, Y, d_grid, levels.shape[0],
+            levels=levels, colors='k', linewidths=0.5
         )
 
         if clabel:
             plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
-    return im, CS
+    return X, Y, d_grid, im, CS
 
 
 def plotData2D(x, y, d, title=None,
@@ -738,7 +750,13 @@ def plotData2D(x, y, d, title=None,
 
         # Already a grid
         else:
-            X, Y, d_grid = x, y, d
+
+            if x.ndim == 1:
+                X, Y = np.meshgrid(x, y)
+                d_grid = d
+
+            else:
+                X, Y, d_grid = x, y, d
 
         if equalizeHist == 'HistEqualized':
             cdf, bins = exposure.cumulative_distribution(
@@ -858,21 +876,30 @@ def plotProfile2D(x, y, data, a, b, npts,
     return ax
 
 
-def dataHillsideWidget(survey):
+def dataHillsideWidget(survey, EPSGCode=26909, figName='DataHillshade', dpi=300):
 
     def plotWidget(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            MagContour, ColorMap, VminVmax, Equalize
+            Contours, ColorMap, VminVmax, Equalize,
+            SaveGeoTiff
          ):
 
-        fig = plt.figure(figsize=(9, 9))
-        axs = plt.subplot()
+        if SaveGeoTiff:
+            fig = plt.figure()
+            fig.set_size_inches(9, 9)
+            axs = plt.Axes(fig, [0., 0., 1., 1.])
+            axs.set_axis_off()
+            fig.add_axes(axs)
+
+        else:
+            fig = plt.figure(figsize=(9, 9))
+            axs = plt.subplot()
 
         # Add shading
-        im, CS = plotDataHillside(xLoc, yLoc, data,
+        X, Y, d_grid, im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
-                                  clabel=False, contour=MagContour,
+                                  clabel=False, contours=Contours,
                                   vmax=VminVmax[1], vmin=VminVmax[0],
                                   alpha=ColorTransp, alphaHS=HSTransp,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
@@ -880,14 +907,26 @@ def dataHillsideWidget(survey):
 
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
-        axs.set_aspect('auto')
-        cbar = plt.colorbar(im, fraction=0.02)
-        cbar.set_label('TMI (nT)')
+        if SaveGeoTiff:
+            plt.savefig(figName + '.png', dpi=dpi)
+            plt.close()
 
-        axs.set_xlabel("Easting (m)", size=14)
-        axs.set_ylabel("Northing (m)", size=14)
-        axs.grid('on', color='k', linestyle='--')
-        plt.show()
+            img = np.asarray(PIL.Image.open(figName + '.png'))
+
+            DataIO.arrayToRaster(
+                img, figName + '.tiff',
+                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+            )
+
+        else:
+            axs.set_aspect('auto')
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label('TMI (nT)')
+
+            axs.set_xlabel("Easting (m)", size=14)
+            axs.set_ylabel("Northing (m)", size=14)
+            axs.grid('on', color='k', linestyle='--')
+            plt.show()
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
@@ -910,7 +949,7 @@ def dataHillsideWidget(survey):
                               ColorTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
                               HSTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
                               vScale=widgets.FloatSlider(min=1, max=4, step=1., value=1.0, continuous_update=False),
-                              MagContour=widgets.FloatSlider(min=10, max=100, step=10, value=50, continuous_update=False),
+                              Contours=widgets.IntSlider(min=10, max=100, step=10, value=50, continuous_update=False),
                               ColorMap=widgets.Dropdown(
                                   options=cmaps(),
                                   value='RdBu_r',
@@ -934,17 +973,25 @@ def dataHillsideWidget(survey):
                                   value='HistEqualized',
                                   description='Color Normalization',
                                   disabled=False,
+                                ),
+                              SaveGeoTiff=widgets.ToggleButton(
+                                  value=False,
+                                  description='Export geoTiff',
+                                  disabled=False,
+                                  button_style='',
+                                  tooltip='Description',
+                                  icon='check'
                                 )
                               )
     return out
 
 
-def gridFiltersWidget(survey, gridFilter='derivativeX'):
+def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300):
 
     def plotWidget(
             SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters
+            ColorMap, Filters, SaveGrid
          ):
 
         if Filters == 'TMI':
@@ -958,15 +1005,15 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
             equalizeHist = 'HistEqualized'
 
         plotIt(
-            data, SunAzimuth, SunAngle,
+            X, Y, data, SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
         )
 
     def plotWidgetUpC(
             SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters, UpwardDistance
+            ColorMap, Filters, UpwardDistance, SaveGrid
          ):
         if Filters == 'TMI':
             data = survey.values
@@ -977,15 +1024,15 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
             vmin, vmax = data.min(), data.max()
 
         plotIt(
-            data, SunAzimuth, SunAngle,
+            X, Y, data, SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized'
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
         )
 
     def plotWidgetRTP(
             SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters, inc, dec
+            ColorMap, Filters, inc, dec, SaveGrid
          ):
         if Filters == 'TMI':
             data = survey.values
@@ -999,38 +1046,62 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
             vmin, vmax = data.min(), data.max()
 
         plotIt(
-            data, SunAzimuth, SunAngle,
+            X, Y, data, SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized'
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
         )
 
     def plotIt(
-            data, SunAzimuth, SunAngle,
+            X, Y, data, SunAzimuth, SunAngle,
             Saturation, Transparency, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
          ):
 
-        fig = plt.figure(figsize=(12, 12))
-        axs = plt.subplot()
+        if SaveGrid:
+            fig = plt.figure()
+            fig.set_size_inches(9, 9)
+            axs = plt.Axes(fig, [0., 0., 1., 1.])
+            axs.set_axis_off()
+            fig.add_axes(axs)
+
+        else:
+
+            fig = plt.figure(figsize=(10, 10))
+            axs = plt.subplot()
+
         # Add shading
-        im, CS = plotDataHillside(xLoc, yLoc, data,
-                                  axs=axs, cmap=ColorMap,
-                                  clabel=False,
-                                  vmin=vmin, vmax=vmax, levels=50,
-                                  alpha=Saturation, alphaHS=Transparency,
-                                  ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-                                  equalizeHist=equalizeHist)
+        X, Y, data, im, CS = plotDataHillside(
+            X, Y, data,
+            axs=axs, cmap=ColorMap,
+            clabel=False, resolution=10,
+            vmin=vmin, vmax=vmax, contours=50,
+            alpha=Saturation, alphaHS=Transparency,
+            ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
+            equalizeHist=equalizeHist
+        )
 
-        # Add points at the survey locations
-        # plt.scatter(xLoc, yLoc, s=2, c='k')
-        axs.set_aspect('auto')
-        cbar = plt.colorbar(im, fraction=0.02)
-        cbar.set_label(gridFilter)
+        if SaveGrid:
+            plt.savefig(gridFilter + '.png', dpi=dpi)
+            plt.close()
 
-        axs.set_xlabel("Easting (m)", size=14)
-        axs.set_ylabel("Northing (m)", size=14)
-        axs.grid('on', color='k', linestyle='--')
-        plt.show()
+            img = np.asarray(PIL.Image.open(gridFilter + '.png'))
+
+            DataIO.arrayToRaster(
+                img, gridFilter + '.tiff',
+                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+            )
+
+        else:
+            # Add points at the survey locations
+            # plt.scatter(xLoc, yLoc, s=2, c='k')
+            axs.set_aspect('auto')
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label(gridFilter)
+
+            axs.set_xlabel("Easting (m)", size=14)
+            axs.set_ylabel("Northing (m)", size=14)
+            axs.grid('on', color='k', linestyle='--')
+            plt.show()
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
@@ -1043,6 +1114,8 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
         filters.grid = survey.values
         filters.dx = survey.dx
         filters.dy = survey.dy
+
+        X, Y = np.meshgrid(xLoc, yLoc)
 
         data = getattr(filters, '{}'.format(gridFilter))
     else:
@@ -1082,7 +1155,16 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
                                     ),
                                   UpwardDistance=widgets.FloatSlider(
                                     min=0, max=500, step=10, value=0,
-                                    continuous_update=False),
+                                    continuous_update=False
+                                    ),
+                                  SaveGrid=widgets.ToggleButton(
+                                      value=False,
+                                      description='Export Grid',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
+                                    )
 
                                   )
     elif gridFilter == 'RTP':
@@ -1125,6 +1207,14 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
                                         value=17,
                                         description='Declination:',
                                         disabled=False
+                                    ),
+                                  SaveGrid=widgets.ToggleButton(
+                                      value=False,
+                                      description='Export Grid',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
                                     )
                                   )
     else:
@@ -1158,12 +1248,20 @@ def gridFiltersWidget(survey, gridFilter='derivativeX'):
                                       description='Grid Filters',
                                       disabled=False,
                                     ),
+                                  SaveGrid=widgets.ToggleButton(
+                                      value=False,
+                                      description='Export Grid',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
+                                    )
                                   )
 
     return out
 
 
-def worldViewerWidget(worldFile, data, locs):
+def worldViewerWidget(worldFile, data, grid, z=0):
 
     world = shapefile.Reader(worldFile)
     # Extract lines from shape file
@@ -1196,6 +1294,13 @@ def worldViewerWidget(worldFile, data, locs):
         selection = int(np.r_[[ii for ii, s in enumerate(list(data.keys())) if placeID in s]])
         dataVals = list(data.values())[selection]
 
+        xLoc = np.asarray(range(grid.nx))*grid.dx+grid.limits[0]
+        yLoc = np.asarray(range(grid.ny))*grid.dy+grid.limits[2]
+
+        Xloc, Yloc = np.meshgrid(xLoc, yLoc)
+        Zloc = np.ones_like(Xloc)*z
+
+        locs = np.c_[mkvc(Xloc), mkvc(Yloc), mkvc(Zloc)]
         survey = ProblemSetter.setSyntheticProblem(locs, EarthField=dataVals[-3:])
 
         xyz = survey.srcField.rxList[0].locs
@@ -1236,7 +1341,7 @@ def worldViewerWidget(worldFile, data, locs):
 
         # Add axes with rotating arrow
         pos = axs.get_position()
-        arrowAxs = fig.add_axes([10, 10 ,  pos.width*.5, pos.height*0.5], projection='3d')
+        arrowAxs = fig.add_axes([10, 10,  pos.width*.5, pos.height*0.5], projection='3d')
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
                         [-.25, -.25, -.25, -.25, 0.5],
@@ -1295,5 +1400,101 @@ def worldViewerWidget(worldFile, data, locs):
                         disabled=False,
                         ))
 
+    return out
 
+
+def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
+
+    def plotWidget(
+            Resolution, Method,
+            Contours, ColorMap,
+            SaveGrid
+         ):
+
+        if Method == 'minimumCurvature':
+            gridCC, d_grid = MathUtils.minCurvatureInterp(
+                np.c_[xLoc, yLoc], survey.dobs,
+                gridSize=Resolution
+                )
+            X = gridCC[:, 0].reshape(d_grid.shape, order='F')
+            Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
+
+        else:
+            npts_x = int((xLoc.max() - xLoc.min())/Resolution)
+            npts_y = int((yLoc.max() - yLoc.min())/Resolution)
+
+            # Create grid of points
+            vectorX = np.linspace(xLoc.min(), xLoc.max(), npts_x)
+            vectorY = np.linspace(yLoc.min(), yLoc.max(), npts_y)
+
+            Y, X = np.meshgrid(vectorY, vectorX)
+
+            d_grid = griddata(np.c_[xLoc, yLoc], data, (X, Y), method=Method)
+
+        if SaveGrid:
+            DataIO.arrayToRaster(
+                d_grid, fileName + '.tiff',
+                EPSGCode, X.min(), X.max(),  Y.min(), Y.max(), 1,
+                dataType='grid')
+
+        else:
+            fig = plt.figure(figsize=(9, 9))
+            axs = plt.subplot()
+            # Add shading
+            X, Y, d_grid, im, CS = plotDataHillside(
+                X, Y, d_grid, alpha=1., contours=Contours,
+                axs=axs, cmap=ColorMap, clabel=False)
+
+            # Add points at the survey locations
+            plt.scatter(xLoc, yLoc, s=2, c='k')
+            axs.set_aspect('auto')
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label('TMI (nT)')
+
+            axs.set_xlabel("Easting (m)", size=14)
+            axs.set_ylabel("Northing (m)", size=14)
+            axs.grid('on', color='k', linestyle='--')
+            plt.show()
+
+        return X, Y, d_grid
+
+    # Calculate the original map extents
+    xLoc = survey.srcField.rxList[0].locs[:, 0]
+    yLoc = survey.srcField.rxList[0].locs[:, 1]
+    data = survey.dobs
+
+    out = widgets.interactive(plotWidget,
+                              Resolution=widgets.FloatText(
+                                        value=50,
+                                        description='Grid (m):',
+                                        disabled=False
+                                ),
+                              Method=widgets.Dropdown(
+                                  options=[
+                                    'nearest', 'linear', 'cubic',
+                                    'minimumCurvature'
+                                    ],
+                                  value='minimumCurvature',
+                                  description='Method',
+                                  disabled=False,
+                                ),
+                              Contours=widgets.IntSlider(
+                                    min=10, max=100, step=10,
+                                    value=50, continuous_update=False
+                                ),
+                              ColorMap=widgets.Dropdown(
+                                  options=cmaps(),
+                                  value='RdBu_r',
+                                  description='ColorMap',
+                                  disabled=False,
+                                ),
+                              SaveGrid=widgets.ToggleButton(
+                                  value=False,
+                                  description='Export Grid',
+                                  disabled=False,
+                                  button_style='',
+                                  tooltip='Description',
+                                  icon='check'
+                                )
+                              )
     return out
