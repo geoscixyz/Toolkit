@@ -20,7 +20,7 @@ from matplotlib.colors import LightSource, Normalize
 from library.graphics import graphics
 from matplotlib.ticker import FormatStrFormatter
 from skimage import exposure
-
+import PIL
 
 def PFSimulator(prism, survey):
 
@@ -29,15 +29,15 @@ def PFSimulator(prism, survey):
                    Profile_ctx, Profile_cty):
 
         # # Get the line extent from the 2D survey for now
-        prob = Mag.problem()
-        prob.prism = prism.result
-        prob.survey = survey.result
+        prob = Mag.Problem()
+        prob.prism = prism
+        prob.survey = survey
 
         return PlotFwrSim(prob, susc, comp, irt, Q, RemInc, RemDec,
                           Profile_azm, Profile_len, Profile_npt,
                           Profile_ctx, Profile_cty)
 
-    locs = survey.result.srcField.rxList[0].locs
+    locs = survey.srcField.rxList[0].locs
     xlim = np.asarray([locs[:, 0].min(), locs[:, 0].max()])
     ylim = np.asarray([locs[:, 1].min(), locs[:, 1].max()])
 
@@ -70,8 +70,9 @@ def cmaps():
     """
 
     return [
-              'viridis', 'plasma', 'RdBu_r',
-              'Greys_r', 'jet', 'hsv', 'rainbow', 'gnuplot'
+              'viridis', 'plasma', 'magma', 'RdBu_r',
+              'Greys_r', 'jet', 'hsv', 'rainbow', 'pink',
+               'bone', 'hsv', 'nipy_spectral'
             ]
 
 
@@ -79,23 +80,24 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
                Profile_azm, Profile_len, Profile_npt,
                Profile_ctx, Profile_cty):
 
-    def MagSurvey2D(survey, Profile_ctx, Profile_cty, Profile_azm,
+    def MagSurvey2D(x, y, data, Profile_ctx, Profile_cty, Profile_azm,
                     Profile_len, Profile_npt,
-                    data=None, fig=None, ax=None,
+                    fig=None, ax=None,
                     vmin=None, vmax=None, pred=None):
 
         # Get the line extent from the 2D survey for now
         Profile_azm /= 180./np.pi
         Profile_len /= 2.*0.98
 
-        dx = np.cos(-Profile_azm)*Profile_lenf
+        dx = np.cos(-Profile_azm)*Profile_len
         dy = np.sin(-Profile_azm)*Profile_len
 
         a = [Profile_ctx - dx, Profile_cty - dy]
         b = [Profile_ctx + dx, Profile_cty + dy]
 
-        return plotMagSurvey2D(survey, a, b, Profile_npt,
-                               data=data, fig=fig, ax=ax,
+        return plotMagSurvey2D(x, y,
+                               data, a, b, Profile_npt,
+                               fig=fig, ax=ax,
                                vmin=vmin, vmax=vmax, pred=pred)
 
     def MagSurveyProfile(survey, Profile_ctx, Profile_cty, Profile_azm,
@@ -115,7 +117,7 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
         xyz = survey.srcField.rxList[0].locs
         dobs = survey.dobs
 
-        return plotProfile2D(xyz, [dobs, data], a, b, Profile_npt,
+        return plotProfile2D(xyz[:, 0], xyz[:, 1], [dobs, data], a, b, Profile_npt,
                              fig=fig, ax=ax, ylabel='nT')
 
     survey = prob.survey
@@ -133,11 +135,18 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
 
     vmin = survey.dobs.min()
     vmax = survey.dobs.max()
+    rxLoc = survey.srcField.rxList[0].locs
+    x, y = rxLoc[:, 0], rxLoc[:, 1]
 
     f = plt.figure(figsize=(8, 8))
 
     ax0 = plt.subplot(1, 2, 1)
-    MagSurvey2D(survey, Profile_ctx, Profile_cty, Profile_azm,
+    MagSurvey2D(x, y, survey.dobs, Profile_ctx, Profile_cty, Profile_azm,
+                Profile_len, Profile_npt, fig=f, ax=ax0, pred=dpred,
+                vmin=survey.dobs.min(), vmax=survey.dobs.max())
+
+    ax0 = plt.subplot(1, 2, 2)
+    MagSurvey2D(x, y, dpred, Profile_ctx, Profile_cty, Profile_azm,
                 Profile_len, Profile_npt, fig=f, ax=ax0, pred=dpred,
                 vmin=survey.dobs.min(), vmax=survey.dobs.max())
 
@@ -163,7 +172,10 @@ def ViewMagSurveyWidget(survey):
         fig = plt.figure(figsize=(10, 6))
         ax1 = plt.subplot(1, 2, 1)
 
-        plotMagSurvey2D(xLoc, yLoc, data, a, b, Sampling, fig=fig, ax=ax1, cmap=ColorMap)
+        plotMagSurvey2D(
+         xLoc, yLoc, data, a, b, Sampling,
+         fig=fig, ax=ax1, cmap=ColorMap, marker=False
+        )
 
         # if Profile:
         ax2 = plt.subplot(1, 2, 2)
@@ -171,8 +183,8 @@ def ViewMagSurveyWidget(survey):
                       fig=fig, ax=ax2, ylabel='nT')
 
         # ax2.set_aspect(0.5)
-        # pos = ax2.get_position()
-        # ax2.set_position([pos.x0, pos.y0, pos.width*1.5, pos.height*1.5])
+        pos = ax2.get_position()
+        ax2.set_position([pos.x0, pos.y0+0.25, pos.width*2.0, pos.height*0.5])
         ax2.set_title('A', loc='left', fontsize=14)
         ax2.set_title("A'", loc='right', fontsize=14)
 
@@ -217,7 +229,7 @@ def ViewMagSurveyWidget(survey):
     return out
 
 
-def plotMagSurvey2D(x, y, data, a, b, npts, pred=None,
+def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
                     fig=None, ax=None, vmin=None, vmax=None,
                     cmap='RdBu_r', equalizeHist='HistEqualized'):
     """
@@ -233,17 +245,17 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None,
     xLine, yLine = linefun(a[0], b[0], a[1], b[1], npts)
 
     # Use SimPEG.PF ploting function
-    fig, im = plotData2D(x, y, data, fig=fig,  ax=ax,
+    fig, im, cbar = plotData2D(x, y, data, fig=fig,  ax=ax,
                          vmin=vmin, vmax=vmax,
-                         marker=False, cmap=cmap,
+                         marker=marker, cmap=cmap,
                          colorbar=False, equalizeHist=equalizeHist)
 
-    ax.plot(xLine, yLine, 'w.', ms=5)
+    ax.plot(xLine, yLine, 'k.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
-    cbar.set_label('nT')
-    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='w', ha='left')
+    cbar.set_label('TMI (nT)')
+    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='left')
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
-            color='w', ha='right')
+            color='k', ha='right')
     ax.grid(True)
 
     return
@@ -299,7 +311,7 @@ def ViewPrism(survey):
                               prism_inc=(-90., 90., 5.),
                               prism_dec=(-90., 90., 5.),
                               View_dip=widgets.FloatSlider(min=0, max=90, step=1, value=30, continuous_update=False),
-                              View_azm=widgets.FloatSlider(min=0, max=360, step=1, value=220, continuous_update=False),
+                              View_azm=widgets.FloatSlider(min=0, max=360, step=1, value=0, continuous_update=False),
                               View_lim=widgets.FloatSlider(min=1, max=2*lim, step=1, value=lim, continuous_update=False),
                               )
 
@@ -347,7 +359,7 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
                                [y1, y2, y2, y1, y1, y2, y2, y1],
                                [z1, z1, z1, z1, z2, z2, z2, z2]])
 
-        xyz = MagUtils.rotate(block_xyz.T, np.r_[prism.xc, prism.yc, prism.zc], pinc, pdec)
+        xyz = MathUtils.rotate(block_xyz.T, np.r_[prism.xc, prism.yc, prism.zc], pinc, pdec)
         # R = MagUtils.rotationMatrix(pinc, pdec)
 
         # xyz = R.dot(block_xyz).T
@@ -533,7 +545,7 @@ class MidPointNorm(Normalize):
         self.autoscale_None(result)
 
         if self.midpoint is None:
-            self.midpoint = np.mean(value)
+            self.midpoint = (self.vmin + self.vmax)/2.
         vmin, vmax, midpoint = self.vmin, self.vmax, self.midpoint
 
         if not (vmin < midpoint < vmax):
@@ -586,9 +598,9 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
-                     vmin=None, vmax=None,
-                     clabel=True, cmap='RdBu_r', ve=1., alpha=1., alphaHS=1.,
+def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
+                     vmin=None, vmax=None, levels=None, resolution=25,
+                     clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
                      equalizeHist='HistEqualized', minCurvature=True):
 
@@ -599,16 +611,18 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
         if minCurvature:
             gridCC, d_grid = MathUtils.minCurvatureInterp(
                 np.c_[x, y], z,
-                vectorX=None, vectorY=None, vectorZ=None, gridSize=25,
+                vectorX=None, vectorY=None, vectorZ=None, gridSize=resolution,
                 tol=1e-5, iterMax=None, method='spline',
             )
             X = gridCC[:, 0].reshape(d_grid.shape, order='F')
             Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
 
         else:
+            npts_x = int((x.max() - x.min())/Resolution)
+            npts_y = int((y.max() - y.min())/Resolution)
             # Create grid of points
-            vectorX = np.linspace(x.min(), x.max(), 1000)
-            vectorY = np.linspace(y.min(), y.max(), 1000)
+            vectorX = np.linspace(x.min(), x.max(), npts_x)
+            vectorY = np.linspace(y.min(), y.max(), npts_y)
 
             Y, X = np.meshgrid(vectorY, vectorX)
 
@@ -632,32 +646,48 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contour=0,
 
     if fill:
 
+        if vmin is None:
+            vmin = d_grid[~np.isnan(d_grid)].min()
+
+        if vmax is None:
+            vmax = d_grid[~np.isnan(d_grid)].max()
+
         if equalizeHist == 'HistEqualized':
+
+            subGrid = d_grid[~np.isnan(d_grid)]
             cdf, bins = exposure.cumulative_distribution(
-                z[~np.isnan(z)].flatten(), nbins=256
+                    subGrid[
+                       (subGrid < vmax) *
+                       (subGrid > vmin)
+                       ].flatten(), nbins=256
             )
             my_cmap = graphics.equalizeColormap(cmap, bins, cdf)
         else:
             my_cmap = cmap
 
         extent = x.min(), x.max(), y.min(), y.max()
+
+        clevels = np.linspace(vmin, vmax, contours)
         im = axs.contourf(
-            X, Y, d_grid, 50, vmin=vmin, vmax=vmax,
-            cmap=my_cmap, norm=MidPointNorm(midpoint=midpoint), alpha=alpha
+            X, Y, d_grid, contours, vmin=vmin, vmax=vmax, levels=clevels,
+            cmap=my_cmap, alpha=alpha
         )
 
-        axs.imshow(ls.hillshade(d_grid, vert_exag=ve, dx=5., dy=5.),
-                   cmap='gray_r', alpha=alphaHS,
-                   extent=extent, origin='lower')
+        if np.all([alpha != 1, alphaHS != 0]):
+            axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
+                       dx=resolution, dy=resolution),
+                       cmap='gray_r', alpha=alphaHS,
+                       extent=extent, origin='lower')
 
-    if contour > 0:
+    if levels is not None:
         CS = axs.contour(
-            X, Y, d_grid, int(contour), colors='k', linewidths=0.5
+            X, Y, d_grid, levels.shape[0],
+            levels=levels, colors='k', linewidths=0.5
         )
 
         if clabel:
             plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
-    return im, CS
+    return X, Y, d_grid, im, CS
 
 
 def plotData2D(x, y, d, title=None,
@@ -691,10 +721,10 @@ def plotData2D(x, y, d, title=None,
         ax = plt.subplot()
 
     if d.ndim == 1:
-        assert(
-            np.all([x.shape[0] == d.shape[0], y.shape[0] == d.shape[0]]),
-            "Data and locations must be consistant"
-        )
+        assert x.shape[0] == d.shape[0], "Data and x locations must be consistant"
+
+        assert y.shape[0] == d.shape[0], "Data and y locations must be consistant"
+
 
     plt.sca(ax)
     if marker:
@@ -720,7 +750,13 @@ def plotData2D(x, y, d, title=None,
 
         # Already a grid
         else:
-            X, Y, d_grid = x, y, d
+
+            if x.ndim == 1:
+                X, Y = np.meshgrid(x, y)
+                d_grid = d
+
+            else:
+                X, Y, d_grid = x, y, d
 
         if equalizeHist == 'HistEqualized':
             cdf, bins = exposure.cumulative_distribution(
@@ -736,13 +772,14 @@ def plotData2D(x, y, d, title=None,
                 origin='lower', vmin=vmin, vmax=vmax, cmap=my_cmap
               )
 
+        cbar = []
         if colorbar:
-            plt.colorbar(fraction=0.02)
+            cbar = plt.colorbar(fraction=0.02)
 
         if contours is None:
 
             if vmin != vmax:
-                plt.contour(X, Y, d_grid, 10, vmin=vmin, vmax=vmax, cmap=cmap)
+                plt.contour(X, Y, d_grid, 10, vmin=vmin, vmax=vmax, cmap=my_cmap)
         else:
             plt.contour(X, Y, d_grid, levels=contours, colors='k',
                         vmin=vmin, vmax=vmax)
@@ -766,7 +803,7 @@ def plotData2D(x, y, d, title=None,
     ax.set_aspect('equal')
     # plt.gca().set_aspect('equal', adjustable='box')
 
-    return fig, im
+    return fig, im, cbar
 
 
 def plotProfile2D(x, y, data, a, b, npts,
@@ -816,21 +853,21 @@ def plotProfile2D(x, y, data, a, b, npts,
     if not isinstance(data, list):
         data = [data]
 
-        for ii, d in enumerate(data):
-            if d.ndim == 1:
-                dline = griddata(np.c_[x, y], d, (xLine, yLine), method='linear')
+    for ii, d in enumerate(data):
+        if d.ndim == 1:
+            dline = griddata(np.c_[x, y], d, (xLine, yLine), method='linear')
 
-            else:
-                F = RegularGridInterpolator((x, y), d.T)
-                dline = F(np.c_[xLine, yLine])
+        else:
+            F = RegularGridInterpolator((x, y), d.T)
+            dline = F(np.c_[xLine, yLine])
 
-            # Check for nan
-            ind = np.isnan(dline) == False
+        # Check for nan
+        ind = np.isnan(dline)==False
 
-            if plotStr[ii]:
-                ax.plot(distance[ind], dline[ind], plotStr[ii])
-            else:
-                ax.plot(distance[ind], dline[ind])
+        if plotStr[ii]:
+            ax.plot(distance[ind], dline[ind], plotStr[ii])
+        else:
+            ax.plot(distance[ind], dline[ind])
 
     # ax.set_xlim(distance.min(), distance.max())
     ax.set_ylabel(ylabel)
@@ -839,34 +876,57 @@ def plotProfile2D(x, y, data, a, b, npts,
     return ax
 
 
-def dataHillsideWidget(survey):
+def dataHillsideWidget(survey, EPSGCode=26909, figName='DataHillshade', dpi=300):
 
     def plotWidget(
             SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
-            MagContour, ColorMap, Equalize
+            ColorTransp, HSTransp, vScale,
+            Contours, ColorMap, VminVmax, Equalize,
+            SaveGeoTiff
          ):
 
-        fig = plt.figure(figsize=(8, 6))
-        axs = plt.subplot()
+        if SaveGeoTiff:
+            fig = plt.figure()
+            fig.set_size_inches(9, 9)
+            axs = plt.Axes(fig, [0., 0., 1., 1.])
+            axs.set_axis_off()
+            fig.add_axes(axs)
+
+        else:
+            fig = plt.figure(figsize=(9, 9))
+            axs = plt.subplot()
 
         # Add shading
-        im, CS = plotDataHillside(xLoc, yLoc, data,
+        X, Y, d_grid, im, CS = plotDataHillside(xLoc, yLoc, data,
                                   axs=axs, cmap=ColorMap,
-                                  clabel=False, contour=MagContour,
-                                  alpha=Saturation, alphaHS=Transparency,
+                                  clabel=False, contours=Contours,
+                                  vmax=VminVmax[1], vmin=VminVmax[0],
+                                  alpha=ColorTransp, alphaHS=HSTransp,
                                   ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
                                   equalizeHist=Equalize)
 
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
-        cbar = plt.colorbar(im)
-        cbar.set_label('nT')
+        if SaveGeoTiff:
+            plt.savefig(figName + '.png', dpi=dpi)
+            plt.close()
 
-        axs.set_xlabel("Easting (m)", size=14)
-        axs.set_ylabel("Northing (m)", size=14)
-        axs.grid('on', color='k', linestyle='--')
-        plt.show()
+            img = np.asarray(PIL.Image.open(figName + '.png'))
+
+            DataIO.arrayToRaster(
+                img, figName + '.tiff',
+                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+            )
+
+        else:
+            axs.set_aspect('auto')
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label('TMI (nT)')
+
+            axs.set_xlabel("Easting (m)", size=14)
+            axs.set_ylabel("Northing (m)", size=14)
+            axs.grid('on', color='k', linestyle='--')
+            plt.show()
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
@@ -885,32 +945,327 @@ def dataHillsideWidget(survey):
 
     out = widgets.interactive(plotWidget,
                               SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
-                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=45, continuous_update=False),
-                              Saturation=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.5, continuous_update=False),
-                              Transparency=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
+                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
+                              ColorTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
+                              HSTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
                               vScale=widgets.FloatSlider(min=1, max=4, step=1., value=1.0, continuous_update=False),
-                              MagContour=widgets.FloatSlider(min=0, max=20, step=1, value=10, continuous_update=False),
+                              Contours=widgets.IntSlider(min=10, max=100, step=10, value=50, continuous_update=False),
                               ColorMap=widgets.Dropdown(
                                   options=cmaps(),
                                   value='RdBu_r',
                                   description='ColorMap',
                                   disabled=False,
                                 ),
+                              VminVmax=widgets.FloatRangeSlider(
+                                    value=[data.min(), data.max()],
+                                    min=data.min(),
+                                    max=data.max(),
+                                    step=1.0,
+                                    description='Color Range',
+                                    disabled=False,
+                                    continuous_update=False,
+                                    orientation='horizontal',
+                                    readout=True,
+                                    readout_format='.1f',
+                                ),
                               Equalize=widgets.Dropdown(
                                   options=['Linear', 'HistEqualized'],
                                   value='HistEqualized',
                                   description='Color Normalization',
                                   disabled=False,
+                                ),
+                              SaveGeoTiff=widgets.ToggleButton(
+                                  value=False,
+                                  description='Export geoTiff',
+                                  disabled=False,
+                                  button_style='',
+                                  tooltip='Description',
+                                  icon='check'
                                 )
                               )
     return out
 
 
-def worldViewerWidget(worldFile, data, locs):
+def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300):
+
+    def plotWidget(
+            SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, SaveGrid
+         ):
+
+        if Filters == 'TMI':
+            data = survey.values
+            vmin, vmax = data.min(), data.max()
+            equalizeHist = 'HistEqualized'
+
+        else:
+            data = getattr(filters, '{}'.format(Filters))
+            vmin, vmax = np.percentile(data, 5), np.percentile(data, 95)
+            equalizeHist = 'HistEqualized'
+
+        plotIt(
+            X, Y, data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
+        )
+
+    def plotWidgetUpC(
+            SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, UpwardDistance, SaveGrid
+         ):
+        if Filters == 'TMI':
+            data = survey.values
+            vmin, vmax = data.min(), data.max()
+
+        else:
+            data = filters.upwardContinuation(z=UpwardDistance)
+            vmin, vmax = data.min(), data.max()
+
+        plotIt(
+            X, Y, data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
+        )
+
+    def plotWidgetRTP(
+            SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, inc, dec, SaveGrid
+         ):
+        if Filters == 'TMI':
+            data = survey.values
+            vmin, vmax = data.min(), data.max()
+
+        else:
+            filters._RTP = None
+            filters.inc = inc
+            filters.dec = dec
+            data = filters.RTP
+            vmin, vmax = data.min(), data.max()
+
+        plotIt(
+            X, Y, data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
+        )
+
+    def plotIt(
+            X, Y, data, SunAzimuth, SunAngle,
+            Saturation, Transparency, vScale,
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
+         ):
+
+        if SaveGrid:
+            fig = plt.figure()
+            fig.set_size_inches(9, 9)
+            axs = plt.Axes(fig, [0., 0., 1., 1.])
+            axs.set_axis_off()
+            fig.add_axes(axs)
+
+        else:
+
+            fig = plt.figure(figsize=(10, 10))
+            axs = plt.subplot()
+
+        # Add shading
+        X, Y, data, im, CS = plotDataHillside(
+            X, Y, data,
+            axs=axs, cmap=ColorMap,
+            clabel=False, resolution=10,
+            vmin=vmin, vmax=vmax, contours=50,
+            alpha=Saturation, alphaHS=Transparency,
+            ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
+            equalizeHist=equalizeHist
+        )
+
+        if SaveGrid:
+            plt.savefig(gridFilter + '.png', dpi=dpi)
+            plt.close()
+
+            img = np.asarray(PIL.Image.open(gridFilter + '.png'))
+
+            DataIO.arrayToRaster(
+                img, gridFilter + '.tiff',
+                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+            )
+
+        else:
+            # Add points at the survey locations
+            # plt.scatter(xLoc, yLoc, s=2, c='k')
+            axs.set_aspect('auto')
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label(gridFilter)
+
+            axs.set_xlabel("Easting (m)", size=14)
+            axs.set_ylabel("Northing (m)", size=14)
+            axs.grid('on', color='k', linestyle='--')
+            plt.show()
+
+    # Calculate the original map extents
+    if isinstance(survey, DataIO.dataGrid):
+        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.limits[0]
+        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.limits[2]
+        xlim = survey.limits[:2]
+        ylim = survey.limits[2:]
+
+        filters = MathUtils.gridFilter()
+        filters.grid = survey.values
+        filters.dx = survey.dx
+        filters.dy = survey.dy
+
+        X, Y = np.meshgrid(xLoc, yLoc)
+
+        data = getattr(filters, '{}'.format(gridFilter))
+    else:
+
+        assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
+
+    if gridFilter == 'upwardContinuation':
+        out = widgets.interactive(plotWidgetUpC,
+                                  SunAzimuth=widgets.FloatSlider(
+                                    min=0, max=360, step=5, value=0,
+                                    continuous_update=False),
+                                  SunAngle=widgets.FloatSlider(
+                                    min=0, max=90, step=5, value=15,
+                                    continuous_update=False),
+                                  Saturation=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=0.3,
+                                    continuous_update=False),
+                                  Transparency=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=1.0,
+                                    continuous_update=False),
+                                  vScale=widgets.FloatSlider(
+                                    min=1, max=4, step=1., value=4.0,
+                                    continuous_update=False),
+                                  ColorMap=widgets.Dropdown(
+                                      options=cmaps(),
+                                      value='RdBu_r',
+                                      description='ColorMap',
+                                      disabled=False,
+                                    ),
+                                  Filters=widgets.Dropdown(
+                                      options=[
+                                        gridFilter,
+                                        'TMI'],
+                                      value=gridFilter,
+                                      description='Grid Filters',
+                                      disabled=False,
+                                    ),
+                                  UpwardDistance=widgets.FloatSlider(
+                                    min=0, max=500, step=10, value=0,
+                                    continuous_update=False
+                                    ),
+                                  SaveGrid=widgets.ToggleButton(
+                                      value=False,
+                                      description='Export Grid',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
+                                    )
+
+                                  )
+    elif gridFilter == 'RTP':
+        out = widgets.interactive(plotWidgetRTP,
+                                  SunAzimuth=widgets.FloatSlider(
+                                    min=0, max=360, step=5, value=0,
+                                    continuous_update=False),
+                                  SunAngle=widgets.FloatSlider(
+                                    min=0, max=90, step=5, value=15,
+                                    continuous_update=False),
+                                  Saturation=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=0.3,
+                                    continuous_update=False),
+                                  Transparency=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=1.0,
+                                    continuous_update=False),
+                                  vScale=widgets.FloatSlider(
+                                    min=1, max=4, step=1., value=4.0,
+                                    continuous_update=False),
+                                  ColorMap=widgets.Dropdown(
+                                      options=cmaps(),
+                                      value='RdBu_r',
+                                      description='ColorMap',
+                                      disabled=False,
+                                    ),
+                                  Filters=widgets.Dropdown(
+                                      options=[
+                                        gridFilter,
+                                        'TMI'],
+                                      value=gridFilter,
+                                      description='Grid Filters',
+                                      disabled=False,
+                                    ),
+                                  inc=widgets.FloatText(
+                                        value=73,
+                                        description='Inclination:',
+                                        disabled=False
+                                    ),
+                                  dec=widgets.FloatText(
+                                        value=17,
+                                        description='Declination:',
+                                        disabled=False
+                                    ),
+                                  SaveGrid=widgets.ToggleButton(
+                                      value=False,
+                                      description='Export Grid',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
+                                    )
+                                  )
+    else:
+        out = widgets.interactive(plotWidget,
+                                  SunAzimuth=widgets.FloatSlider(
+                                    min=0, max=360, step=5, value=0,
+                                    continuous_update=False),
+                                  SunAngle=widgets.FloatSlider(
+                                    min=0, max=90, step=5, value=15,
+                                    continuous_update=False),
+                                  Saturation=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=0.3,
+                                    continuous_update=False),
+                                  Transparency=widgets.FloatSlider(
+                                    min=0, max=1, step=0.1, value=1.0,
+                                    continuous_update=False),
+                                  vScale=widgets.FloatSlider(
+                                    min=1, max=4, step=1., value=4.0,
+                                    continuous_update=False),
+                                  ColorMap=widgets.Dropdown(
+                                      options=cmaps(),
+                                      value='RdBu_r',
+                                      description='ColorMap',
+                                      disabled=False,
+                                    ),
+                                  Filters=widgets.Dropdown(
+                                      options=[
+                                        gridFilter,
+                                        'TMI'],
+                                      value=gridFilter,
+                                      description='Grid Filters',
+                                      disabled=False,
+                                    ),
+                                  SaveGrid=widgets.ToggleButton(
+                                      value=False,
+                                      description='Export Grid',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
+                                    )
+                                  )
+
+    return out
+
+
+def worldViewerWidget(worldFile, data, grid, z=0):
 
     world = shapefile.Reader(worldFile)
     # Extract lines from shape file
-    X, Y = [],[]
+    X, Y = [], []
     for shape in world.shapeRecords():
 
         for ii, part in enumerate(shape.shape.parts):
@@ -930,7 +1285,7 @@ def worldViewerWidget(worldFile, data, locs):
     def plotCountry(X, Y, ax=None, fill=True, linewidth=1):
 
         for x, y in zip(X, Y):
-            ax.plot(x, y, 0, 'k', linewidth=linewidth)
+            ax.plot(x, y, 'k', linewidth=linewidth)
 
         return ax
 
@@ -939,12 +1294,19 @@ def worldViewerWidget(worldFile, data, locs):
         selection = int(np.r_[[ii for ii, s in enumerate(list(data.keys())) if placeID in s]])
         dataVals = list(data.values())[selection]
 
+        xLoc = np.asarray(range(grid.nx))*grid.dx+grid.limits[0]
+        yLoc = np.asarray(range(grid.ny))*grid.dy+grid.limits[2]
+
+        Xloc, Yloc = np.meshgrid(xLoc, yLoc)
+        Zloc = np.ones_like(Xloc)*z
+
+        locs = np.c_[mkvc(Xloc), mkvc(Yloc), mkvc(Zloc)]
         survey = ProblemSetter.setSyntheticProblem(locs, EarthField=dataVals[-3:])
 
         xyz = survey.srcField.rxList[0].locs
         plt.figure(figsize=(10, 8))
         ax1 = plt.subplot(1, 2, 1)
-        fig, im = plotData2D(
+        fig, im, cbar = plotData2D(
           xyz[:, 0], xyz[:, 1], survey.dobs,
           ax=ax1, cmap='RdBu_r', marker=False, colorbar=False
         )
@@ -956,25 +1318,35 @@ def worldViewerWidget(worldFile, data, locs):
         ax1.set_yticklabels([MathUtils.decimalDegrees2DMS(dataVals[0], "Latitude")])
         ax1.set_ylabel('Latitude')
         ax1.grid(True)
-        plt.colorbar(im, orientation='horizontal')
+        cbar = plt.colorbar(im, orientation='horizontal')
+        cbar.set_label('TMI (nT)')
 
-        axs = plt.subplot(1, 2, 2, projection='3d')
+        axs = plt.subplot(1, 2, 2)
         axs = plotCountry(X, Y, ax=axs, fill=False)
+        axs.scatter(dataVals[1], dataVals[0], s=50, c='r', marker='s', )
         # axs.set_axis_off()
-        axs.set_zticklabels([])
         axs.set_aspect('equal')
         pos = axs.get_position()
-        axs.set_position([pos.x0-0.2, pos.y0-0.75, pos.width*3., pos.height*3.])
+        axs.set_position([pos.x0, pos.y0,  pos.width*1.5, pos.height*1.5])
         axs.patch.set_alpha(0.0)
         # xydata = np.loadtxt("./assets/country-capitals.csv", delimiter=",")
         for key, entry in zip(list(data.keys()), list(data.values())):
             axs.scatter(entry[1], entry[0], c='k')
 
+        axs.set_title(
+          "Earth's Field: " + str(int(dataVals[-3])) + "nT, "
+          "Inc: " + str(int(dataVals[-2])) + "$^\circ$, "
+          "Dec: " + str(int(dataVals[-1])) + "$^\circ$"
+        )
+
+        # Add axes with rotating arrow
+        pos = axs.get_position()
+        arrowAxs = fig.add_axes([10, 10,  pos.width*.5, pos.height*0.5], projection='3d')
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
                         [-.25, -.25, -.25, -.25, 0.5],
                         [-.2, .2, .2, -.2, 0]
-                    ])*30.
+                    ])
 
         # rot = Utils.mkvc(Utils.dipazm_2_xyz(pinc, pdec))
 
@@ -987,34 +1359,35 @@ def worldViewerWidget(worldFile, data, locs):
 
         #print xyz
         # Face 1
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0]+dataVals[1],
-                                                   xyz[:4, 1]+90,
-                                                   xyz[:4, 2]/800. + 0.05))], facecolors='r'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 2, 4], 0],
+                                                   xyz[[1, 2, 4], 1],
+                                                   xyz[[1, 2, 4], 2]))], facecolors='w'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 2, 4], 0]+dataVals[1],
-                                                   xyz[[1, 2, 4], 1]+90,
-                                                   xyz[[1, 2, 4], 2]/800. + 0.05))], facecolors='w'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 4], 0],
+                                                   xyz[[0, 1, 4], 1],
+                                                   xyz[[0, 1, 4], 2]))], facecolors='k'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 4], 0]+dataVals[1],
-                                                   xyz[[0, 1, 4], 1]+90,
-                                                   xyz[[0, 1, 4], 2]/800. + 0.05))], facecolors='k'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[2, 3, 4], 0],
+                                                   xyz[[2, 3, 4], 1],
+                                                   xyz[[2, 3, 4], 2]))], facecolors='w'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[2, 3, 4], 0]+dataVals[1],
-                                                   xyz[[2, 3, 4], 1]+90,
-                                                   xyz[[2, 3, 4], 2]/800. + 0.05))], facecolors='w'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 3, 4], 0],
+                                               xyz[[0, 3, 4], 1],
+                                               xyz[[0, 3, 4], 2]))], facecolors='k'))
 
-        axs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 3, 4], 0]+dataVals[1],
-                                               xyz[[0, 3, 4], 1]+90,
-                                               xyz[[0, 3, 4], 2]/800. + 0.05))], facecolors='k'))
+        arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0],
+                                                   xyz[:4, 1],
+                                                   xyz[:4, 2]))], facecolors='r'))
 
-        axs.scatter(dataVals[1], dataVals[0], s=50, c='r', marker='s', )
-        axs.view_init(60, -90)
-        axs.set_aspect('equal')
-        axs.set_title(
-          "Earth's Field: " + str(int(dataVals[-3])) + "nT, "
-          "Inc: " + str(int(dataVals[-2])) + "$^\circ$, "
-          "Dec: " + str(int(dataVals[-1])) + "$^\circ$"
-        )
+        arrowAxs.view_init(30, -90)
+        arrowAxs.set_xlim([-0.5, 0.5])
+        arrowAxs.set_ylim([-0.5, 0.5])
+        arrowAxs.set_zlim([-0.5, 0.5])
+        arrowAxs.set_xticks([])
+        arrowAxs.set_yticks([])
+        arrowAxs.set_zticks([])
+        # arrowAxs.set_aspect('equal')
+
         plt.show()
 
         return axs
@@ -1027,5 +1400,101 @@ def worldViewerWidget(worldFile, data, locs):
                         disabled=False,
                         ))
 
+    return out
 
+
+def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
+
+    def plotWidget(
+            Resolution, Method,
+            Contours, ColorMap,
+            SaveGrid
+         ):
+
+        if Method == 'minimumCurvature':
+            gridCC, d_grid = MathUtils.minCurvatureInterp(
+                np.c_[xLoc, yLoc], survey.dobs,
+                gridSize=Resolution
+                )
+            X = gridCC[:, 0].reshape(d_grid.shape, order='F')
+            Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
+
+        else:
+            npts_x = int((xLoc.max() - xLoc.min())/Resolution)
+            npts_y = int((yLoc.max() - yLoc.min())/Resolution)
+
+            # Create grid of points
+            vectorX = np.linspace(xLoc.min(), xLoc.max(), npts_x)
+            vectorY = np.linspace(yLoc.min(), yLoc.max(), npts_y)
+
+            Y, X = np.meshgrid(vectorY, vectorX)
+
+            d_grid = griddata(np.c_[xLoc, yLoc], data, (X, Y), method=Method)
+
+        if SaveGrid:
+            DataIO.arrayToRaster(
+                d_grid, fileName + '.tiff',
+                EPSGCode, X.min(), X.max(),  Y.min(), Y.max(), 1,
+                dataType='grid')
+
+        else:
+            fig = plt.figure(figsize=(9, 9))
+            axs = plt.subplot()
+            # Add shading
+            X, Y, d_grid, im, CS = plotDataHillside(
+                X, Y, d_grid, alpha=1., contours=Contours,
+                axs=axs, cmap=ColorMap, clabel=False)
+
+            # Add points at the survey locations
+            plt.scatter(xLoc, yLoc, s=2, c='k')
+            axs.set_aspect('auto')
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label('TMI (nT)')
+
+            axs.set_xlabel("Easting (m)", size=14)
+            axs.set_ylabel("Northing (m)", size=14)
+            axs.grid('on', color='k', linestyle='--')
+            plt.show()
+
+        return X, Y, d_grid
+
+    # Calculate the original map extents
+    xLoc = survey.srcField.rxList[0].locs[:, 0]
+    yLoc = survey.srcField.rxList[0].locs[:, 1]
+    data = survey.dobs
+
+    out = widgets.interactive(plotWidget,
+                              Resolution=widgets.FloatText(
+                                        value=50,
+                                        description='Grid (m):',
+                                        disabled=False
+                                ),
+                              Method=widgets.Dropdown(
+                                  options=[
+                                    'nearest', 'linear', 'cubic',
+                                    'minimumCurvature'
+                                    ],
+                                  value='minimumCurvature',
+                                  description='Method',
+                                  disabled=False,
+                                ),
+                              Contours=widgets.IntSlider(
+                                    min=10, max=100, step=10,
+                                    value=50, continuous_update=False
+                                ),
+                              ColorMap=widgets.Dropdown(
+                                  options=cmaps(),
+                                  value='RdBu_r',
+                                  description='ColorMap',
+                                  disabled=False,
+                                ),
+                              SaveGrid=widgets.ToggleButton(
+                                  value=False,
+                                  description='Export Grid',
+                                  disabled=False,
+                                  button_style='',
+                                  tooltip='Description',
+                                  icon='check'
+                                )
+                              )
     return out
