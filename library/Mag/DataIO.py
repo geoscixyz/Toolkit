@@ -105,8 +105,8 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
 
     xPixels = array.shape[1]  # number of pixels in x
     yPixels = array.shape[0]  # number of pixels in y
-    pixelXSize = (xMax-xMin)/xPixels  # size of the pixel in X direction
-    pixelYSize = -(yMax-yMin)/yPixels  # size of the pixel in Y direction
+    pixelXSize = (xMax-xMin)/(xPixels-1)  # size of the pixel in X direction
+    pixelYSize = -(yMax-yMin)/(yPixels-1)  # size of the pixel in Y direction
 
     driver = gdal.GetDriverByName('GTiff')
 

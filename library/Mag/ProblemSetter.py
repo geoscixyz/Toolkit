@@ -212,7 +212,7 @@ def setDataExtentWidget(survey):
         dataSub.limits = lims
         # coordinate_system = grid.coordinate_system
         dataSub.values = subData
-        dataSub.nx, dataSub.ny = subData.shape[0], subData.shape[1]
+        dataSub.nx, dataSub.ny = subData.shape[1], subData.shape[0]
         dataSub.dx, dataSub.dy = survey.dx, survey.dy
         dataSub.x0, dataSub.y0 = East-Width/2, North-Height/2
 
