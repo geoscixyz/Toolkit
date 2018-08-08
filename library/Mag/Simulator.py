@@ -193,23 +193,19 @@ def ViewMagSurveyWidget(survey):
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
-        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.limits[0]
-        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.limits[2]
-        xlim = survey.limits[:2]
-        ylim = survey.limits[2:]
+        xLoc = survey.hx
+        yLoc = survey.hy
         data = survey.values
     else:
         xLoc = survey.srcField.rxList[0].locs[:, 0]
         yLoc = survey.srcField.rxList[0].locs[:, 1]
-        xlim = np.asarray([xLoc.min(), xLoc.max()])
-        ylim = np.asarray([yLoc.min(), yLoc.max()])
         data = survey.dobs
 
-    Lx = xlim[1] - xlim[0]
-    Ly = ylim[1] - ylim[0]
+    Lx = xLoc.max() - xLoc.min()
+    Ly = yLoc.max() - yLoc.min()
     diag = (Lx**2. + Ly**2.)**0.5
 
-    cntr = [np.mean(xlim), np.mean(ylim)]
+    cntr = [np.mean(xLoc), np.mean(yLoc)]
 
     out = widgets.interactive(
         MagSurvey2D,
@@ -602,7 +598,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
                      vmin=None, vmax=None, levels=None, resolution=25,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
-                     equalizeHist='HistEqualized', minCurvature=True):
+                     equalizeHist='HistEqualized', minCurvature=True, scatterData=None):
 
     ls = LightSource(azdeg=azdeg, altdeg=altdeg)
 
@@ -687,6 +683,18 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
 
         if clabel:
             plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
+
+    if scatterData is not None:
+        plt.scatter(
+          scatterData['x'], scatterData['y'],
+          scatterData['z'], c=scatterData['c'],
+          cmap=scatterData['cmap'],
+          vmin=scatterData['clim'][0],
+          vmax=scatterData['clim'][1]
+        )
+        axs.set_xlim([extent[0], extent[1]])
+        axs.set_ylim([extent[2], extent[3]])
+        axs.set_aspect('auto')
     return X, Y, d_grid, im, CS
 
 
@@ -876,7 +884,11 @@ def plotProfile2D(x, y, data, a, b, npts,
     return ax
 
 
-def dataHillsideWidget(survey, EPSGCode=26909, figName='DataHillshade', dpi=300):
+def dataHillsideWidget(
+    survey, EPSGCode=26909,
+    figName='DataHillshade', dpi=300,
+    scatterData=None
+  ):
 
     def plotWidget(
             SunAzimuth, SunAngle,
@@ -897,13 +909,14 @@ def dataHillsideWidget(survey, EPSGCode=26909, figName='DataHillshade', dpi=300)
             axs = plt.subplot()
 
         # Add shading
-        X, Y, d_grid, im, CS = plotDataHillside(xLoc, yLoc, data,
-                                  axs=axs, cmap=ColorMap,
-                                  clabel=False, contours=Contours,
-                                  vmax=VminVmax[1], vmin=VminVmax[0],
-                                  alpha=ColorTransp, alphaHS=HSTransp,
-                                  ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-                                  equalizeHist=Equalize)
+        X, Y, d_grid, im, CS = plotDataHillside(
+          xLoc, yLoc, data,
+          axs=axs, cmap=ColorMap,
+          clabel=False, contours=Contours,
+          vmax=VminVmax[1], vmin=VminVmax[0],
+          alpha=ColorTransp, alphaHS=HSTransp,
+          ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
+          equalizeHist=Equalize, scatterData=scatterData)
 
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
@@ -930,17 +943,13 @@ def dataHillsideWidget(survey, EPSGCode=26909, figName='DataHillshade', dpi=300)
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
-        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.limits[0]
-        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.limits[2]
-        xlim = survey.limits[:2]
-        ylim = survey.limits[2:]
+        xLoc = survey.hx
+        yLoc = survey.hy
         data = survey.values
 
     else:
         xLoc = survey.srcField.rxList[0].locs[:, 0]
         yLoc = survey.srcField.rxList[0].locs[:, 1]
-        xlim = np.asarray([xLoc.min(), xLoc.max()])
-        ylim = np.asarray([yLoc.min(), yLoc.max()])
         data = survey.dobs
 
     out = widgets.interactive(plotWidget,
@@ -986,7 +995,7 @@ def dataHillsideWidget(survey, EPSGCode=26909, figName='DataHillshade', dpi=300)
     return out
 
 
-def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300):
+def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300, scatterData=None):
 
     def plotWidget(
             SunAzimuth, SunAngle,
@@ -1077,7 +1086,7 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300)
             vmin=vmin, vmax=vmax, contours=50,
             alpha=Saturation, alphaHS=Transparency,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-            equalizeHist=equalizeHist
+            equalizeHist=equalizeHist, scatterData=scatterData
         )
 
         if SaveGrid:
@@ -1105,17 +1114,12 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300)
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
-        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.limits[0]
-        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.limits[2]
-        xlim = survey.limits[:2]
-        ylim = survey.limits[2:]
-
         filters = MathUtils.gridFilter()
         filters.grid = survey.values
         filters.dx = survey.dx
         filters.dy = survey.dy
 
-        X, Y = np.meshgrid(xLoc, yLoc)
+        X, Y = np.meshgrid(survey.hx, survey.hy)
 
         data = getattr(filters, '{}'.format(gridFilter))
     else:
@@ -1294,10 +1298,7 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         selection = int(np.r_[[ii for ii, s in enumerate(list(data.keys())) if placeID in s]])
         dataVals = list(data.values())[selection]
 
-        xLoc = np.asarray(range(grid.nx))*grid.dx+grid.limits[0]
-        yLoc = np.asarray(range(grid.ny))*grid.dy+grid.limits[2]
-
-        Xloc, Yloc = np.meshgrid(xLoc, yLoc)
+        Xloc, Yloc = np.meshgrid(grid.hx, grid.hy)
         Zloc = np.ones_like(Xloc)*z
 
         locs = np.c_[mkvc(Xloc), mkvc(Yloc), mkvc(Zloc)]
