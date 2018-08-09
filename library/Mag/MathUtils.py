@@ -3,6 +3,7 @@ import scipy as sp
 from scipy.spatial import cKDTree
 from SimPEG.Utils import mkvc
 from scipy.sparse.linalg import bicgstab
+import matplotlib.pyplot as plt
 
 
 def rotationMatrix(inc, dec, normal=True):
@@ -477,3 +478,62 @@ class gridFilter(object):
             zUpw_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
         return zUpw
+
+
+def estimateDepth(grid):
+    """
+        Function to estimate depth of anomalies
+        from tilt angle. Distance between the 0 and
+        pi/4 contour.
+
+        INPUT
+        :object: grid Grid object from
+
+        OUTPUT
+        :xyDepth:
+    """
+
+    filters = gridFilter(dx=grid.dx, dy=grid.dy, grid=grid.values)
+    tilt = filters.tiltAngle
+
+    X, Y = np.meshgrid(grid.hx, grid.hy)
+
+
+    C_0 = plt.contour(X, Y, tilt, levels=[0], colors='k')
+    C_45 = plt.contour(X, Y, tilt, levels=[np.pi/4.], colors='r')
+    plt.close()
+
+    # Get zero contour nodes
+    # xy0 = np.vstack(C_0.allsegs[0])
+
+    # Get 45 contour nodes
+    xy45 = np.vstack(C_45.allsegs[0])
+
+    # Create ckDtree for shortest distance
+    tree = cKDTree(xy45)
+
+
+    # Compute shortest distance between pair of points
+    xy = []
+    dist = []
+    for contour in C_0.allsegs[0]:
+
+        # Query two closest points to each nodes of zero contour
+        d, indx = tree.query(contour, k=2)
+
+        length = (
+            (xy45[indx[:, 1], 0] - xy45[indx[:, 0], 0])**2. +
+            (xy45[indx[:, 1], 1] - xy45[indx[:, 0], 1])**2.)
+
+        indL = length > 0
+
+        dist += [np.abs(
+            (xy45[indx[indL, 1], 1] - xy45[indx[indL, 0], 1])*contour[indL, 0] -
+            (xy45[indx[indL, 1], 0] - xy45[indx[indL, 0], 0])*contour[indL, 1] +
+            xy45[indx[indL, 1], 0] * xy45[indx[indL, 0], 1] -
+            xy45[indx[indL, 1], 1] * xy45[indx[indL, 0], 0]) / length[indL]**0.5]
+
+        xy += [contour[indL, :]]
+
+    return xy, dist
+

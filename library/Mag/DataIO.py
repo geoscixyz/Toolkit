@@ -6,7 +6,13 @@ from SimPEG.Utils import mkvc
 import geosoft.gxpy.grid as gxgrd
 import geosoft.gxpy.gx as gx
 import matplotlib.pyplot as plt
-import gdal, osr, ogr, os
+import gdal
+import osr
+import ogr
+import os
+from shapely.geometry import mapping, LineString
+import fiona
+from fiona.crs import from_epsg
 
 
 def loadGRDFile(fileName, plotIt=True):
@@ -85,7 +91,6 @@ class dataGrid(object):
     x0, y0 = 0., 0.
     nx, ny = 1, 1
     dx, dy = 1., 1.
-    limits = np.r_[0, 1, 0, 1]
     values = None
 
     def __init__(self, **kwargs):
@@ -93,6 +98,22 @@ class dataGrid(object):
             setattr(self, key, value)
 
         return
+
+    @property
+    def hx(self):
+
+        if getattr(self, '_hx', None) is None:
+            self._hx = np.asarray(range(self.nx)) * self.dx + self.x0
+
+        return self._hx
+
+    @property
+    def hy(self):
+
+        if getattr(self, '_hy', None) is None:
+            self._hy = np.asarray(range(self.ny)) * self.dy + self.y0
+
+        return self._hy
 
 
 def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, dataType='image'):
@@ -136,3 +157,32 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
 
     dataset.FlushCache()  # Write to disk.
     print('Image saved as: ' + fileName + ' Click box again to continue...')
+
+
+def exportShapefile(polylines, attributes, EPSGCode=26909, fileName='MyShape', label='AverageDepth', attType='int'):
+    """
+        Function to export polylines to shape file with attribute
+
+    """
+    crs = from_epsg(EPSGCode)
+
+    # Define a polygon feature geometry with one attribute
+    schema = {
+        'geometry': 'LineString',
+        'properties': {label: attType},
+
+    }
+
+    with fiona.open(fileName + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs) as c:
+        ## If there are multiple geometries, put the "for" loop here
+        for poly, att in zip(polylines, attributes):
+
+            if np.all([np.any(att), len(poly)>1]):
+                pline = LineString(list(tuple(map(tuple, poly))))
+
+                res = {}
+                res['properties'] = {}
+                res['properties'][label] = np.mean(att)
+                # geometry of of the original polygon shapefile
+                res['geometry'] = mapping(pline)
+                c.write(res)
