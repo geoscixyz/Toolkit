@@ -19,6 +19,7 @@ from scipy.interpolate.interpnd import _ndim_coords_from_arrays
 from matplotlib.colors import LightSource, Normalize
 from library.graphics import graphics
 from matplotlib.ticker import FormatStrFormatter
+import matplotlib as mpl
 from skimage import exposure
 import PIL
 
@@ -71,7 +72,7 @@ def cmaps():
 
     return [
               'viridis', 'plasma', 'magma', 'RdBu_r',
-              'Greys_r', 'jet', 'hsv', 'rainbow', 'pink',
+              'Greys_r', 'jet', 'rainbow', 'pink',
                'bone', 'hsv', 'nipy_spectral'
             ]
 
@@ -643,10 +644,10 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
     if fill:
 
         if vmin is None:
-            vmin = d_grid[~np.isnan(d_grid)].min()
+            vmin = np.floor(d_grid[~np.isnan(d_grid)].min())
 
         if vmax is None:
-            vmax = d_grid[~np.isnan(d_grid)].max()
+            vmax = np.ceil(d_grid[~np.isnan(d_grid)].max())
 
         if equalizeHist == 'HistEqualized':
 
@@ -663,17 +664,18 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
 
         extent = x.min(), x.max(), y.min(), y.max()
 
+        if np.all([alpha != 1, alphaHS != 0]):
+            axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
+                       dx=resolution, dy=resolution),
+                       cmap='gray_r', alpha=alphaHS,
+                       extent=extent, origin='lower')
+
         clevels = np.linspace(vmin, vmax, contours)
         im = axs.contourf(
             X, Y, d_grid, contours, vmin=vmin, vmax=vmax, levels=clevels,
             cmap=my_cmap, alpha=alpha
         )
 
-        if np.all([alpha != 1, alphaHS != 0]):
-            axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
-                       dx=resolution, dy=resolution),
-                       cmap='gray_r', alpha=alphaHS,
-                       extent=extent, origin='lower')
 
     if levels is not None:
         CS = axs.contour(
@@ -687,7 +689,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
     if scatterData is not None:
         plt.scatter(
           scatterData['x'], scatterData['y'],
-          scatterData['z'], c=scatterData['c'],
+          scatterData['size'], c=scatterData['c'],
           cmap=scatterData['cmap'],
           vmin=scatterData['clim'][0],
           vmax=scatterData['clim'][1]
@@ -932,13 +934,24 @@ def dataHillsideWidget(
             )
 
         else:
-            axs.set_aspect('auto')
+            axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label('TMI (nT)')
 
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
+
+            if scatterData is not None:
+                pos = axs.get_position()
+                cbarax = fig.add_axes([pos.x0+0.875, pos.y0+0.225,  pos.width*.025, pos.height*0.4])
+                norm = mpl.colors.Normalize(vmin=scatterData['clim'][0], vmax=scatterData['clim'][1])
+                cb = mpl.colorbar.ColorbarBase(
+                  cbarax, cmap=scatterData['cmap'],
+                  norm=norm,
+                  orientation="vertical")
+                cb.set_label("Depth (m)", size=12)
+
             plt.show()
 
     # Calculate the original map extents
@@ -995,7 +1008,9 @@ def dataHillsideWidget(
     return out
 
 
-def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300, scatterData=None):
+def gridFiltersWidget(
+  survey, gridFilter='derivativeX',
+  EPSGCode=26909, dpi=300, scatterData=None):
 
     def plotWidget(
             SunAzimuth, SunAngle,
@@ -1010,7 +1025,7 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
 
         else:
             data = getattr(filters, '{}'.format(Filters))
-            vmin, vmax = np.percentile(data, 5), np.percentile(data, 95)
+            vmin, vmax = data.min(), data.max()
             equalizeHist = 'HistEqualized'
 
         plotIt(
@@ -1103,13 +1118,24 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
         else:
             # Add points at the survey locations
             # plt.scatter(xLoc, yLoc, s=2, c='k')
-            axs.set_aspect('auto')
+            axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label(gridFilter)
 
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
+
+            if scatterData is not None:
+                pos = axs.get_position()
+                cbarax = fig.add_axes([pos.x0+0.875, pos.y0+0.225,  pos.width*.025, pos.height*0.4])
+                norm = mpl.colors.Normalize(vmin=scatterData['clim'][0], vmax=scatterData['clim'][1])
+                cb = mpl.colorbar.ColorbarBase(
+                  cbarax, cmap=scatterData['cmap'],
+                  norm=norm,
+                  orientation="vertical")
+                cb.set_label("Depth (m)", size=12)
+
             plt.show()
 
     # Calculate the original map extents
