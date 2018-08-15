@@ -999,7 +999,7 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
 
     def plotWidget(
             SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, SaveGrid
          ):
 
@@ -1015,13 +1015,13 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
 
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
         )
 
     def plotWidgetUpC(
             SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, UpwardDistance, SaveGrid
          ):
         if Filters == 'TMI':
@@ -1034,13 +1034,13 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
 
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
         )
 
     def plotWidgetRTP(
             SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, inc, dec, SaveGrid
          ):
         if Filters == 'TMI':
@@ -1056,13 +1056,13 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
 
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
         )
 
     def plotIt(
             X, Y, data, SunAzimuth, SunAngle,
-            Saturation, Transparency, vScale,
+            ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
          ):
 
@@ -1084,7 +1084,7 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
             axs=axs, cmap=ColorMap,
             clabel=False, resolution=10,
             vmin=vmin, vmax=vmax, contours=50,
-            alpha=Saturation, alphaHS=Transparency,
+            alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
             equalizeHist=equalizeHist, scatterData=scatterData
         )
@@ -1134,10 +1134,10 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
                                   SunAngle=widgets.FloatSlider(
                                     min=0, max=90, step=5, value=15,
                                     continuous_update=False),
-                                  Saturation=widgets.FloatSlider(
+                                  ColorTransp=widgets.FloatSlider(
                                     min=0, max=1, step=0.1, value=0.3,
                                     continuous_update=False),
-                                  Transparency=widgets.FloatSlider(
+                                  HSTransp=widgets.FloatSlider(
                                     min=0, max=1, step=0.1, value=1.0,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
@@ -1179,10 +1179,10 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
                                   SunAngle=widgets.FloatSlider(
                                     min=0, max=90, step=5, value=15,
                                     continuous_update=False),
-                                  Saturation=widgets.FloatSlider(
+                                  ColorTransp=widgets.FloatSlider(
                                     min=0, max=1, step=0.1, value=0.3,
                                     continuous_update=False),
-                                  Transparency=widgets.FloatSlider(
+                                  HSTransp=widgets.FloatSlider(
                                     min=0, max=1, step=0.1, value=1.0,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
@@ -1229,10 +1229,10 @@ def gridFiltersWidget(survey, gridFilter='derivativeX', EPSGCode=26909, dpi=300,
                                   SunAngle=widgets.FloatSlider(
                                     min=0, max=90, step=5, value=15,
                                     continuous_update=False),
-                                  Saturation=widgets.FloatSlider(
+                                  ColorTransp=widgets.FloatSlider(
                                     min=0, max=1, step=0.1, value=0.3,
                                     continuous_update=False),
-                                  Transparency=widgets.FloatSlider(
+                                  HSTransp=widgets.FloatSlider(
                                     min=0, max=1, step=0.1, value=1.0,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
