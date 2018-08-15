@@ -143,6 +143,7 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
     )
 
  #options=['PHOTOMETRIC=RGB']
+    print(xMin, pixelXSize, 0, yMax, 0, pixelYSize)
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
     datasetSRS = osr.SpatialReference()
