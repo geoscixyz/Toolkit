@@ -1449,7 +1449,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
         if Method == 'minimumCurvature':
             gridCC, d_grid = MathUtils.minCurvatureInterp(
                 np.c_[xLoc, yLoc], survey.dobs,
-                gridSize=Resolution
+                gridSize=Resolution, method='spline'
                 )
             X = gridCC[:, 0].reshape(d_grid.shape, order='F')
             Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
@@ -1500,7 +1500,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
 
     out = widgets.interactive(plotWidget,
                               Resolution=widgets.FloatText(
-                                        value=50,
+                                        value=10,
                                         description='Grid (m):',
                                         disabled=False
                                 ),

@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 from scipy.spatial import cKDTree
-from SimPEG.Utils import mkvc
+from SimPEG.Utils import mkvc, speye
 from scipy.sparse.linalg import bicgstab
 import matplotlib.pyplot as plt
 
@@ -108,7 +108,7 @@ def minCurvatureInterp(
     def av_extrap(n):
         """Define 1D averaging operator from cell-centers to nodes."""
         Av = (
-            sp.spdiags(
+            sp.sparse.spdiags(
                 (0.5 * np.ones((n, 1)) * [1, 1]).T,
                 [-1, 0],
                 n + 1, n,
@@ -221,7 +221,7 @@ def minCurvatureInterp(
         A = np.zeros((ndat, ndat))
         for i in range(ndat):
 
-            r = (locs[i, 0] - locs[:, 0])**2. + (locs[i, 1] - locs[:, 1])**2. + 1e+2
+            r = (locs[i, 0] - locs[:, 0])**2. + (locs[i, 1] - locs[:, 1])**2. +1e-8
             A[i, :] = r.T * (np.log((r.T)**0.5) - 1.)
 
         # Solve system for the weights
@@ -231,11 +231,11 @@ def minCurvatureInterp(
         # Reformat the line data locations but skip every n points for test
         nC = gridCC.shape[0]
         m = np.zeros(nC)
-
+        print('In minCurvature')
         # We can parallelize this part later
         for i in range(nC):
 
-            r = (gridCC[i, 0] - locs[:, 0])**2. + (gridCC[i, 1] - locs[:, 1])**2. + 1e+2
+            r = (gridCC[i, 0] - locs[:, 0])**2. + (gridCC[i, 1] - locs[:, 1])**2. + 1e+4
             m[i] = np.sum(w[0] * r.T * (np.log((r.T)**0.5) - 1.))
 
         return gridCC, m.reshape(gridCx.shape, order='F')
