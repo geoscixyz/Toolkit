@@ -221,8 +221,8 @@ def minCurvatureInterp(
         A = np.zeros((ndat, ndat))
         for i in range(ndat):
 
-            r = (locs[i, 0] - locs[:, 0])**2. + (locs[i, 1] - locs[:, 1])**2.
-            A[i, :] = r.T * (np.log((r.T + 1e-8)**0.5) - 1.)
+            r = (locs[i, 0] - locs[:, 0])**2. + (locs[i, 1] - locs[:, 1])**2. + 1e+2
+            A[i, :] = r.T * (np.log((r.T)**0.5) - 1.)
 
         # Solve system for the weights
         w = bicgstab(A, data, tol=1e-6)
@@ -235,8 +235,8 @@ def minCurvatureInterp(
         # We can parallelize this part later
         for i in range(nC):
 
-            r = (gridCC[i, 0] - locs[:, 0])**2. + (gridCC[i, 1] - locs[:, 1])**2.
-            m[i] = np.sum(w[0] * r.T * (np.log((r.T + 1e-8)**0.5) - 1.))
+            r = (gridCC[i, 0] - locs[:, 0])**2. + (gridCC[i, 1] - locs[:, 1])**2. + 1e+2
+            m[i] = np.sum(w[0] * r.T * (np.log((r.T)**0.5) - 1.))
 
         return gridCC, m.reshape(gridCx.shape, order='F')
 

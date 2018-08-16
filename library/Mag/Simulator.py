@@ -663,18 +663,21 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
             my_cmap = cmap
 
         extent = x.min(), x.max(), y.min(), y.max()
-
+        im = axs.imshow(d_grid, vmin=vmin, vmax=vmax,
+                       cmap=my_cmap, clim=[vmin, vmax],
+                       alpha=alpha,
+                       extent=extent, origin='lower')
         if np.all([alpha != 1, alphaHS != 0]):
             axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
                        dx=resolution, dy=resolution),
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
 
-        clevels = np.linspace(vmin, vmax, contours)
-        im = axs.contourf(
-            X, Y, d_grid, contours, vmin=vmin, vmax=vmax, levels=clevels,
-            cmap=my_cmap, alpha=alpha
-        )
+        # clevels = np.linspace(vmin, vmax, contours)
+        # im = axs.contourf(
+        #     X, Y, d_grid, contours, levels=clevels,
+        #     cmap=my_cmap, alpha=alpha
+        # )
 
 
     if levels is not None:
@@ -966,11 +969,15 @@ def dataHillsideWidget(
         data = survey.dobs
 
     out = widgets.interactive(plotWidget,
-                              SunAzimuth=widgets.FloatSlider(min=0, max=360, step=5, value=0, continuous_update=False),
+                              SunAzimuth=widgets.FloatSlider(
+                                min=0, max=360, step=5, value=90, continuous_update=False),
                               SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
-                              ColorTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=0.3, continuous_update=False),
-                              HSTransp=widgets.FloatSlider(min=0, max=1, step=0.1, value=1.0, continuous_update=False),
-                              vScale=widgets.FloatSlider(min=1, max=4, step=1., value=1.0, continuous_update=False),
+                              ColorTransp=widgets.FloatSlider(
+                                min=0, max=1, step=0.05, value=0.9, continuous_update=False),
+                              HSTransp=widgets.FloatSlider(
+                                min=0, max=1, step=0.05, value=0.50, continuous_update=False),
+                              vScale=widgets.FloatSlider(
+                                min=1, max=10, step=1., value=5.0, continuous_update=False),
                               Contours=widgets.IntSlider(min=10, max=100, step=10, value=50, continuous_update=False),
                               ColorMap=widgets.Dropdown(
                                   options=cmaps(),
@@ -1025,9 +1032,10 @@ def gridFiltersWidget(
 
         else:
             data = getattr(filters, '{}'.format(Filters))
-            vmin, vmax = data.min(), data.max()
+            vmin, vmax = np.percentile(data, 5), np.percentile(data, 95)
             equalizeHist = 'HistEqualized'
 
+        vScale *= np.abs(survey.values.max() - survey.values.min()) * np.abs(data.max() - data.min())
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
@@ -1155,19 +1163,19 @@ def gridFiltersWidget(
     if gridFilter == 'upwardContinuation':
         out = widgets.interactive(plotWidgetUpC,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=0,
+                                    min=0, max=360, step=5, value=90,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
                                     min=0, max=90, step=5, value=15,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.1, value=0.3,
+                                    min=0, max=1, step=0.05, value=0.9,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.1, value=1.0,
+                                    min=0, max=1, step=0.05, value=0.50,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=4, step=1., value=4.0,
+                                    min=1, max=10, step=1., value=5.0,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
@@ -1200,19 +1208,19 @@ def gridFiltersWidget(
     elif gridFilter == 'RTP':
         out = widgets.interactive(plotWidgetRTP,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=0,
+                                    min=0, max=360, step=5, value=90,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
                                     min=0, max=90, step=5, value=15,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.1, value=0.3,
+                                    min=0, max=1, step=0.05, value=0.9,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.1, value=1.0,
+                                    min=0, max=1, step=0.05, value=0.50,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=4, step=1., value=4.0,
+                                    min=1, max=10, step=1., value=5.0,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
@@ -1250,19 +1258,19 @@ def gridFiltersWidget(
     else:
         out = widgets.interactive(plotWidget,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=0,
+                                    min=0, max=360, step=5, value=90,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
                                     min=0, max=90, step=5, value=15,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.1, value=0.3,
+                                    min=0, max=1, step=0.05, value=0.9,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.1, value=1.0,
+                                    min=0, max=1, step=0.05, value=0.50,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=4, step=1., value=4.0,
+                                    min=1, max=10, step=1., value=5.0,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
@@ -1454,7 +1462,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
             vectorX = np.linspace(xLoc.min(), xLoc.max(), npts_x)
             vectorY = np.linspace(yLoc.min(), yLoc.max(), npts_y)
 
-            Y, X = np.meshgrid(vectorY, vectorX)
+            X, Y = np.meshgrid(vectorX, vectorY)
 
             d_grid = griddata(np.c_[xLoc, yLoc], data, (X, Y), method=Method)
 
