@@ -16,7 +16,7 @@ placeholder fig
 
 .. figure:: ./images/draped_mag_placeholder.PNG
     :align: center
-    :figwidth: 75 %   
+    :figwidth: 75 %
 
 This site provides a portal to a suite of basic geophysical tools or applications that can aid geological interpretation of magnetic data. The content and applications here were assembled as part of a project initiated between UBC’s Mineral Deposit Research Unit and Geophysical Inversion Facility. Magnetic data was focused on for this particular Toolkit, due to the usefulness and common availability of this type of geophysical data. However, applications for analysis of other geophysical data types may be added in the future.
 
@@ -28,7 +28,7 @@ To get initiated with the tools in the Geophysical Toolkit, we have set up both 
 
 Geological knowledge is vital to meaningful interpretation of geophysical data. Therefore, geophysicists and geologists must work together to gain the maximum value from geophysical data! Neither the geophysicist nor the geologist needs to be an expert in the other’s field, they simply need to bring their respective skills and knowledge to the table and start a conversation.
 
-
+:cite:`Blakely1996`
 
 Contents:
 ^^^^^^^^^
@@ -40,6 +40,8 @@ Contents:
    content/Demos/demos
    content/Tools/tools
    content/Interp/interp
+   NotebookIndex
+   references
 
 
 
