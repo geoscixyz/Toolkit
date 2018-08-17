@@ -59,9 +59,11 @@ The magnetic susceptibility of a rock depends on the type and abundance of magne
 
 A chart showing the range of magnetic susceptibility values for common rock types are shown below. Note that the scale is logarithmic, indicating a large variability in magnetic susceptibility among rocks.
 
+
 .. image:: ./images/susceptibility_chart.gif
    :scale: 100%
    :align: center
+   :name: magnetic_susceptibility_chart
 
 
 
