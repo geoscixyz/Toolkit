@@ -174,7 +174,7 @@ def exportShapefile(polylines, attributes, EPSGCode=26909, fileName='MyShape', l
 
     }
 
-    with fiona.open(fileName + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs) as c:
+    with fiona.open("Output/" + fileName + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs) as c:
         ## If there are multiple geometries, put the "for" loop here
         for poly, att in zip(polylines, attributes):
 

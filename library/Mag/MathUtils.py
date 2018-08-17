@@ -231,7 +231,7 @@ def minCurvatureInterp(
         # Reformat the line data locations but skip every n points for test
         nC = gridCC.shape[0]
         m = np.zeros(nC)
-        print('In minCurvature')
+
         # We can parallelize this part later
         for i in range(nC):
 
@@ -245,7 +245,7 @@ def minCurvatureInterp(
         NotImplementedError("Only methods 'relaxation' || 'spline' are available" )
 
 
-def decimalDegrees2DMS(value,type):
+def decimalDegrees2DMS(value, type):
     """
         Converts a Decimal Degree Value into
         Degrees Minute Seconds Notation.

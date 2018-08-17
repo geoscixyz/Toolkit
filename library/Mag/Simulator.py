@@ -926,13 +926,13 @@ def dataHillsideWidget(
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
         if SaveGeoTiff:
-            plt.savefig(figName + '.png', dpi=dpi)
+            plt.savefig("Output/" + figName + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open(figName + '.png'))
+            img = np.asarray(PIL.Image.open("Output/" + figName + '.png'))
 
             DataIO.arrayToRaster(
-                img, figName + '.tiff',
+                img, "Output/" + figName + '.tiff',
                 EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
 
@@ -1017,6 +1017,7 @@ def dataHillsideWidget(
 
 def gridFiltersWidget(
   survey, gridFilter='derivativeX',
+  figName=None,
   EPSGCode=26909, dpi=300, scatterData=None):
 
     def plotWidget(
@@ -1060,6 +1061,11 @@ def gridFiltersWidget(
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
         )
+
+        gridOut = survey
+        gridOut.values = data
+
+        return gridOut
 
     def plotWidgetRTP(
             SunAzimuth, SunAngle,
@@ -1113,13 +1119,17 @@ def gridFiltersWidget(
         )
 
         if SaveGrid:
-            plt.savefig(gridFilter + '.png', dpi=dpi)
+
+            if figName is None:
+              figName = gridFilter
+
+            plt.savefig("Output/" + figName + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open(gridFilter + '.png'))
+            img = np.asarray(PIL.Image.open("Output/" + figName + '.png'))
 
             DataIO.arrayToRaster(
-                img, gridFilter + '.tiff',
+                img, "Output/" + figName + '.tiff',
                 EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
 
@@ -1332,7 +1342,7 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         selection = int(np.r_[[ii for ii, s in enumerate(list(data.keys())) if placeID in s]])
         dataVals = list(data.values())[selection]
 
-        Xloc, Yloc = np.meshgrid(grid.hx, grid.hy)
+        Xloc, Yloc = np.meshgrid(grid.hx[::5], grid.hy[::5])
         Zloc = np.ones_like(Xloc)*z
 
         locs = np.c_[mkvc(Xloc), mkvc(Yloc), mkvc(Zloc)]
@@ -1491,7 +1501,16 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
             axs.grid('on', color='k', linestyle='--')
             plt.show()
 
-        return X, Y, d_grid
+        # Create grid object
+        gridOut = DataIO.dataGrid()
+
+        gridOut.values = d_grid
+        gridOut.nx, gridOut.ny = gridOut.values.shape[1], gridOut.values.shape[0]
+        gridOut.x0, gridOut.y0 = X.min(), Y.min()
+        gridOut.dx = (X.max() - X.min()) / gridOut.values.shape[1]
+        gridOut.dy = (Y.max() - Y.min()) / gridOut.values.shape[0]
+        gridOut.limits = np.r_[gridOut.x0, gridOut.x0+gridOut.nx*gridOut.dx, gridOut.y0, gridOut.y0+gridOut.ny*gridOut.dy]
+        return gridOut
 
     # Calculate the original map extents
     xLoc = survey.srcField.rxList[0].locs[:, 0]

@@ -98,9 +98,8 @@ release = '0.0.1'
 exclude_patterns = [
   '_build',
   'AUTHORS.rst',
-  'content/inversion/*',
-  'content/*/include/*',
-  'table_*'
+  'table_*',
+  '**.ipynb_checkpoints'
   ]
 
 linkcheck_ignore = [
@@ -336,3 +335,20 @@ sys.path.append(os.getcwd())
 # from _ext import copyImages, supress_nonlocal_image_warn, make_lectures_page
 
 # copyImages()
+
+# -- Strip all notebooks before
+
+
+def nbstripout():
+    # get relevant directories
+    cwd = os.getcwd()
+
+    # search for images that have been missed
+    for root, dirList, fileList in os.walk(cwd):
+        if 'Workspace' not in root:
+            for filename in fileList:
+                if 'ipynb' in filename:
+                    os.system('nbstripout ' + os.path.join(root, filename))
+
+
+nbstripout()
