@@ -10,6 +10,8 @@ dependencies:
   - ipywidgets
   - gdal
   - sckit-image
+  - pyshp
+  - fiona
+  - shapely
   - pip:
-    - pyshp
     - git+https://github.com/geoscixyz/Toolkit.git@master

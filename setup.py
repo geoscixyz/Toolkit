@@ -39,8 +39,7 @@ setup(
         'matplotlib',
         'ipywidgets',
         'SimPEG>=0.4.1',
-        'fiona',
-
+        'fiona'
     ],
     author='GeoSci Developers',
     author_email='fourndo@gmail.com',
