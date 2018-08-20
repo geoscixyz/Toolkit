@@ -21,9 +21,7 @@ eggs/
 parts/
 sdist/
 var/
-Notebooks/github.com
-Notebooks/images
-Notebooks/Output
+Notebooks/github.com/
 *.egg-info/
 .installed.cfg
 *.egg
