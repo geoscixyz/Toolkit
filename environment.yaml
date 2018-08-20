@@ -1,0 +1,15 @@
+name: Toolkit-environment
+
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - numpy
+  - scipy
+  - matplotlib
+  - ipywidgets
+  - gdal
+  - sckit-image
+  - pip:
+    - pyshp
+    - git+https://github.com/geoscixyz/Toolkit.git@master
