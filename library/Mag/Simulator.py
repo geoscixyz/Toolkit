@@ -20,6 +20,7 @@ from matplotlib.colors import LightSource, Normalize
 from library.graphics import graphics
 from matplotlib.ticker import FormatStrFormatter
 import matplotlib as mpl
+from skimage import exposure
 import PIL
 
 def PFSimulator(prism, survey):

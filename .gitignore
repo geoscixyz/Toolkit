@@ -4,7 +4,7 @@ __pycache__/
 
 # C extensions
 *.so
-*.tiff
+
 *.shp
 
 # Folders
@@ -65,3 +65,4 @@ target/
 # Windows
 
 # notebooks
+Notebooks/Output/
