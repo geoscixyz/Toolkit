@@ -16,5 +16,6 @@ dependencies:
   - fiona
   - shapely
   - krb5
+  - nbstripout
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
