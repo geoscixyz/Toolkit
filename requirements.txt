@@ -5,4 +5,5 @@ ipykernel
 nbsphinx
 numpy
 gdal
-geosoft
+shapely
+fiona

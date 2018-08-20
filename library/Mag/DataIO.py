@@ -3,8 +3,6 @@ import scipy as sp
 from . import Simulator
 from scipy.spatial import cKDTree
 from SimPEG.Utils import mkvc
-import geosoft.gxpy.grid as gxgrd
-import geosoft.gxpy.gx as gx
 import matplotlib.pyplot as plt
 import gdal
 import osr
@@ -20,6 +18,14 @@ def loadGRDFile(fileName, plotIt=True):
         Load a data matrix in Geosoft *.grd format and return
         a dictionary with gridded data
     """
+
+    try:
+        import geosoft.gxpy.grid as gxgrd
+        import geosoft.gxpy.gx as gx
+    except ImportError:
+        print("geosoft module not installed. loadGRDFile ")
+        return
+
     gxc = gx.GXpy()
     data = dataGrid()
 
