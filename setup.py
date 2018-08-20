@@ -34,12 +34,7 @@ setup(
     version='0.0.1',
     packages=find_packages(),
     install_requires=[
-        'numpy>=1.7',
-        'scipy>=0.13',
-        'matplotlib',
-        'ipywidgets',
         'SimPEG>=0.4.1',
-        'fiona'
     ],
     author='GeoSci Developers',
     author_email='fourndo@gmail.com',
