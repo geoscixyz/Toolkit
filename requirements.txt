@@ -6,3 +6,4 @@ testipynb
 nose
 numpy
 nbstripout
+numpydoc
