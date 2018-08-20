@@ -13,5 +13,6 @@ dependencies:
   - pyshp
   - fiona
   - shapely
+  - poppler<0.62
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git@master
