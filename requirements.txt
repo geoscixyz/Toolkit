@@ -4,4 +4,6 @@ sphinxcontrib-bibtex
 ipykernel
 nbsphinx
 numpy
-h5py
+gdal
+shapely
+fiona
