@@ -9,7 +9,7 @@ dependencies:
   - matplotlib
   - ipywidgets
   - gdal
-  - sckit-image
+  - scikit-image
   - pyshp
   - fiona
   - shapely
