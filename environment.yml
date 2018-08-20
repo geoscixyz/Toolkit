@@ -4,6 +4,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - python=3.6
+  - conda>=4.5.10
   - numpy
   - scipy
   - matplotlib
@@ -13,6 +15,6 @@ dependencies:
   - pyshp
   - fiona
   - shapely
-  - poppler<0.62
+  - krb5
   - pip:
-    - git+https://github.com/geoscixyz/Toolkit.git@master
+    - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
