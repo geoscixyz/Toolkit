@@ -166,7 +166,7 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
     print('Image saved as: ' + fileName + ' Click box again to continue...')
 
 
-def exportShapefile(polylines, attributes, EPSGCode=26909, fileName='MyShape', label='AverageDepth', attType='int'):
+def exportShapefile(polylines, attributes, EPSGCode=26909, fileName='MyShape', label='AvgDepth', attType='int'):
     """
         Function to export polylines to shape file with attribute
 
