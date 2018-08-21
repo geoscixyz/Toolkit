@@ -1,2 +1,2 @@
 conda:
-    file: readthedocs -environment.yml
+    file: environment.yml
