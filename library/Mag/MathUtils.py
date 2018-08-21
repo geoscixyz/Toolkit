@@ -293,8 +293,7 @@ def estimateDepth(grid):
         :xyDepth:
     """
 
-    filters = gridFilter(dx=grid.dx, dy=grid.dy, grid=grid.values)
-    tilt = filters.tiltAngle
+    tilt = grid.tiltAngle
 
     X, Y = np.meshgrid(grid.hx, grid.hy)
 
