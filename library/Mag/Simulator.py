@@ -1032,7 +1032,7 @@ def gridFiltersWidget(
             equalizeHist = 'HistEqualized'
 
         else:
-            data = getattr(filters, '{}'.format(Filters))
+            data = getattr(survey, '{}'.format(Filters))
             vmin, vmax = np.percentile(data, 5), np.percentile(data, 95)
             equalizeHist = 'HistEqualized'
 
@@ -1053,7 +1053,7 @@ def gridFiltersWidget(
             vmin, vmax = data.min(), data.max()
 
         else:
-            data = filters.upwardContinuation(z=UpwardDistance)
+            data = survey.upwardContinuation(z=UpwardDistance)
             vmin, vmax = data.min(), data.max()
 
         plotIt(
@@ -1077,10 +1077,10 @@ def gridFiltersWidget(
             vmin, vmax = data.min(), data.max()
 
         else:
-            filters._RTP = None
-            filters.inc = inc
-            filters.dec = dec
-            data = filters.RTP
+            survey._RTP = None
+            survey.inc = inc
+            survey.dec = dec
+            data = survey.RTP
             vmin, vmax = data.min(), data.max()
 
         plotIt(
@@ -1158,14 +1158,14 @@ def gridFiltersWidget(
 
     # Calculate the original map extents
     if isinstance(survey, DataIO.dataGrid):
-        filters = MathUtils.gridFilter()
-        filters.grid = survey.values
-        filters.dx = survey.dx
-        filters.dy = survey.dy
+        # survey = MathUtils.gridFilter()
+        # survey.grid = survey.values
+        # survey.dx = survey.dx
+        # survey.dy = survey.dy
 
         X, Y = np.meshgrid(survey.hx, survey.hy)
 
-        data = getattr(filters, '{}'.format(gridFilter))
+        data = getattr(survey, '{}'.format(gridFilter))
     else:
 
         assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
