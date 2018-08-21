@@ -5,7 +5,8 @@ channels:
   - defaults
 
 dependencies:
-  - python=3.6
+  - python=3.5
+  - conda>=4.5.10
   - numpy
   - scipy
   - matplotlib
