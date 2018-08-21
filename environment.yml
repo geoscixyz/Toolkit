@@ -5,7 +5,7 @@ channels:
   - defaults
 
 dependencies:
-  - python=3.6
+  - python=3.5
   - conda>=4.5.10
   - numpy
   - scipy
@@ -19,3 +19,9 @@ dependencies:
   - krb5
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
+    - sphinx
+    - sphinx_rtd_theme
+    - sphinxcontrib-bibtex
+    - nbsphinx
+    - nbstripout
+    - numpydoc

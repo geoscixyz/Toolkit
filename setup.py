@@ -30,7 +30,7 @@ with open('README.md') as f:
     LONG_DESCRIPTION = ''.join(f.readlines())
 
 setup(
-    name='library',
+    name='GeoToolkit',
     version='0.0.1',
     packages=find_packages(),
     install_requires=[
@@ -38,7 +38,7 @@ setup(
     ],
     author='GeoSci Developers',
     author_email='fourndo@gmail.com',
-    description='toolkit',
+    description='Geophysical toolkit for geologists',
     long_description=LONG_DESCRIPTION,
     keywords='geophysics, geologists',
     url='http://toolkit.geosci.xyz',

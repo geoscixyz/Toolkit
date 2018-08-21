@@ -3,10 +3,6 @@
 1. Magnetic Data - Background
 =============================
 
-.. .. figure:: ./images/icon_mag.gif
-..    :align: right
-..    :scale: 100 %
-
 
 This page will provide some basic background information on magnetism and magnetic data, concepts that must be broadly understood before embarking on interpretation or modelling of magnetic data.
 
@@ -25,7 +21,7 @@ of where magnetic material lies and also its susceptiblity and shape. Processed 
 presented as maps or profiles, and advanced processing such as inversion can provide 3D models of subsurface magnetic susceptibility
 distributions.
 
-.. figure:: ./images/Intro_Response.png
+.. figure:: ../../images/Intro_Response.png
     :align: center
     :figwidth: 50 %
     :name: mag_response
@@ -60,7 +56,7 @@ The magnetic susceptibility of a rock depends on the type and abundance of magne
 A chart showing the range of magnetic susceptibility values for common rock types are shown below. Note that the scale is logarithmic, indicating a large variability in magnetic susceptibility among rocks.
 
 
-.. image:: ./images/susceptibility_chart.gif
+.. image:: ../../images/susceptibility_chart.gif
    :scale: 100%
    :align: center
    :name: magnetic_susceptibility_chart
@@ -78,19 +74,19 @@ Earth's Magnetic Field
 ----------------------
 From the GPG `magnetics basic principles page`_
 
-.. image:: ./images/Geodynamo_Between_Reversals.gif
+.. image:: ../../images/Geodynamo_Between_Reversals.gif
    :scale: 30%
    :align: right
 
 All magnetic fields arise from currents. This is also true for the magnetic field of the earth. The outer core of the earth is molten and in a state of convection and a geomagnetic dynamo creates magnetic fields. Close to the surface of the core the magnetic fields are very complicated but as we move outward the magnetic field resembles that of a large bar magnetic which is often referred to as a magnetic dipole.
 
-.. image:: ./images/earthfield.gif
+.. image:: ../../images/earthfield.gif
    :scale: 100%
    :align: left
 
 To a first approximation, Earth’s magnetic field resembles a large dipolar source with a negative pole in the northern hemisphere and a positive pole in the southern hemisphere. The dipole is offset from the center of the earth and also tilted. The north magnetic pole at the surface of the earth is approximately at Melville Island.
 
-.. image:: ./images/components.gif
+.. image:: ../../images/components.gif
    :scale: 100%
    :align: right
 
@@ -159,7 +155,7 @@ From the GPG `magnetics basic principles page`_
 
 A toy bar magnet is a quintessential example of an object that has a remanent magnetization. If taken to outer space where there is no inducing field, it still possesses a magnetic field like that of a dipole. The acquisition of remanence occurs when a body with magnetic minerals cools through its Curie temperature. Above the Curie temperature thermal agitation prevents the elementary dipoles from aligning with the ambient magnetic field. As the material cools the magnetic particles can stay aligned and eventually lock into place in a domain structure. Each domain has all of its constituent dipoles locked into a single direction. This structure stays in place after the ambient field is removed and the object will have a net remanent magnetism. Some elements of the process are portrayed in the figure below:
 
-.. image:: ./images/Magnetization_Domain.png
+.. image:: ../../images/Magnetization_Domain.png
    :scale: 75%
    :align: right
 
@@ -181,19 +177,19 @@ Prior to interpretation, magnetic data may have several corrections applied. In 
 
 .. Just a trick to force sphinx moving the figures for the html
 
-.. figure:: ./images/inducing_field.gif
+.. figure:: ../../images/inducing_field.gif
             :align: center
             :scale: 0%
 
-.. figure:: ./images/magnetic_anomaly.gif
+.. figure:: ../../images/magnetic_anomaly.gif
             :align: center
             :scale: 0%
 
-.. figure:: ./images/measurements.gif
+.. figure:: ../../images/measurements.gif
             :align: center
             :scale: 0%
 
-.. figure:: ./images/no_field.gif
+.. figure:: ../../images/no_field.gif
             :align: center
             :scale: 0%
 
