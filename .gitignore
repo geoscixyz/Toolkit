@@ -21,7 +21,7 @@ eggs/
 parts/
 sdist/
 var/
-Notebooks/github.com/
+
 *.egg-info/
 .installed.cfg
 *.egg
@@ -66,4 +66,3 @@ target/
 # Windows
 
 # notebooks
-docs/Notebooks/Output/
