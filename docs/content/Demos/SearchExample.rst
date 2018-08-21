@@ -18,7 +18,7 @@ draped survey with a flight height of 80 m. Below is an image of the residual
 magnetic field.
 
 
-.. image:: ../../images/SearchQuestII.png
+.. image:: ../../images/search_placeholder.PNG
   :align: center
 
 
