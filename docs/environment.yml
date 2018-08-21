@@ -1,0 +1,19 @@
+name: Toolkit-environment
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - numpy
+  - scipy
+  - matplotlib
+  - ipywidgets
+  - gdal
+  - scikit-image
+  - pyshp
+  - fiona
+  - shapely
+  - krb5
+  - pip:
+    - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
