@@ -248,8 +248,8 @@ def setDataExtentWidget(survey):
             dataSelector,
             East=widgets.FloatSlider(min=xlim[0], max=xlim[1], step=500, value=669500, continuous_update=False),
             North=widgets.FloatSlider(min=ylim[0], max=ylim[1], step=10, value=6069500, continuous_update=False),
-            Width=widgets.FloatSlider(min=1000, max=100000, step=1000, value=40000, continuous_update=False),
-            Height=widgets.FloatSlider(min=1000, max=100000, step=1000, value=40000, continuous_update=False)
+            Width=widgets.FloatSlider(min=1000, max=100000, step=1000, value=30000, continuous_update=False),
+            Height=widgets.FloatSlider(min=1000, max=100000, step=1000, value=30000, continuous_update=False)
             )
 
     return out

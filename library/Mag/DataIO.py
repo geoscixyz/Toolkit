@@ -22,6 +22,7 @@ class dataGrid(object):
     nx, ny = 1, 1
     dx, dy = 1., 1.
     values = None
+    valuesUpContinued = None
     inc = 90.
     dec = 90.
 
@@ -67,11 +68,17 @@ class dataGrid(object):
     def gridPadded(self):
 
         if getattr(self, '_gridPadded', None) is None:
+
+            if self.valuesUpContinued is not None:
+                grid = self.valuesUpContinued
+            else:
+                grid = self.values
+
             # Add paddings
             dpad = np.c_[
-                np.fliplr(self.values[:, 0:self.npadx]),
-                self.values,
-                np.fliplr(self.values[:, -self.npadx:])
+                np.fliplr(grid[:, 0:self.npadx]),
+                grid,
+                np.fliplr(grid[:, -self.npadx:])
                 ]
 
             dpad = np.r_[
@@ -82,12 +89,12 @@ class dataGrid(object):
 
             # Tapper the paddings
             rampx = -np.cos(np.pi*np.asarray(range(self.npadx))/self.npadx)
-            rampx = np.r_[rampx, np.ones(self.values.shape[1]), -rampx]/2. + 0.5
+            rampx = np.r_[rampx, np.ones(grid.shape[1]), -rampx]/2. + 0.5
             # tapperx,_ = meshgrid(rampx,np.ones(dpad.shape[1]))
             # tapperx[padx:-padx,:] = 1.
 
             rampy = -np.cos(np.pi*np.asarray(range(self.npady))/self.npady)
-            rampy = np.r_[rampy, np.ones(self.values.shape[0]), -rampy]/2. + 0.5
+            rampy = np.r_[rampy, np.ones(grid.shape[0]), -rampy]/2. + 0.5
             tapperx, tappery = np.meshgrid(rampx, rampy)
 
             self._gridPadded = tapperx*tappery*dpad
