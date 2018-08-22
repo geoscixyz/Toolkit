@@ -17,6 +17,7 @@ dependencies:
   - krb5
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
+    - simpeg
     # - sphinx
     # - sphinx_rtd_theme
     # - sphinxcontrib-bibtex
