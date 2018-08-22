@@ -1016,10 +1016,16 @@ def gridFiltersWidget(
   figName=None,
   EPSGCode=26909, dpi=300, scatterData=None):
 
+    gridProps = [
+        'derivativeX', 'derivativeY', 'firstVertical',
+        'totalHorizontal', 'tiltAngle', 'analyticSignal',
+        'RTP', 'gridFFT', 'gridPadded'
+      ]
+
     def plotWidget(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, SaveGrid
+            ColorMap, Filters, Refresh, SaveGrid,
          ):
 
         if Filters == 'TMI':
@@ -1042,13 +1048,17 @@ def gridFiltersWidget(
     def plotWidgetUpC(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, UpwardDistance, SaveGrid
+            ColorMap, Filters, UpwardDistance, Refresh, SaveGrid
          ):
         if Filters == 'TMI':
             data = survey.values
             vmin, vmax = data.min(), data.max()
 
         else:
+
+            for prop in gridProps:
+                setattr(survey, '_{}'.format(prop), None)
+            survey.valuesUpContinued = None
             data = survey.upwardContinuation(z=UpwardDistance)
             vmin, vmax = data.min(), data.max()
 
@@ -1058,15 +1068,21 @@ def gridFiltersWidget(
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
         )
 
-        gridOut = survey
-        gridOut.values = data
+        # gridOut = DataIO.dataGrid()
+        # gridOut.x0, gridOut.y0 = survey.x0, survey.y0
+        # gridOut.nx, gridOut.ny = survey.nx, survey.ny
+        # gridOut.dx, gridOut.dy = survey.dx, survey.dy
+        # gridOut.values = data
+        survey.valuesUpContinued = data
+        survey._gridPadded = None
+        survey._gridFFT = None
 
-        return gridOut
+        return survey
 
     def plotWidgetRTP(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, inc, dec, SaveGrid
+            ColorMap, Filters, inc, dec, Refresh, SaveGrid
          ):
         if Filters == 'TMI':
             data = survey.values
@@ -1159,7 +1175,7 @@ def gridFiltersWidget(
         # survey.dx = survey.dx
         # survey.dy = survey.dy
 
-        X, Y = np.meshgrid(survey.hx, survey.hy)
+        X, Y = survey.hx, survey.hy
 
         data = getattr(survey, '{}'.format(gridFilter))
     else:
@@ -1200,6 +1216,14 @@ def gridFiltersWidget(
                                   UpwardDistance=widgets.FloatSlider(
                                     min=0, max=500, step=10, value=0,
                                     continuous_update=False
+                                    ),
+                                  Refresh=widgets.ToggleButton(
+                                      value=False,
+                                      description='Refresh',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
                                     ),
                                   SaveGrid=widgets.ToggleButton(
                                       value=False,
@@ -1252,6 +1276,14 @@ def gridFiltersWidget(
                                         description='Declination:',
                                         disabled=False
                                     ),
+                                  Refresh=widgets.ToggleButton(
+                                      value=False,
+                                      description='Refresh',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
+                                    ),
                                   SaveGrid=widgets.ToggleButton(
                                       value=False,
                                       description='Export Grid',
@@ -1291,6 +1323,14 @@ def gridFiltersWidget(
                                       value=gridFilter,
                                       description='Grid Filters',
                                       disabled=False,
+                                    ),
+                                  Refresh=widgets.ToggleButton(
+                                      value=False,
+                                      description='Refresh',
+                                      disabled=False,
+                                      button_style='',
+                                      tooltip='Description',
+                                      icon='check'
                                     ),
                                   SaveGrid=widgets.ToggleButton(
                                       value=False,
