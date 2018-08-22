@@ -188,11 +188,11 @@ def setDataExtentWidget(survey):
 
         fig, axs = plt.figure(figsize=(12, 6)), plt.subplot(1, 2, 1)
         Simulator.plotData2D(
-            xLoc, yLoc, data, marker=False, fig=fig, ax=axs,
+            xLoc, yLoc, survey.values, marker=False, fig=fig, ax=axs,
             colorbar=False
         )
 
-        axs.scatter(East, North, 20, marker='+')
+        # axs.scatter(East, North, 20, marker='+')
         axs.add_patch(
             Rectangle(
                 (East-Width/2, North-Height/2),
@@ -204,41 +204,45 @@ def setDataExtentWidget(survey):
             )
 
         # Extract data within window and plot
-        indx = (xLoc > lims[0]) * (xLoc < lims[1])
-        indy = (yLoc > lims[2]) * (yLoc < lims[3])
+        indx = np.logical_and(xLoc > lims[0], xLoc < lims[1])
 
-        subData = data[:, indx]
-        subData = subData[indy, :]
+        indy = np.logical_and(yLoc > lims[2], yLoc < lims[3])
+
+        nx, ny = np.count_nonzero(indx), np.count_nonzero(indy)
 
         # Create new dataGrid object
         dataSub = DataIO.dataGrid()
         dataSub.limits = lims
         # coordinate_system = grid.coordinate_system
-        dataSub.values = subData
-        dataSub.nx, dataSub.ny = subData.shape[1], subData.shape[0]
+        dataSub.values = survey.values[:, indx]
+        dataSub.values = dataSub.values[indy, :]
+
+        dataSub.nx, dataSub.ny = nx, ny
         dataSub.dx, dataSub.dy = survey.dx, survey.dy
         dataSub.x0, dataSub.y0 = East-Width/2, North-Height/2
 
         # fig,
         axs = plt.subplot(1, 2, 2)
         fig, im, cbar = Simulator.plotData2D(
-            xLoc[indx], yLoc[indy], subData, marker=False, fig=fig, ax=axs
+            xLoc[indx], yLoc[indy], dataSub.values, marker=False, fig=fig, ax=axs
         )
         cbar.set_label('TMI (nT)')
         return dataSub
 
     if isinstance(survey, DataIO.dataGrid):
+
         xLoc = np.asarray(range(survey.nx))*survey.dx+survey.x0
         yLoc = np.asarray(range(survey.ny))*survey.dy+survey.y0
         xlim = survey.limits[:2]
         ylim = survey.limits[2:]
-        data = survey.values
+
     else:
-        xLoc = survey.srcField.rxList[0].locs[:, 0]
-        yLoc = survey.srcField.rxList[0].locs[:, 1]
-        xlim = np.asarray([xLoc.min(), xLoc.max()])
-        ylim = np.asarray([yLoc.min(), yLoc.max()])
-        data = survey.dobs
+        print("Only implemented for class 'dataGrid'")
+        # xLoc = survey.srcField.rxList[0].locs[:, 0]
+        # yLoc = survey.srcField.rxList[0].locs[:, 1]
+        # xlim = np.asarray([xLoc.min(), xLoc.max()])
+        # ylim = np.asarray([yLoc.min(), yLoc.max()])
+        # data = survey.dobs
 
     out = widgets.interactive(
             dataSelector,

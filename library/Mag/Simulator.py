@@ -764,12 +764,12 @@ def plotData2D(x, y, d, title=None,
         # Already a grid
         else:
 
-            if x.ndim == 1:
-                X, Y = np.meshgrid(x, y)
-                d_grid = d
+            # if x.ndim == 1:
+            #     X, Y = np.meshgrid(x, y)
+            #     d_grid = d
 
-            else:
-                X, Y, d_grid = x, y, d
+            # else:
+            X, Y, d_grid = x, y, d
 
         if equalizeHist == 'HistEqualized':
             cdf, bins = exposure.cumulative_distribution(
@@ -789,11 +789,7 @@ def plotData2D(x, y, d, title=None,
         if colorbar:
             cbar = plt.colorbar(fraction=0.02)
 
-        if contours is None:
-
-            if vmin != vmax:
-                plt.contour(X, Y, d_grid, 10, vmin=vmin, vmax=vmax, cmap=my_cmap)
-        else:
+        if contours is not None:
             plt.contour(X, Y, d_grid, levels=contours, colors='k',
                         vmin=vmin, vmax=vmax)
 
