@@ -127,13 +127,14 @@
 }
 
 @Article{Froner2013,
-  author    = {B Froner and S Purves and J Lowell and J Henderson},
-  title     = {Perception of visual information: The role of colour in seismic interpretation},
-  journal   = {First Break},
-  year      = {2013},
-  volume    = {31},
-  month     = {04},
-  booktitle = {First Break},
+  author        = {B Froner and S Purves and J Lowell and J Henderson},
+  title         = {Perception of visual information: The role of colour in seismic interpretation},
+  journal       = {First Break},
+  year          = {2013},
+  volume        = {31},
+  month         = {04},
+  __markedentry = {[mdru:]},
+  booktitle     = {First Break},
 }
 
 @Article{Borland2007,
@@ -144,23 +145,8 @@
   volume        = {27},
   pages         = {14-7},
   month         = {03},
-  __markedentry = {[mdru:]},
-  booktitle     = {IEEE computer graphics and applications},
-}
-
-@Article{Salem2005,
-  author        = {Ahmed Salem},
-  title         = {Interpretation of magnetic data using analytic signal derivatives},
-  journal       = {Geophysical Prospecting},
-  year          = {2005},
-  volume        = {53},
-  number        = {1},
-  pages         = {75-82},
   __markedentry = {[mdru:6]},
-  abstract      = {ABSTRACT This paper develops an automatic method for interpretation of magnetic data using derivatives of the analytic signal. A linear equation is derived to provide source location parameters of a 2D magnetic body without a priori information about the nature of the source. Then using the source location parameters, the nature of the source can be ascertained. The method has been tested using theoretical simulations with random noise for two 2D magnetic models placed at different depths with respect to the observation height. In both cases, the method gave a good estimate for the location and shape of the sources. Good results were obtained on two field data sets.},
-  doi           = {10.1111/j.1365-2478.2005.00434.x},
-  eprint        = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1365-2478.2005.00434.x},
-  url           = {https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1365-2478.2005.00434.x},
+  booktitle     = {IEEE computer graphics and applications},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
