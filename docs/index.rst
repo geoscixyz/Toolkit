@@ -40,7 +40,6 @@ Contents:
    content/Demos/demos
    content/Tools/tools
    content/Interp/interp
-   Notebooks/index
    references
 
 
