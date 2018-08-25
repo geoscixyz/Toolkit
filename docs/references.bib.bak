@@ -127,26 +127,85 @@
 }
 
 @Article{Froner2013,
-  author        = {B Froner and S Purves and J Lowell and J Henderson},
-  title         = {Perception of visual information: The role of colour in seismic interpretation},
-  journal       = {First Break},
-  year          = {2013},
-  volume        = {31},
-  month         = {04},
-  __markedentry = {[mdru:]},
-  booktitle     = {First Break},
+  author    = {B Froner and S Purves and J Lowell and J Henderson},
+  title     = {Perception of visual information: The role of colour in seismic interpretation},
+  journal   = {First Break},
+  year      = {2013},
+  volume    = {31},
+  month     = {04},
+  booktitle = {First Break},
 }
 
 @Article{Borland2007,
-  author        = {David Borland and Russell M Taylor II},
-  title         = {Rainbow Color Map (Still) Considered Harmful},
-  journal       = {IEEE computer graphics and applications},
-  year          = {2007},
-  volume        = {27},
-  pages         = {14-7},
-  month         = {03},
+  author    = {David Borland and Russell M Taylor},
+  title     = {Rainbow Color Map (Still) Considered Harmful},
+  journal   = {IEEE computer graphics and applications},
+  year      = {2007},
+  volume    = {27},
+  pages     = {14-7},
+  month     = {03},
+  booktitle = {IEEE computer graphics and applications},
+}
+
+@Article{Salem2005,
+  author   = {Ahmed Salem},
+  title    = {Interpretation of magnetic data using analytic signal derivatives},
+  journal  = {Geophysical Prospecting},
+  year     = {2005},
+  volume   = {53},
+  number   = {1},
+  pages    = {75-82},
+  abstract = {ABSTRACT This paper develops an automatic method for interpretation of magnetic data using derivatives of the analytic signal. A linear equation is derived to provide source location parameters of a 2D magnetic body without a priori information about the nature of the source. Then using the source location parameters, the nature of the source can be ascertained. The method has been tested using theoretical simulations with random noise for two 2D magnetic models placed at different depths with respect to the observation height. In both cases, the method gave a good estimate for the location and shape of the sources. Good results were obtained on two field data sets.},
+  doi      = {10.1111/j.1365-2478.2005.00434.x},
+  eprint   = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/j.1365-2478.2005.00434.x},
+  url      = {https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1365-2478.2005.00434.x},
+}
+
+@Article{Miller1994,
+  author  = {Hugh G. Miller and Vijay Singh},
+  title   = {Potential field tilt—a new concept for location of potential field sources},
+  journal = {Journal of Applied Geophysics},
+  year    = {1994},
+  volume  = {32},
+  number  = {2},
+  pages   = {213 - 217},
+  issn    = {0926-9851},
+  doi     = {https://doi.org/10.1016/0926-9851(94)90022-1},
+  url     = {http://www.sciencedirect.com/science/article/pii/0926985194900221},
+}
+
+@Article{Roest1992,
+  author        = {Walter R. Roest and Jacob Verhoef and Mark Pilkington},
+  title         = {Magnetic interpretation using the 3-D analytic signal},
+  journal       = {GEOPHYSICS},
+  year          = {1992},
+  volume        = {57},
+  number        = {1},
+  pages         = {116-125},
+  __markedentry = {[mdru:]},
+  doi           = {10.1190/1.1443174},
+  eprint        = {https://doi.org/10.1190/1.1443174},
+  url           = { 
+        https://doi.org/10.1190/1.1443174
+    
+},
+}
+
+@Article{Nabighian1972,
+  author        = {Misac N. Nabighian},
+  title         = {The analytic signal of two-dimensional magnetic bodies with polygonal cross-section: Its properties and use for automated anomaly interpretation},
+  journal       = {Geophysics},
+  year          = {1972},
+  volume        = {37},
+  number        = {3},
+  pages         = {507-517},
   __markedentry = {[mdru:6]},
-  booktitle     = {IEEE computer graphics and applications},
+  doi           = {10.1190/1.1440276},
+  eprint        = {https://doi.org/10.1190/1.1440276},
+  url           = { 
+        https://doi.org/10.1190/1.1440276
+    
+},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
