@@ -1048,7 +1048,7 @@ def gridFiltersWidget(
     def plotWidgetUpC(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, UpwardDistance, Refresh, SaveGrid
+            ColorMap, Filters, UpDist, Refresh, SaveGrid
          ):
         if Filters == 'TMI':
             data = survey.values
@@ -1059,7 +1059,7 @@ def gridFiltersWidget(
             for prop in gridProps:
                 setattr(survey, '_{}'.format(prop), None)
             survey.valuesUpContinued = None
-            data = survey.upwardContinuation(z=UpwardDistance)
+            data = survey.upwardContinuation(z=UpDist)
             vmin, vmax = data.min(), data.max()
 
         plotIt(
@@ -1213,7 +1213,7 @@ def gridFiltersWidget(
                                       description='Grid Filters',
                                       disabled=False,
                                     ),
-                                  UpwardDistance=widgets.FloatSlider(
+                                  UpDist=widgets.FloatSlider(
                                     min=0, max=500, step=10, value=0,
                                     continuous_update=False
                                     ),
