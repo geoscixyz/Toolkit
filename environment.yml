@@ -19,9 +19,9 @@ dependencies:
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
     - SimPEG
-    # - sphinx
-    # - sphinx_rtd_theme
-    # - sphinxcontrib-bibtex
-    # - nbsphinx
-    # - nbstripout
-    # - numpydoc
+    - sphinx
+    - sphinx_rtd_theme
+    - sphinxcontrib-bibtex
+    - nbsphinx
+    - nbstripout
+    - numpydoc
