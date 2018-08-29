@@ -38,13 +38,10 @@ This notebook applies sunshading and image enhancements previously introduced in
 
 In this notebook, a subset of magnetic data from the Search Phase II dataset is processed using the suite of 2D magnetic filters presented in the synthetic model case study.
 
-**2.2.3. Edge detection**
+**2.2.3. Edge detection and depth to source**
 
-The edge-detection technique previously applied to the magnetic data generated from the our synthetic 3D geologic model, is applied here to a subset of the Search Phase II magnetic data.
+The edge-detection and depth to source technique previously applied to the magnetic data generated from the our synthetic 3D geologic model, is applied here to a subset of the Search Phase II magnetic data.
 
-**2.2.4. Depth to source**
-
-We choose a magnetic anomaly within the Search Phase II magnetic dataset and apply two different depth to source methods to assess the depth to the top of the magnetic body.
 
 
 .. links:

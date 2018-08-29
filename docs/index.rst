@@ -14,13 +14,17 @@ MDRU-GIF’s Geophysical Toolkit for Geologists was developed to provide guidanc
 
 placeholder fig
 
-.. figure:: ./images/draped_mag_placeholder.PNG
+.. figure:: ./images/draped_mag_search.PNG
     :align: center
-    :figwidth: 75 %
+    :figwidth: 40 %
 
 This site provides a portal to a suite of basic geophysical tools or applications that can aid geological interpretation of magnetic data. The content and applications here were assembled as part of a project initiated between UBC’s Mineral Deposit Research Unit and Geophysical Inversion Facility. Magnetic data was focused on for this particular Toolkit, due to the usefulness and common availability of this type of geophysical data. However, applications for analysis of other geophysical data types may be added in the future.
 
 Magnetic data can provide great insight into geology at and below the Earth’s surface. Magnetic data is of particular use where geology is concealed by weathering or overburden, as this cover material is often magnetically ‘transparent’. The distribution of lithological units, and geologic structure can be interpreted helping geoscientists piece together a more complete picture of the Earth’s subsurface.
+
+.. figure:: ./images/tilt_depth_over_tmi.PNG
+    :align: center
+    :figwidth: 60 %
 
 Some background information, references, and resources, related to the Earth’s magnetic field, magnetic response of rocks, and magnetic data collection are provided in an :ref:`introductory section<Mag_index>`.
 
@@ -28,7 +32,6 @@ To get initiated with the tools in the Geophysical Toolkit, we have set up both 
 
 Geological knowledge is vital to meaningful interpretation of geophysical data. Therefore, geophysicists and geologists must work together to gain the maximum value from geophysical data! Neither the geophysicist nor the geologist needs to be an expert in the other’s field, they simply need to bring their respective skills and knowledge to the table and start a conversation.
 
-:cite:`Blakely1996`
 
 Contents:
 ^^^^^^^^^
