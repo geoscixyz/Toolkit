@@ -360,11 +360,18 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
     print('Image saved as: ' + fileName + ' Click box again to continue...')
 
 
-def exportShapefile(polylines, attributes, EPSGCode=26909, fileName='MyShape', label='AvgDepth', attType='int'):
+def exportShapefile(
+    polylines, attributes, EPSGCode=26909, fileName='MyShape',
+    label='AvgDepth', attType='int', directory="Output"
+):
     """
         Function to export polylines to shape file with attribute
 
     """
+
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
+
     crs = from_epsg(EPSGCode)
 
     # Define a polygon feature geometry with one attribute
@@ -374,7 +381,10 @@ def exportShapefile(polylines, attributes, EPSGCode=26909, fileName='MyShape', l
 
     }
 
-    with fiona.open("Output/" + fileName + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs) as c:
+    with fiona.open(
+        directory + os.path.sep + fileName + '.shp', 'w', 'ESRI Shapefile',
+        schema, crs=crs
+    ) as c:
         ## If there are multiple geometries, put the "for" loop here
         for poly, att in zip(polylines, attributes):
 
