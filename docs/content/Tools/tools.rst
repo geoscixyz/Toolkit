@@ -4,20 +4,15 @@
 =============================================
 
 
-Gallery of all notebooks/apps here
+Gallery
 
 Data prep - data downsampling and cropping
 
 Data gridding
 
-2D Filters
+Visualization and enhancements
 
-Visualization/enhancements
+2D filters
 
-Edge detection
+Edge detection and depth to source
 
-Depth to top
-
-Dip modelling
-
-etc
