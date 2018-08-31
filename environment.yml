@@ -17,7 +17,7 @@ dependencies:
   - krb5
   - mkl
   - pip:
-    - git+https://github.com/geoscixyz/Toolkit.git@deploy_binder
+    - git+https://github.com/geoscixyz/Toolkit.git@master
     - SimPEG
     - sphinx
     - sphinx_rtd_theme

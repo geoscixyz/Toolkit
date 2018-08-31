@@ -1425,7 +1425,9 @@ def worldViewerWidget(worldFile, data, grid, z=0):
 
         # Add axes with rotating arrow
         pos = axs.get_position()
-        arrowAxs = fig.add_axes([10, 10,  pos.width*.5, pos.height*0.5], projection='3d')
+        arrowAxs = fig.add_axes(
+          [10, 10,  pos.width*.5, pos.height*0.5], projection='3d'
+        )
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
                         [-.25, -.25, -.25, -.25, 0.5],
@@ -1445,23 +1447,33 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         # Face 1
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 2, 4], 0],
                                                    xyz[[1, 2, 4], 1],
-                                                   xyz[[1, 2, 4], 2]))], facecolors='w'))
+                                                   xyz[[1, 2, 4], 2]))],
+                                                   facecolors='w')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 4], 0],
                                                    xyz[[0, 1, 4], 1],
-                                                   xyz[[0, 1, 4], 2]))], facecolors='k'))
+                                                   xyz[[0, 1, 4], 2]))],
+                                                   facecolors='k')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[2, 3, 4], 0],
                                                    xyz[[2, 3, 4], 1],
-                                                   xyz[[2, 3, 4], 2]))], facecolors='w'))
+                                                   xyz[[2, 3, 4], 2]))],
+                                                   facecolors='w')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 3, 4], 0],
-                                               xyz[[0, 3, 4], 1],
-                                               xyz[[0, 3, 4], 2]))], facecolors='k'))
+                                                   xyz[[0, 3, 4], 1],
+                                                   xyz[[0, 3, 4], 2]))],
+                                                   facecolors='k')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0],
                                                    xyz[:4, 1],
-                                                   xyz[:4, 2]))], facecolors='r'))
+                                                   xyz[:4, 2]))],
+                                                   facecolors='r')
+                                  )
 
         arrowAxs.view_init(30, -90)
         arrowAxs.set_xlim([-0.5, 0.5])
@@ -1477,17 +1489,18 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         return axs
 
     out = widgets.interactive(plotLocs,
-                        placeID = widgets.Dropdown(
-                        options=list(data.keys()),
-                        value=list(data.keys())[0],
-                        description='Location:',
-                        disabled=False,
-                        ))
+                              placeID=widgets.Dropdown(
+                                options=list(data.keys()),
+                                value=list(data.keys())[0],
+                                description='Location:',
+                                disabled=False,
+                                )
+                              )
 
     return out
 
 
-def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
+def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
 
     def plotWidget(
             Resolution, Method,
@@ -1517,7 +1530,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
 
         if SaveGrid:
             DataIO.arrayToRaster(
-                d_grid, fileName + '.tiff',
+                d_grid, saveAs + '.tiff',
                 EPSGCode, X.min(), X.max(),  Y.min(), Y.max(), 1,
                 dataType='grid')
 
