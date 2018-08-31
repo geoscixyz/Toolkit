@@ -887,7 +887,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 def dataHillsideWidget(
     survey, EPSGCode=26909,
-    figName='DataHillshade', dpi=300,
+    saveAs='DataHillshade', dpi=300,
     scatterData=None
   ):
 
@@ -922,13 +922,13 @@ def dataHillsideWidget(
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
         if SaveGeoTiff:
-            plt.savefig("Output/" + figName + '.png', dpi=dpi)
+            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + figName + '.png'))
+            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
 
             DataIO.arrayToRaster(
-                img, "Output/" + figName + '.tiff',
+                img, "Output/" + saveAs + '.tiff',
                 EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
 
@@ -1012,9 +1012,10 @@ def dataHillsideWidget(
 
 
 def gridFiltersWidget(
-  survey, gridFilter='derivativeX',
-  figName=None,
-  EPSGCode=26909, dpi=300, scatterData=None):
+    survey, gridFilter='derivativeX',
+    saveAs=None,
+    EPSGCode=26909, dpi=300, scatterData=None
+):
 
     gridProps = [
         'derivativeX', 'derivativeY', 'firstVertical',
@@ -1039,16 +1040,17 @@ def gridFiltersWidget(
             equalizeHist = 'HistEqualized'
 
         vScale *= np.abs(survey.values.max() - survey.values.min()) * np.abs(data.max() - data.min())
+
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
         )
 
     def plotWidgetUpC(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, UpwardDistance, Refresh, SaveGrid
+            ColorMap, Filters, UpDist, Refresh, SaveGrid
          ):
         if Filters == 'TMI':
             data = survey.values
@@ -1059,13 +1061,13 @@ def gridFiltersWidget(
             for prop in gridProps:
                 setattr(survey, '_{}'.format(prop), None)
             survey.valuesUpContinued = None
-            data = survey.upwardContinuation(z=UpwardDistance)
+            data = survey.upwardContinuation(z=UpDist)
             vmin, vmax = data.min(), data.max()
 
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
         # gridOut = DataIO.dataGrid()
@@ -1098,13 +1100,13 @@ def gridFiltersWidget(
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
     def plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
          ):
 
         if SaveGrid:
@@ -1132,16 +1134,16 @@ def gridFiltersWidget(
 
         if SaveGrid:
 
-            if figName is None:
-              figName = gridFilter
+            if saveAs is None:
+                saveAs = gridFilter
 
-            plt.savefig("Output/" + figName + '.png', dpi=dpi)
+            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + figName + '.png'))
+            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
 
             DataIO.arrayToRaster(
-                img, "Output/" + figName + '.tiff',
+                img, "Output/" + saveAs + '.tiff',
                 EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
 
@@ -1182,6 +1184,7 @@ def gridFiltersWidget(
 
         assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
 
+    print(saveAs)
     if gridFilter == 'upwardContinuation':
         out = widgets.interactive(plotWidgetUpC,
                                   SunAzimuth=widgets.FloatSlider(
@@ -1213,7 +1216,7 @@ def gridFiltersWidget(
                                       description='Grid Filters',
                                       disabled=False,
                                     ),
-                                  UpwardDistance=widgets.FloatSlider(
+                                  UpDist=widgets.FloatSlider(
                                     min=0, max=500, step=10, value=0,
                                     continuous_update=False
                                     ),
