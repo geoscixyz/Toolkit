@@ -193,11 +193,7 @@ class dataGrid(object):
 
         if getattr(self, '_tiltAngle', None) is None:
 
-            Ftilt = self.gridFFT*np.sqrt(self.Kx**2. + self.Ky**2. + 1e-8)
-            tilt_pad = np.fft.ifft2(Ftilt)
-            tilt = np.real(
-                tilt_pad[self.npady:-self.npady, self.npadx:-self.npadx])
-            self._tiltAngle = np.arctan2(tilt, self.totalHorizontal)
+            self._tiltAngle = np.arctan2(self.firstVertical, self.totalHorizontal)
 
         return self._tiltAngle
 
@@ -360,10 +356,14 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
     print('Image saved as: ' + fileName + ' Click box again to continue...')
 
 
+<<<<<<< HEAD
 def exportShapefile(
     polylines, attributes, EPSGCode=26909, fileName='MyShape',
     label='AvgDepth', attType='int', directory="Output"
 ):
+=======
+def exportShapefile(polylines, attributes, EPSGCode=26909, saveAs='MyShape', label='AvgDepth', attType='int'):
+>>>>>>> master
     """
         Function to export polylines to shape file with attribute
 
@@ -381,10 +381,14 @@ def exportShapefile(
 
     }
 
+<<<<<<< HEAD
     with fiona.open(
         directory + os.path.sep + fileName + '.shp', 'w', 'ESRI Shapefile',
         schema, crs=crs
     ) as c:
+=======
+    with fiona.open("Output/" + saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs) as c:
+>>>>>>> master
         ## If there are multiple geometries, put the "for" loop here
         for poly, att in zip(polylines, attributes):
 
