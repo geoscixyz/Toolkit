@@ -42,4 +42,4 @@ after_success:
   - gcloud auth activate-service-account --key-file credentials/client-secret.json ;
   - gcloud config set project geologytoolkit ;
   - gcloud -q components update gae-python ;
-  - gcloud -q app deploy ./app.yaml --version ${TRAVIS_COMMIT} --promote;
+  - gcloud -q app deploy ./docs/app.yaml --version ${TRAVIS_COMMIT} --promote;
