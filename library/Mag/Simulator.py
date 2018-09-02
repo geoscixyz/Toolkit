@@ -1013,8 +1013,10 @@ def dataHillsideWidget(
 
 def gridFiltersWidget(
     survey, gridFilter='derivativeX',
-    saveAs=None,
-    EPSGCode=26909, dpi=300, scatterData=None
+    saveAs=None, ColorTransp=0.9, HSTransp=0.5,
+    EPSGCode=26909, dpi=300, scatterData=None,
+    SunAzimuth=90, SunAngle=15, vScale=5.,
+    ColorMap='RdBu_r'
 ):
 
     gridProps = [
@@ -1188,23 +1190,23 @@ def gridFiltersWidget(
     if gridFilter == 'upwardContinuation':
         out = widgets.interactive(plotWidgetUpC,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=90,
+                                    min=0, max=360, step=5, value=SunAzimuth,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
-                                    min=0, max=90, step=5, value=15,
+                                    min=0, max=90, step=5, value=SunAngle,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.9,
+                                    min=0, max=1, step=0.05, value=ColorTransp,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.50,
+                                    min=0, max=1, step=0.05, value=HSTransp,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=10, step=1., value=5.0,
+                                    min=1, max=10, step=1., value=vScale,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
-                                      value='RdBu_r',
+                                      value=ColorMap,
                                       description='ColorMap',
                                       disabled=False,
                                     ),
@@ -1241,23 +1243,23 @@ def gridFiltersWidget(
     elif gridFilter == 'RTP':
         out = widgets.interactive(plotWidgetRTP,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=90,
+                                    min=0, max=360, step=5, value=SunAzimuth,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
-                                    min=0, max=90, step=5, value=15,
+                                    min=0, max=90, step=5, value=SunAngle,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.9,
+                                    min=0, max=1, step=0.05, value=ColorTransp,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.50,
+                                    min=0, max=1, step=0.05, value=HSTransp,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=10, step=1., value=5.0,
+                                    min=1, max=10, step=1., value=vScale,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
-                                      value='RdBu_r',
+                                      value=ColorMap,
                                       description='ColorMap',
                                       disabled=False,
                                     ),
@@ -1299,23 +1301,23 @@ def gridFiltersWidget(
     else:
         out = widgets.interactive(plotWidget,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=90,
+                                    min=0, max=360, step=5, value=SunAzimuth,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
-                                    min=0, max=90, step=5, value=15,
+                                    min=0, max=90, step=5, value=SunAngle,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.9,
+                                    min=0, max=1, step=0.05, value=ColorTransp,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.50,
+                                    min=0, max=1, step=0.05, value=HSTransp,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=10, step=1., value=5.0,
+                                    min=1, max=10, step=1., value=vScale,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
-                                      value='RdBu_r',
+                                      value=ColorMap,
                                       description='ColorMap',
                                       disabled=False,
                                     ),
@@ -1571,7 +1573,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
 
     out = widgets.interactive(plotWidget,
                               Resolution=widgets.FloatText(
-                                        value=10,
+                                        value=25,
                                         description='Grid (m):',
                                         disabled=False
                                 ),
