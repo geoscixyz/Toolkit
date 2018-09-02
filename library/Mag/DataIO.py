@@ -184,7 +184,9 @@ class dataGrid(object):
 
         if getattr(self, '_totalHorizontal', None) is None:
 
-            self._totalHorizontal = np.sqrt(self.derivativeX**2. + self.derivativeY**2. + 1e-8)
+            self._totalHorizontal = np.sqrt(
+                self.derivativeX**2. + self.derivativeY**2. + 1e-8
+            )
 
         return self._totalHorizontal
 
@@ -193,7 +195,9 @@ class dataGrid(object):
 
         if getattr(self, '_tiltAngle', None) is None:
 
-            self._tiltAngle = np.arctan2(self.firstVertical, self.totalHorizontal)
+            self._tiltAngle = np.arctan2(
+                self.firstVertical, self.totalHorizontal
+            )
 
         return self._tiltAngle
 
@@ -202,7 +206,11 @@ class dataGrid(object):
 
         if getattr(self, '_analyticSignal', None) is None:
 
-            self._analyticSignal = np.sqrt(self.derivativeX**2. + self.derivativeY**2. + self.firstVertical**2. + 1e-8)
+            self._analyticSignal = np.sqrt(
+                self.derivativeX**2. +
+                self.derivativeY**2. +
+                self.firstVertical**2. + 1e-8
+            )
 
         return self._analyticSignal
 
@@ -226,7 +234,11 @@ class dataGrid(object):
             Function to calculate upward continued data
         """
 
-        upFact = -np.sqrt(self.Kx**2. + self.Ky**2.)*z/np.sqrt(self.dx**2. + self.dy**2.)
+        upFact = -(
+            np.sqrt(self.Kx**2. + self.Ky**2.) *
+            z /
+            np.sqrt(self.dx**2. + self.dy**2.)
+        )
         FzUpw = self.gridFFT*np.exp(upFact)
         zUpw_pad = np.fft.ifft2(FzUpw)
         zUpw = np.real(
@@ -288,9 +300,12 @@ def loadGeoTiffFile(fileName, plotIt=True):
     rasterObject = gdal.Open(fileName)
     band = rasterObject.GetRasterBand(1)
     data.values = band.ReadAsArray()
-    data.nx, data.ny = data.values.shape[1], data.values.shape[0]
-    data.x0, y0 = rasterObject.GetGeoTransform()[0], rasterObject.GetGeoTransform()[3]
-    data.dx, data.dy = np.round(rasterObject.GetGeoTransform()[1]), np.round(np.abs(rasterObject.GetGeoTransform()[5]))
+    data.nx = data.values.shape[1]
+    data.ny = data.values.shape[0]
+    data.x0 = rasterObject.GetGeoTransform()[0]
+    y0 = rasterObject.GetGeoTransform()[3]
+    data.dx = np.round(rasterObject.GetGeoTransform()[1])
+    data.dy = np.round(np.abs(rasterObject.GetGeoTransform()[5]))
     data.y0 = y0 - data.ny*data.dy
     data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, y0]
 
@@ -311,8 +326,11 @@ def loadGeoTiffFile(fileName, plotIt=True):
     return data
 
 
-
-def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, dataType='image'):
+def arrayToRaster(
+    array, fileName, EPSGCode,
+    xMin, xMax, yMin, yMax,
+    numBands, dataType='image'
+):
     """
         Source:
 
@@ -328,7 +346,7 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
     driver = gdal.GetDriverByName('GTiff')
 
     # Chose type
-    if dataType=='image':
+    if dataType == 'image':
         encodeType = gdal.GDT_Byte
     else:
         encodeType = gdal.GDT_Float32
@@ -338,7 +356,6 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
         encodeType,
     )
 
- #options=['PHOTOMETRIC=RGB']
     print(xMin, pixelXSize, 0, yMax, 0, pixelYSize)
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
@@ -356,11 +373,19 @@ def arrayToRaster(array, fileName, EPSGCode, xMin, xMax, yMin, yMax, numBands, d
     print('Image saved as: ' + fileName + ' Click box again to continue...')
 
 
-def exportShapefile(polylines, attributes, EPSGCode=26909, saveAs='MyShape', label='AvgDepth', attType='int'):
+def exportShapefile(
+    polylines, attributes, EPSGCode=26909,
+    saveAs='MyShape', label='AvgDepth', attType='int', directory="Output"
+):
+
     """
         Function to export polylines to shape file with attribute
 
     """
+
+    if not os.path.isdir(directory):
+        os.makedirs(directory)
+
     crs = from_epsg(EPSGCode)
 
     # Define a polygon feature geometry with one attribute
@@ -370,11 +395,14 @@ def exportShapefile(polylines, attributes, EPSGCode=26909, saveAs='MyShape', lab
 
     }
 
-    with fiona.open("Output/" + saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs) as c:
-        ## If there are multiple geometries, put the "for" loop here
+    with fiona.open(
+        directory + os.path.sep + saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs
+    ) as c:
+
+        # If there are multiple geometries, put the "for" loop here
         for poly, att in zip(polylines, attributes):
 
-            if np.all([np.any(att), len(poly)>1]):
+            if np.all([np.any(att), len(poly) > 1]):
                 pline = LineString(list(tuple(map(tuple, poly))))
 
                 res = {}
