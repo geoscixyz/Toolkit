@@ -16,6 +16,7 @@ class Doc_Test(unittest.TestCase):
         for root, dirList, fileList in os.walk(self.path_to_docs):
             for filename in fileList:
                 if 'ipynb' in filename:
+                    print('Found a ipynb to strip!')
                     os.system('nbstripout ' + os.path.join(root, filename))
 
     def test_html(self):
@@ -34,6 +35,8 @@ class Doc_Test(unittest.TestCase):
             "{0!s}".format((html_path))])
         assert check == 0
 
+        self.nbstripout()
+
     def test_linkcheck(self):
         doctrees_path = os.path.sep.join(
             self.path_to_docs.split(os.path.sep) + ['_build']+['doctrees']
@@ -51,6 +54,8 @@ class Doc_Test(unittest.TestCase):
             "%s"%(link_path)
         ])
         assert check == 0
+
+        self.nbstripout()
 
 
 

@@ -10,11 +10,12 @@ NBDIR = os.path.sep.join(
 class TestNotebooks(unittest.TestCase):
 
     def nbstripout(self):
-
+        print('Notebook stripping out!')
         # search for notebooks
         for root, dirList, fileList in os.walk(NBDIR):
             for filename in fileList:
                 if 'ipynb' in filename:
+                    print('Found a ipynb to strip!')
                     os.system('nbstripout ' + os.path.join(root, filename))
 
     def test_notebooks(self):
@@ -22,6 +23,7 @@ class TestNotebooks(unittest.TestCase):
         self.nbstripout()
         Test = testipynb.TestNotebooks(directory=NBDIR, timeout=10000)
         self.assertTrue(Test.run_tests())
+        self.nbstripout()
 
 
 if __name__ == "__main__":
