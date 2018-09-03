@@ -10,8 +10,7 @@ class Doc_Test(unittest.TestCase):
         return os.path.sep.join(dirname.split(os.path.sep)[:-1] + ['docs'])
 
     def nbstripout(self):
-        # get relevant directories
-        # cwd = os.getcwd()
+        print('Notebook stripping out!')
 
         # search for images that have been missed
         for root, dirList, fileList in os.walk(self.path_to_docs):
