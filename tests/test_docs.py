@@ -34,6 +34,8 @@ class Doc_Test(unittest.TestCase):
             "{0!s}".format((html_path))])
         assert check == 0
 
+        self.nbstripout()
+
     def test_linkcheck(self):
         doctrees_path = os.path.sep.join(
             self.path_to_docs.split(os.path.sep) + ['_build']+['doctrees']
@@ -51,6 +53,8 @@ class Doc_Test(unittest.TestCase):
             "%s"%(link_path)
         ])
         assert check == 0
+
+        self.nbstripout()
 
 
 
