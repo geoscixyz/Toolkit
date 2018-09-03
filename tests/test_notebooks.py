@@ -5,13 +5,24 @@ import unittest
 NBDIR = os.path.sep.join(
     os.path.abspath(__file__).split(os.path.sep)[:-2] + ['docs/Notebooks']
 )
-# IGNORE = ["TEM_VerticalConductor_1D_stiched_invrsion"]
+
 
 class TestNotebooks(unittest.TestCase):
 
+    def nbstripout(self):
+
+        # search for notebooks
+        for root, dirList, fileList in os.walk(NBDIR):
+            for filename in fileList:
+                if 'ipynb' in filename:
+                    os.system('nbstripout ' + os.path.join(root, filename))
+
     def test_notebooks(self):
+
+        self.nbstripout()
         Test = testipynb.TestNotebooks(directory=NBDIR, timeout=10000)
         self.assertTrue(Test.run_tests())
+
 
 if __name__ == "__main__":
     unittest.main()

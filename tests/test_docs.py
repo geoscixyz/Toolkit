@@ -9,6 +9,16 @@ class Doc_Test(unittest.TestCase):
         dirname, filename = os.path.split(os.path.abspath(__file__))
         return os.path.sep.join(dirname.split(os.path.sep)[:-1] + ['docs'])
 
+    def nbstripout(self):
+        # get relevant directories
+        # cwd = os.getcwd()
+
+        # search for images that have been missed
+        for root, dirList, fileList in os.walk(self.path_to_docs):
+            for filename in fileList:
+                if 'ipynb' in filename:
+                    os.system('nbstripout ' + os.path.join(root, filename))
+
     def test_html(self):
         doctrees_path = os.path.sep.join(
             self.path_to_docs.split(os.path.sep) + ['_build']+['doctrees']
@@ -16,6 +26,8 @@ class Doc_Test(unittest.TestCase):
         html_path = os.path.sep.join(
             self.path_to_docs.split(os.path.sep) + ['_build']+['html']
         )
+
+        self.nbstripout()
 
         check = subprocess.call(["sphinx-build", "-nW", "-b", "html", "-d",
             "{0!s}".format((doctrees_path)) ,
@@ -31,6 +43,8 @@ class Doc_Test(unittest.TestCase):
             self.path_to_docs.split(os.path.sep) + ['_build']
         )
 
+        self.nbstripout()
+
         check = subprocess.call([
             "sphinx-build", "-nW", "-b", "linkcheck", "-d",
             "%s"%(doctrees_path),
@@ -38,6 +52,8 @@ class Doc_Test(unittest.TestCase):
             "%s"%(link_path)
         ])
         assert check == 0
+
+
 
 if __name__ == '__main__':
     unittest.main()
