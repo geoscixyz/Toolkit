@@ -15,6 +15,7 @@ class TestNotebooks(unittest.TestCase):
         for root, dirList, fileList in os.walk(NBDIR):
             for filename in fileList:
                 if 'ipynb' in filename:
+                    print('Found a ipynb to strip!')
                     os.system('nbstripout ' + os.path.join(root, filename))
 
     def test_notebooks(self):

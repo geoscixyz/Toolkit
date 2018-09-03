@@ -16,6 +16,7 @@ class Doc_Test(unittest.TestCase):
         for root, dirList, fileList in os.walk(self.path_to_docs):
             for filename in fileList:
                 if 'ipynb' in filename:
+                    print('Found a ipynb to strip!')
                     os.system('nbstripout ' + os.path.join(root, filename))
 
     def test_html(self):
