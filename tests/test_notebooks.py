@@ -6,7 +6,7 @@ NBDIR = os.path.sep.join(
     os.path.abspath(__file__).split(os.path.sep)[:-2] + ['docs/Notebooks']
 )
 
-BASEDIR = os.path.abspath(__file__).split(os.path.sep)[:-2]
+BASEDIR = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[:-2])
 
 
 class TestNotebooks(unittest.TestCase):
