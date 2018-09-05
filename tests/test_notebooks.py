@@ -6,13 +6,15 @@ NBDIR = os.path.sep.join(
     os.path.abspath(__file__).split(os.path.sep)[:-2] + ['docs/Notebooks']
 )
 
+BASEDIR = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[:-2])
+
 
 class TestNotebooks(unittest.TestCase):
 
     def nbstripout(self):
         print('Notebook stripping out!')
         # search for notebooks
-        for root, dirList, fileList in os.walk(NBDIR):
+        for root, dirList, fileList in os.walk(BASEDIR):
             for filename in fileList:
                 if 'ipynb' in filename:
                     print('Found a ipynb to strip!')
