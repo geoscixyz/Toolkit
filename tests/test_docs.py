@@ -15,7 +15,7 @@ class Doc_Test(unittest.TestCase):
         # search for images that have been missed
         for root, dirList, fileList in os.walk(self.path_to_docs):
             for filename in fileList:
-                if 'ipynb' in filename:
+                if filename.endswith(".ipynb"):
                     print('Found a ipynb to strip!')
                     os.system('nbstripout ' + os.path.join(root, filename))
 
@@ -34,7 +34,7 @@ class Doc_Test(unittest.TestCase):
             "{0!s}".format((self.path_to_docs)),
             "{0!s}".format((html_path))])
 
-        self.nbstripout()
+        # self.nbstripout()
 
         assert check == 0
 
@@ -57,7 +57,7 @@ class Doc_Test(unittest.TestCase):
             "%s"%(link_path)
         ])
 
-        self.nbstripout()
+        # self.nbstripout()
 
         assert check == 0
 
@@ -65,22 +65,22 @@ class Doc_Test(unittest.TestCase):
 if __name__ == '__main__':
 
 
-    print('Notebook stripping out!')
-    dirname, filename = os.path.split(os.path.abspath(__file__))
-    BASEPATH = os.path.sep.join(dirname.split(os.path.sep)[:-1])
+    # print('Notebook stripping out!')
+    # dirname, filename = os.path.split(os.path.abspath(__file__))
+    # BASEPATH = os.path.sep.join(dirname.split(os.path.sep)[:-1])
 
-    # search for images that have been missed
-    for root, dirList, fileList in os.walk(self.path_to_docs):
-        for filename in fileList:
-            if 'ipynb' in filename:
-                print('Found a ipynb to strip!')
-                os.system('nbstripout ' + os.path.join(BASEPATH, filename))
+    # # search for images that have been missed
+    # for root, dirList, fileList in os.walk(self.path_to_docs):
+    #     for filename in fileList:
+    #         if 'ipynb' in filename:
+    #             print('Found a ipynb to strip!')
+    #             os.system('nbstripout ' + os.path.join(BASEPATH, filename))
 
     unittest.main()
 
-    # search for images that have been missed
-    for root, dirList, fileList in os.walk(self.path_to_docs):
-        for filename in fileList:
-            if 'ipynb' in filename:
-                print('Found a ipynb to strip!')
-                os.system('nbstripout ' + os.path.join(BASEPATH, filename))
+    # # search for images that have been missed
+    # for root, dirList, fileList in os.walk(self.path_to_docs):
+    #     for filename in fileList:
+    #         if 'ipynb' in filename:
+    #             print('Found a ipynb to strip!')
+    #             os.system('nbstripout ' + os.path.join(BASEPATH, filename))
