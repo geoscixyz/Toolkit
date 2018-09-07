@@ -887,7 +887,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 def dataHillsideWidget(
     survey, EPSGCode=26909,
-    figName='DataHillshade', dpi=300,
+    saveAs='DataHillshade', dpi=300,
     scatterData=None
   ):
 
@@ -922,13 +922,13 @@ def dataHillsideWidget(
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
         if SaveGeoTiff:
-            plt.savefig("Output/" + figName + '.png', dpi=dpi)
+            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + figName + '.png'))
+            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
 
             DataIO.arrayToRaster(
-                img, "Output/" + figName + '.tiff',
+                img, "Output/" + saveAs + '.tiff',
                 EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
 
@@ -1012,9 +1012,12 @@ def dataHillsideWidget(
 
 
 def gridFiltersWidget(
-  survey, gridFilter='derivativeX',
-  figName=None,
-  EPSGCode=26909, dpi=300, scatterData=None):
+    survey, gridFilter='derivativeX',
+    saveAs=None, ColorTransp=0.9, HSTransp=0.5,
+    EPSGCode=26909, dpi=300, scatterData=None,
+    SunAzimuth=90, SunAngle=15, vScale=5.,
+    ColorMap='RdBu_r'
+):
 
     gridProps = [
         'derivativeX', 'derivativeY', 'firstVertical',
@@ -1039,10 +1042,11 @@ def gridFiltersWidget(
             equalizeHist = 'HistEqualized'
 
         vScale *= np.abs(survey.values.max() - survey.values.min()) * np.abs(data.max() - data.min())
+
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
         )
 
     def plotWidgetUpC(
@@ -1065,7 +1069,7 @@ def gridFiltersWidget(
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
         # gridOut = DataIO.dataGrid()
@@ -1098,13 +1102,13 @@ def gridFiltersWidget(
         plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid
+            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
     def plotIt(
             X, Y, data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid
+            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
          ):
 
         if SaveGrid:
@@ -1132,16 +1136,16 @@ def gridFiltersWidget(
 
         if SaveGrid:
 
-            if figName is None:
-              figName = gridFilter
+            if saveAs is None:
+                saveAs = gridFilter
 
-            plt.savefig("Output/" + figName + '.png', dpi=dpi)
+            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + figName + '.png'))
+            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
 
             DataIO.arrayToRaster(
-                img, "Output/" + figName + '.tiff',
+                img, "Output/" + saveAs + '.tiff',
                 EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
 
@@ -1182,26 +1186,27 @@ def gridFiltersWidget(
 
         assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
 
+    print(saveAs)
     if gridFilter == 'upwardContinuation':
         out = widgets.interactive(plotWidgetUpC,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=90,
+                                    min=0, max=360, step=5, value=SunAzimuth,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
-                                    min=0, max=90, step=5, value=15,
+                                    min=0, max=90, step=5, value=SunAngle,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.9,
+                                    min=0, max=1, step=0.05, value=ColorTransp,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.50,
+                                    min=0, max=1, step=0.05, value=HSTransp,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=10, step=1., value=5.0,
+                                    min=1, max=10, step=1., value=vScale,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
-                                      value='RdBu_r',
+                                      value=ColorMap,
                                       description='ColorMap',
                                       disabled=False,
                                     ),
@@ -1238,23 +1243,23 @@ def gridFiltersWidget(
     elif gridFilter == 'RTP':
         out = widgets.interactive(plotWidgetRTP,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=90,
+                                    min=0, max=360, step=5, value=SunAzimuth,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
-                                    min=0, max=90, step=5, value=15,
+                                    min=0, max=90, step=5, value=SunAngle,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.9,
+                                    min=0, max=1, step=0.05, value=ColorTransp,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.50,
+                                    min=0, max=1, step=0.05, value=HSTransp,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=10, step=1., value=5.0,
+                                    min=1, max=10, step=1., value=vScale,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
-                                      value='RdBu_r',
+                                      value=ColorMap,
                                       description='ColorMap',
                                       disabled=False,
                                     ),
@@ -1296,23 +1301,23 @@ def gridFiltersWidget(
     else:
         out = widgets.interactive(plotWidget,
                                   SunAzimuth=widgets.FloatSlider(
-                                    min=0, max=360, step=5, value=90,
+                                    min=0, max=360, step=5, value=SunAzimuth,
                                     continuous_update=False),
                                   SunAngle=widgets.FloatSlider(
-                                    min=0, max=90, step=5, value=15,
+                                    min=0, max=90, step=5, value=SunAngle,
                                     continuous_update=False),
                                   ColorTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.9,
+                                    min=0, max=1, step=0.05, value=ColorTransp,
                                     continuous_update=False),
                                   HSTransp=widgets.FloatSlider(
-                                    min=0, max=1, step=0.05, value=0.50,
+                                    min=0, max=1, step=0.05, value=HSTransp,
                                     continuous_update=False),
                                   vScale=widgets.FloatSlider(
-                                    min=1, max=10, step=1., value=5.0,
+                                    min=1, max=10, step=1., value=vScale,
                                     continuous_update=False),
                                   ColorMap=widgets.Dropdown(
                                       options=cmaps(),
-                                      value='RdBu_r',
+                                      value=ColorMap,
                                       description='ColorMap',
                                       disabled=False,
                                     ),
@@ -1422,7 +1427,9 @@ def worldViewerWidget(worldFile, data, grid, z=0):
 
         # Add axes with rotating arrow
         pos = axs.get_position()
-        arrowAxs = fig.add_axes([10, 10,  pos.width*.5, pos.height*0.5], projection='3d')
+        arrowAxs = fig.add_axes(
+          [10, 10,  pos.width*.5, pos.height*0.5], projection='3d'
+        )
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
                         [-.25, -.25, -.25, -.25, 0.5],
@@ -1442,23 +1449,33 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         # Face 1
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[1, 2, 4], 0],
                                                    xyz[[1, 2, 4], 1],
-                                                   xyz[[1, 2, 4], 2]))], facecolors='w'))
+                                                   xyz[[1, 2, 4], 2]))],
+                                                   facecolors='w')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 1, 4], 0],
                                                    xyz[[0, 1, 4], 1],
-                                                   xyz[[0, 1, 4], 2]))], facecolors='k'))
+                                                   xyz[[0, 1, 4], 2]))],
+                                                   facecolors='k')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[2, 3, 4], 0],
                                                    xyz[[2, 3, 4], 1],
-                                                   xyz[[2, 3, 4], 2]))], facecolors='w'))
+                                                   xyz[[2, 3, 4], 2]))],
+                                                   facecolors='w')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[[0, 3, 4], 0],
-                                               xyz[[0, 3, 4], 1],
-                                               xyz[[0, 3, 4], 2]))], facecolors='k'))
+                                                   xyz[[0, 3, 4], 1],
+                                                   xyz[[0, 3, 4], 2]))],
+                                                   facecolors='k')
+                                  )
 
         arrowAxs.add_collection3d(Poly3DCollection([list(zip(xyz[:4, 0],
                                                    xyz[:4, 1],
-                                                   xyz[:4, 2]))], facecolors='r'))
+                                                   xyz[:4, 2]))],
+                                                   facecolors='r')
+                                  )
 
         arrowAxs.view_init(30, -90)
         arrowAxs.set_xlim([-0.5, 0.5])
@@ -1474,17 +1491,18 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         return axs
 
     out = widgets.interactive(plotLocs,
-                        placeID = widgets.Dropdown(
-                        options=list(data.keys()),
-                        value=list(data.keys())[0],
-                        description='Location:',
-                        disabled=False,
-                        ))
+                              placeID=widgets.Dropdown(
+                                options=list(data.keys()),
+                                value=list(data.keys())[0],
+                                description='Location:',
+                                disabled=False,
+                                )
+                              )
 
     return out
 
 
-def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
+def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
 
     def plotWidget(
             Resolution, Method,
@@ -1514,7 +1532,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
 
         if SaveGrid:
             DataIO.arrayToRaster(
-                d_grid, fileName + '.tiff',
+                d_grid, saveAs + '.tiff',
                 EPSGCode, X.min(), X.max(),  Y.min(), Y.max(), 1,
                 dataType='grid')
 
@@ -1555,7 +1573,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, fileName='DataGrid'):
 
     out = widgets.interactive(plotWidget,
                               Resolution=widgets.FloatText(
-                                        value=10,
+                                        value=25,
                                         description='Grid (m):',
                                         disabled=False
                                 ),

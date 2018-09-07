@@ -7,8 +7,8 @@ Notebooks
 .. toctree::
    :maxdepth: 1
 
-   Synthetic_Gridding.ipynb
    Synthetic_Viewer.ipynb
+   Synthetic_Gridding.ipynb
    Synthetic_Filters.ipynb
    Synthetic_Tilt_Depth_Estimation.ipynb
    Search_Viewer.ipynb
