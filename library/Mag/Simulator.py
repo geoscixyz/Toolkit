@@ -1533,7 +1533,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
 
         if Method == 'minimumCurvature':
             gridCC, d_grid = MathUtils.minCurvatureInterp(
-                np.c_[xLoc, yLoc], survey.dobs,
+                np.c_[xLoc, yLoc], data,
                 gridSize=Resolution, method='spline'
                 )
             X = gridCC[:, 0].reshape(d_grid.shape, order='F')
@@ -1588,9 +1588,9 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
         return gridOut
 
     # Calculate the original map extents
-    xLoc = survey.srcField.rxList[0].locs[:, 0]
-    yLoc = survey.srcField.rxList[0].locs[:, 1]
-    data = survey.dobs
+    xLoc = survey[:, 0]
+    yLoc = survey[:, 1]
+    data = survey[:, -1]
 
     out = widgets.interactive(plotWidget,
                               Resolution=widgets.FloatText(

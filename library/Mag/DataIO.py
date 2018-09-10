@@ -11,6 +11,8 @@ import os
 from shapely.geometry import mapping, LineString
 import fiona
 from fiona.crs import from_epsg
+from download import download
+import ipywidgets as widgets
 
 
 class dataGrid(object):
@@ -501,3 +503,54 @@ def exportShapefile(
                 # geometry of of the original polygon shapefile
                 res['geometry'] = mapping(pline)
                 c.write(res)
+
+
+def cloudScrapper():
+
+    def downloader(url, saveAs, dtype, downloadNow, ):
+
+        if downloadNow:
+            print("Downloading... wait for it...")
+            path = download(url, './Output/' + saveAs, replace=True)
+
+            if dtype == 'CSV':
+                data = np.loadtxt('./Output/' + saveAs)
+                print('CSV file loaded. You will need to grid your data')
+
+            elif dtype == 'GeoTiff':
+                data = DataIO.loadGeoTiffFile('./Output/' + saveAs)
+
+            elif dtype == 'GRD':
+
+                assert os.name == 'nt', "GRD file reader only available for Windows users. Sorry, you can complain to Geosoft"
+                data = DataIO.loadGRDFile('./Output/' + saveAs)
+
+            return data
+
+    out = widgets.interactive(downloader,
+                              url=widgets.Text(
+                                    value="https://www.dropbox.com/s/keggwmaal6wj1rh/Synthetic_Forward_TMI.dat?dl=0",
+                                    description='Sharable link:',
+                                    disabled=False
+                                ),
+                               saveAs=widgets.Text(
+                                    value="Synthetic_Forward_TMI.dat",
+                                    description='Save as:',
+                                    disabled=False
+                                ),
+                              dtype=widgets.RadioButtons(
+                                    options=['CSV', 'GeoTiff', 'GRD'],
+                                    description='File Type:',
+                                    disabled=False
+                                ),
+                              downloadNow=widgets.ToggleButton(
+                                  value=False,
+                                  description='Download',
+                                  disabled=False,
+                                  button_style='',
+                                  tooltip='Description',
+                                  icon='check'
+                                ),
+
+                             )
+    return out
