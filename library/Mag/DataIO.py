@@ -448,7 +448,6 @@ def arrayToRaster(
         encodeType,
     )
 
-    print(xMin, pixelXSize, 0, yMax, 0, pixelYSize)
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
     datasetSRS = osr.SpatialReference()

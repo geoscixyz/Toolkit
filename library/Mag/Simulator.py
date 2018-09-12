@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 import numpy as np
 import ipywidgets as widgets
+from ipywidgets import Layout
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from scipy.interpolate import griddata, interp1d, RegularGridInterpolator
@@ -963,25 +964,40 @@ def dataHillsideWidget(
         xLoc = survey.srcField.rxList[0].locs[:, 0]
         yLoc = survey.srcField.rxList[0].locs[:, 1]
         data = survey.dobs
+    SunAzimuth = widgets.FloatSlider(
+        min=0, max=360, step=5, value=90, continuous_update=False,
+        description='SunAzimuth'
+        )
+    SunAngle = widgets.FloatSlider(
+        min=0, max=90, step=5, value=15, continuous_update=False,
+        description='SunAngle'
+        )
+    ColorTransp = widgets.FloatSlider(
+        min=0, max=1, step=0.05, value=0.9, continuous_update=False,
+        description='ColorTransp'
+        )
+    HSTransp = widgets.FloatSlider(
+        min=0, max=1, step=0.05, value=0.50, continuous_update=False,
+        description='HSTransp'
+        )
 
-    out = widgets.interactive(plotWidget,
-                              SunAzimuth=widgets.FloatSlider(
-                                min=0, max=360, step=5, value=90, continuous_update=False),
-                              SunAngle=widgets.FloatSlider(min=0, max=90, step=5, value=15, continuous_update=False),
-                              ColorTransp=widgets.FloatSlider(
-                                min=0, max=1, step=0.05, value=0.9, continuous_update=False),
-                              HSTransp=widgets.FloatSlider(
-                                min=0, max=1, step=0.05, value=0.50, continuous_update=False),
-                              vScale=widgets.FloatSlider(
-                                min=1, max=10, step=1., value=5.0, continuous_update=False),
-                              Contours=widgets.IntSlider(min=10, max=100, step=10, value=50, continuous_update=False),
-                              ColorMap=widgets.Dropdown(
-                                  options=cmaps(),
-                                  value='RdBu_r',
-                                  description='ColorMap',
-                                  disabled=False,
-                                ),
-                              VminVmax=widgets.FloatRangeSlider(
+    vScale = widgets.FloatSlider(
+        min=1, max=10, step=1., value=5.0, continuous_update=False,
+        description='vScale'
+        )
+
+    Contours = widgets.IntSlider(
+        min=10, max=100, step=10, value=50, continuous_update=False,
+        description='Contours'
+        )
+    ColorMap = widgets.Dropdown(
+        options=cmaps(),
+        value='RdBu_r',
+        description='ColorMap',
+        disabled=False,
+    )
+
+    VminVmax = widgets.FloatRangeSlider(
                                     value=[data.min(), data.max()],
                                     min=data.min(),
                                     max=data.max(),
@@ -992,14 +1008,16 @@ def dataHillsideWidget(
                                     orientation='horizontal',
                                     readout=True,
                                     readout_format='.1f',
-                                ),
-                              Equalize=widgets.Dropdown(
+                                )
+
+    Equalize = widgets.Dropdown(
                                   options=['Linear', 'HistEqualized'],
                                   value='HistEqualized',
                                   description='Color Normalization',
                                   disabled=False,
-                                ),
-                              SaveGeoTiff=widgets.ToggleButton(
+                                )
+
+    SaveGeoTiff = widgets.ToggleButton(
                                   value=False,
                                   description='Export geoTiff',
                                   disabled=False,
@@ -1007,8 +1025,38 @@ def dataHillsideWidget(
                                   tooltip='Description',
                                   icon='check'
                                 )
+
+    out = widgets.interactive_output(plotWidget,
+                              {
+                                    'SunAzimuth': SunAzimuth,
+                                    'SunAngle': SunAngle,
+                                    'ColorTransp': ColorTransp,
+                                    'HSTransp': HSTransp,
+                                    'vScale': vScale,
+                                    'Contours': Contours,
+                                    'ColorMap': ColorMap,
+                                    'VminVmax': VminVmax,
+                                    'Equalize': Equalize,
+                                    'SaveGeoTiff': SaveGeoTiff
+                                }
                               )
-    return out
+
+    left = widgets.VBox(
+            [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
+             Contours, ColorMap, VminVmax, Equalize, SaveGeoTiff],
+            layout=Layout(
+                width='35%', height='400px', margin='60px 0px 0px 0px'
+            )
+        )
+
+    image = widgets.VBox(
+              [out],
+              layout=Layout(
+                  width='65%', height='400px', margin='0px 0px 0px 0px'
+              )
+            )
+
+    return widgets.HBox([left, out])
 
 
 def gridFiltersWidget(
@@ -1087,12 +1135,6 @@ def gridFiltersWidget(
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
-        # gridOut = DataIO.dataGrid()
-        # gridOut.x0, gridOut.y0 = survey.x0, survey.y0
-        # gridOut.nx, gridOut.ny = survey.nx, survey.ny
-        # gridOut.dx, gridOut.dy = survey.dx, survey.dy
-        # gridOut.values = data
-        # survey.valuesFilledUC = data
         survey._gridPadded = None
         survey._gridFFT = None
 
