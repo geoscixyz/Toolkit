@@ -26,6 +26,7 @@ class dataGrid(object):
     values = None
     valuesFilled = None
     valuesFilledUC = None
+    heightUC = None
     inc = 90.
     dec = 90.
     indVal = None
@@ -317,6 +318,7 @@ class dataGrid(object):
             Function to calculate upward continued data
         """
 
+        self.heightUC = z
         upFact = -(
             np.sqrt(self.Kx**2. + self.Ky**2.) *
             z /
