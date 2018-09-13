@@ -8,6 +8,7 @@ import gdal
 import osr
 import ogr
 import os
+import re
 from shapely.geometry import mapping, LineString
 import fiona
 from fiona.crs import from_epsg
@@ -506,47 +507,56 @@ def exportShapefile(
                 c.write(res)
 
 
-def cloudScrapper():
+def fetchData(
+    path="./assets/Search/MAG_UTM09.tiff",
+    localCloud='Local', dtype='CSV', loadFile=False
+):
 
-    def downloader(url, saveAs, dtype, downloadNow, ):
+    def dataLoader(localCloud, path, dtype, loadFile):
 
-        if downloadNow:
-            print("Downloading... wait for it...")
-            path = download(url, './Output/' + saveAs, replace=True)
+        if loadFile:
+
+            if localCloud == 'Cloud':
+                print("Downloading... wait for it...")
+                fileName = re.split('[/?]', path)[-2]
+                out = download(path, './Output/' + fileName, replace=True)
+                path = './Output/' + fileName
 
             if dtype == 'CSV':
-                data = np.loadtxt('./Output/' + saveAs)
+                data = np.loadtxt(path)
                 print('CSV file loaded. You will need to grid your data')
 
             elif dtype == 'GeoTiff':
-                data = DataIO.loadGeoTiffFile('./Output/' + saveAs)
+                data = loadGeoTiffFile(path, plotIt=True)
 
             elif dtype == 'GRD':
 
                 assert os.name == 'nt', "GRD file reader only available for Windows users. Sorry, you can complain to Geosoft"
-                data = DataIO.loadGRDFile('./Output/' + saveAs)
+                data = loadGRDFile(path)
 
             return data
 
-    out = widgets.interactive(downloader,
-                              url=widgets.Text(
-                                    value="https://www.dropbox.com/s/keggwmaal6wj1rh/Synthetic_Forward_TMI.dat?dl=0",
-                                    description='Sharable link:',
+    out = widgets.interactive(dataLoader,
+                              localCloud=widgets.RadioButtons(
+                                    options=['Local', 'Cloud'],
+                                    description='File Type:',
+                                    value=localCloud,
                                     disabled=False
                                 ),
-                               saveAs=widgets.Text(
-                                    value="Synthetic_Forward_TMI.dat",
-                                    description='Save as:',
+                              path=widgets.Text(
+                                    value=path,
+                                    description='Path:',
                                     disabled=False
                                 ),
                               dtype=widgets.RadioButtons(
                                     options=['CSV', 'GeoTiff', 'GRD'],
+                                    value=dtype,
                                     description='File Type:',
                                     disabled=False
                                 ),
-                              downloadNow=widgets.ToggleButton(
-                                  value=False,
-                                  description='Download',
+                              loadFile=widgets.ToggleButton(
+                                  value=loadFile,
+                                  description='Load/Download',
                                   disabled=False,
                                   button_style='',
                                   tooltip='Description',
