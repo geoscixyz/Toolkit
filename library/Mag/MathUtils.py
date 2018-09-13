@@ -85,13 +85,13 @@ def rotate(xyz, center, theta, phi):
 
 
 def minCurvatureInterp(
-    locs, data,
+    xyz, data, xyzOut=None,
     vectorX=None, vectorY=None, vectorZ=None, gridSize=10,
     tol=1e-5, iterMax=None, method='spline'
 ):
     """
     Interpolate properties with a minimum curvature interpolation
-    :param locs:  numpy.array of size n-by-3 of point locations
+    :param xyz:  numpy.array of size n-by-3 of point locations
     :param data: numpy.array of size n-by-m of values to be interpolated
     :param vectorX: numpy.ndarray Gridded locations along x-axis [Default:None]
     :param vectorY: numpy.ndarray Gridded locations along y-axis [Default:None]
@@ -141,104 +141,105 @@ def minCurvatureInterp(
             ), format="csr")
         return aveCC2F
 
-    assert locs.shape[0] == data.shape[0], ("Number of interpolated locs " +
+    assert xyz.shape[0] == data.shape[0], ("Number of interpolated xyz " +
                                             "must match number of data")
 
     if vectorY is not None:
-        assert locs.shape[1] >= 2, (
+        assert xyz.shape[1] >= 2, (
                 "Found vectorY as an input." +
                 " Point locations must contain X and Y coordinates."
             )
 
     if vectorZ is not None:
-        assert locs.shape[1] == 3, (
+        assert xyz.shape[1] == 3, (
                 "Found vectorZ as an input." +
                 " Point locations must contain X, Y and Z coordinates."
             )
 
-    ndim = locs.shape[1]
+    ndim = xyz.shape[1]
 
-    # Define a new grid based on data extent
-    if vectorX is None:
-        xmin, xmax = locs[:, 0].min(), locs[:, 0].max()
-        nCx = int((xmax-xmin)/gridSize)
-        vectorX = xmin+np.cumsum(np.ones(nCx) * gridSize)
+    if xyzOut is None:
+        # Define a new grid based on data extent
+        if vectorX is None:
+            xmin, xmax = xyz[:, 0].min(), xyz[:, 0].max()
+            nCx = int((xmax-xmin)/gridSize)
+            vectorX = xmin+np.cumsum(np.ones(nCx) * gridSize)
 
-    if vectorY is None and ndim >= 2:
-        ymin, ymax = locs[:, 1].min(), locs[:, 1].max()
-        nCy = int((ymax-ymin)/gridSize)
-        vectorY = ymin+np.cumsum(np.ones(nCy) * gridSize)
+        if vectorY is None and ndim >= 2:
+            ymin, ymax = xyz[:, 1].min(), xyz[:, 1].max()
+            nCy = int((ymax-ymin)/gridSize)
+            vectorY = ymin+np.cumsum(np.ones(nCy) * gridSize)
 
-    if vectorZ is None and ndim == 3:
-        zmin, zmax = locs[:, 2].min(), locs[:, 2].max()
-        nCz = int((zmax-zmin)/gridSize)
-        vectorZ = zmin+np.cumsum(np.ones(nCz) * gridSize)
+        if vectorZ is None and ndim == 3:
+            zmin, zmax = xyz[:, 2].min(), xyz[:, 2].max()
+            nCz = int((zmax-zmin)/gridSize)
+            vectorZ = zmin+np.cumsum(np.ones(nCz) * gridSize)
 
-    if ndim == 3:
-        gridCx, gridCy, gridCz = np.meshgrid(vectorX, vectorY, vectorZ)
-        gridCC = np.c_[mkvc(gridCx), mkvc(gridCy), mkvc(gridCz)]
-    elif ndim == 2:
-        gridCx, gridCy = np.meshgrid(vectorX, vectorY)
-        gridCC = np.c_[mkvc(gridCx), mkvc(gridCy)]
+        if ndim == 3:
+            gridCx, gridCy, gridCz = np.meshgrid(vectorX, vectorY, vectorZ)
+            gridCC = np.c_[mkvc(gridCx), mkvc(gridCy), mkvc(gridCz)]
+        elif ndim == 2:
+            gridCx, gridCy = np.meshgrid(vectorX, vectorY)
+            gridCC = np.c_[mkvc(gridCx), mkvc(gridCy)]
+        else:
+            gridCC = vectorX
     else:
-        gridCC = vectorX
-
-    # Build the cKDTree for distance lookup
-    tree = cKDTree(locs)
-    # Get the grid location
-    d, ind = tree.query(gridCC, k=1)
+        # Use the locations given by user
+        gridCC = xyzOut
 
     if method == 'relaxation':
 
-        Ave = aveCC2F(gridCx)
+        # Ave = aveCC2F(gridCx)
 
-        count = 0
-        residual = 1.
+        # count = 0
+        # residual = 1.
 
-        m = np.zeros((gridCC.shape[0], data.shape[1]))
+        # m = np.zeros((gridCC.shape[0], data.shape[1]))
 
-        # Begin with neighrest primers
-        for ii in range(m.shape[1]):
-            # F = NearestNDInterpolator(mesh.gridCC[ijk], data[:, ii])
-            m[:, ii] = data[ind, ii]
+        # # Begin with neighrest primers
+        # for ii in range(m.shape[1]):
+        #     # F = NearestNDInterpolator(mesh.gridCC[ijk], data[:, ii])
+        #     m[:, ii] = data[ind, ii]
 
-        while np.all([count < iterMax, residual > tol]):
-            for ii in range(m.shape[1]):
-                # F = NearestNDInterpolator(mesh.gridCC[ijk], data[:, ii])
-                m[:, ii] = data[ind, ii]
-            mtemp = m
-            m = Ave.T * (Ave * m)
-            residual = np.linalg.norm(m-mtemp)/np.linalg.norm(mtemp)
-            count += 1
+        # while np.all([count < iterMax, residual > tol]):
+        #     for ii in range(m.shape[1]):
+        #         # F = NearestNDInterpolator(mesh.gridCC[ijk], data[:, ii])
+        #         m[:, ii] = data[ind, ii]
+        #     mtemp = m
+        #     m = Ave.T * (Ave * m)
+        #     residual = np.linalg.norm(m-mtemp)/np.linalg.norm(mtemp)
+        #     count += 1
 
-        return gridCC, m
+        # return gridCC, m
+        NotImplementedError("method='relaxation' not yet implemented")
 
     elif method == 'spline':
 
-        ndat = locs.shape[0]
+        ndat = xyz.shape[0]
         # nC = int(nCx*nCy)
 
         A = np.zeros((ndat, ndat))
-        for i in range(ndat):
 
-            r = (locs[i, 0] - locs[:, 0])**2. + (locs[i, 1] - locs[:, 1])**2. +1e-8
-            A[i, :] = r.T * (np.log((r.T)**0.5) - 1.)
+        X, Y = np.meshgrid(xyz[:, 0], xyz[:, 1])
+        # for i in range(ndat):
 
-        # Solve system for the weights
-        w = bicgstab(A, data, tol=1e-6)
+        r = (X.T - X)**2. + (Y.T - Y)**2. + 1e-8
+        A = r.T * (np.log((r.T)**0.5) - 1.)
 
-        # Compute new solution
-        # Reformat the line data locations but skip every n points for test
-        nC = gridCC.shape[0]
-        m = np.zeros(nC)
+        # # Solve system for the weights
+        w = sp.sparse.linalg.bicgstab(A, data, tol=1e-4)
 
+        m = np.zeros(gridCC.shape[0])
         # We can parallelize this part later
-        for i in range(nC):
+        for ii in range(xyz.shape[0]):
 
-            r = (gridCC[i, 0] - locs[:, 0])**2. + (gridCC[i, 1] - locs[:, 1])**2. + 1e+4
-            m[i] = np.sum(w[0] * r.T * (np.log((r.T)**0.5) - 1.))
+            r = (gridCC[:, 0] - xyz[ii, 0])**2. + (gridCC[:, 1] - xyz[ii, 1])**2.
+            m += w[0][ii] * (r).T * (np.log((r.T)**0.5) - 1.)
 
-        return gridCC, m.reshape(gridCx.shape, order='F')
+        if xyzOut is None:
+            m = m.reshape(gridCx.shape, order='F')
+
+        return gridCC, m
 
     else:
 

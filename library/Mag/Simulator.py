@@ -1020,9 +1020,10 @@ def gridFiltersWidget(
 ):
 
     gridProps = [
+        'valuesFilledUC', 'valuesFilled',
         'derivativeX', 'derivativeY', 'firstVertical',
         'totalHorizontal', 'tiltAngle', 'analyticSignal',
-        'RTP', 'gridFFT', 'gridPadded'
+        'RTP', 'gridFFT', 'gridPadded',
       ]
 
     def plotWidget(
@@ -1031,20 +1032,26 @@ def gridFiltersWidget(
             ColorMap, Filters, Refresh, SaveGrid,
          ):
 
+        # if Refresh:
+        #     for prop in gridProps:
+        #         setattr(survey, '_{}'.format(prop), None)
+
         if Filters == 'TMI':
             data = survey.values
-            vmin, vmax = data.min(), data.max()
+            ind = ~np.isnan(data)
+            vmin, vmax = data[ind].min(), data[ind].max()
             equalizeHist = 'HistEqualized'
 
         else:
             data = getattr(survey, '{}'.format(Filters))
-            vmin, vmax = np.percentile(data, 5), np.percentile(data, 95)
+            ind = ~np.isnan(data)
+            vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
             equalizeHist = 'HistEqualized'
 
-        vScale *= np.abs(survey.values.max() - survey.values.min()) * np.abs(data.max() - data.min())
+        vScale *= np.abs(survey.values[ind].max() - survey.values[ind].min()) * np.abs(data[ind].max() - data[ind].min())
 
         plotIt(
-            X, Y, data, SunAzimuth, SunAngle,
+            data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
         )
@@ -1054,20 +1061,28 @@ def gridFiltersWidget(
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, UpDist, Refresh, SaveGrid
          ):
+
+        if Refresh:
+            for prop in gridProps:
+                setattr(survey, '_{}'.format(prop), None)
+
         if Filters == 'TMI':
             data = survey.values
-            vmin, vmax = data.min(), data.max()
+            ind = ~np.isnan(data)
+            vmin, vmax = data[ind].min(), data[ind].max()
 
         else:
 
             for prop in gridProps:
                 setattr(survey, '_{}'.format(prop), None)
-            survey.valuesUpContinued = None
+
             data = survey.upwardContinuation(z=UpDist)
-            vmin, vmax = data.min(), data.max()
+
+            ind = ~np.isnan(data)
+            vmin, vmax = data[ind].min(), data[ind].max()
 
         plotIt(
-            X, Y, data, SunAzimuth, SunAngle,
+            data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
@@ -1077,7 +1092,7 @@ def gridFiltersWidget(
         # gridOut.nx, gridOut.ny = survey.nx, survey.ny
         # gridOut.dx, gridOut.dy = survey.dx, survey.dy
         # gridOut.values = data
-        survey.valuesUpContinued = data
+        # survey.valuesFilledUC = data
         survey._gridPadded = None
         survey._gridFFT = None
 
@@ -1088,25 +1103,32 @@ def gridFiltersWidget(
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, inc, dec, Refresh, SaveGrid
          ):
+
+        # if Refresh:
+        #     for prop in gridProps:
+        #         setattr(survey, '_{}'.format(prop), None)
+
         if Filters == 'TMI':
             data = survey.values
-            vmin, vmax = data.min(), data.max()
+            ind = ~np.isnan(data)
+            vmin, vmax = data[ind].min(), data[ind].max()
 
         else:
             survey._RTP = None
             survey.inc = inc
             survey.dec = dec
             data = survey.RTP
-            vmin, vmax = data.min(), data.max()
+            ind = ~np.isnan(data)
+            vmin, vmax = data[ind].min(), data[ind].max()
 
         plotIt(
-            X, Y, data, SunAzimuth, SunAngle,
+            data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
     def plotIt(
-            X, Y, data, SunAzimuth, SunAngle,
+            data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
          ):
@@ -1125,7 +1147,7 @@ def gridFiltersWidget(
 
         # Add shading
         X, Y, data, im, CS = plotDataHillside(
-            X, Y, data,
+            survey.hx, survey.hy, data,
             axs=axs, cmap=ColorMap,
             clabel=False, resolution=10,
             vmin=vmin, vmax=vmax, contours=50,
@@ -1172,21 +1194,20 @@ def gridFiltersWidget(
 
             plt.show()
 
-    # Calculate the original map extents
-    if isinstance(survey, DataIO.dataGrid):
-        # survey = MathUtils.gridFilter()
-        # survey.grid = survey.values
-        # survey.dx = survey.dx
-        # survey.dy = survey.dy
+    # # Calculate the original map extents
+    # if isinstance(survey, DataIO.dataGrid):
+    #     # survey = MathUtils.gridFilter()
+    #     # survey.grid = survey.values
+    #     # survey.dx = survey.dx
+    #     # survey.dy = survey.dy
 
-        X, Y = survey.hx, survey.hy
+    #     X, Y = survey.hx, survey.hy
 
-        data = getattr(survey, '{}'.format(gridFilter))
-    else:
+    #     data = getattr(survey, '{}'.format(gridFilter))
+    # else:
 
-        assert isinstance(survey, DataIO.dataGrid), 'Only implemented for grids'
+    assert isinstance(survey, DataIO.dataGrid), "Only implemented for objects of class DataIO.dataGrid"
 
-    print(saveAs)
     if gridFilter == 'upwardContinuation':
         out = widgets.interactive(plotWidgetUpC,
                                   SunAzimuth=widgets.FloatSlider(
@@ -1512,7 +1533,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
 
         if Method == 'minimumCurvature':
             gridCC, d_grid = MathUtils.minCurvatureInterp(
-                np.c_[xLoc, yLoc], survey.dobs,
+                np.c_[xLoc, yLoc], data,
                 gridSize=Resolution, method='spline'
                 )
             X = gridCC[:, 0].reshape(d_grid.shape, order='F')
@@ -1567,9 +1588,9 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
         return gridOut
 
     # Calculate the original map extents
-    xLoc = survey.srcField.rxList[0].locs[:, 0]
-    yLoc = survey.srcField.rxList[0].locs[:, 1]
-    data = survey.dobs
+    xLoc = survey[:, 0]
+    yLoc = survey[:, 1]
+    data = survey[:, -1]
 
     out = widgets.interactive(plotWidget,
                               Resolution=widgets.FloatText(
