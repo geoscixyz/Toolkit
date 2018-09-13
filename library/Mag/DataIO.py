@@ -14,7 +14,7 @@ import fiona
 from fiona.crs import from_epsg
 from download import download
 import ipywidgets as widgets
-
+import shapefile
 
 class dataGrid(object):
     """
@@ -465,6 +465,30 @@ def arrayToRaster(
 
     dataset.FlushCache()  # Write to disk.
     print('Image saved as: ' + fileName + ' Click box again to continue...')
+
+
+def readShapefile(fileName):
+
+    world = shapefile.Reader(fileName)
+    # Extract lines from shape file
+    X, Y = [], []
+    for shape in world.shapeRecords():
+
+        for ii, part in enumerate(shape.shape.parts):
+
+            if ii != len(shape.shape.parts)-1:
+                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]:50]]
+                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]:50]]
+
+            else:
+                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]::50]]
+                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]::50]]
+
+            if len(x) > 10:
+                X.append(np.vstack(x))
+                Y.append(np.vstack(y))
+
+    return X, Y
 
 
 def exportShapefile(
