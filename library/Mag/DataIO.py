@@ -477,12 +477,12 @@ def readShapefile(fileName):
         for ii, part in enumerate(shape.shape.parts):
 
             if ii != len(shape.shape.parts)-1:
-                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]:50]]
-                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]:50]]
+                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]]]
+                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]]]
 
             else:
-                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]::50]]
-                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]::50]]
+                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:]]
+                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:]]
 
             if len(x) > 10:
                 X.append(np.vstack(x))

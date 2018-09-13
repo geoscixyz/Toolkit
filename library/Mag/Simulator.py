@@ -1,7 +1,7 @@
 from . import Mag
 from . import MathUtils
-from . import ProblemSetter
 from . import DataIO
+from . import ProblemSetter
 import SimPEG.PF as PF
 import shapefile
 from SimPEG.Utils import mkvc
@@ -161,7 +161,7 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
     plt.show()
 
 
-def ViewMagSurveyWidget(survey):
+def ViewMagSurveyWidget(survey, shapeFile=None):
 
     def MagSurvey2D(East, North, Azimuth, Length, Sampling, ):
 
@@ -177,7 +177,7 @@ def ViewMagSurveyWidget(survey):
 
         plotMagSurvey2D(
          xLoc, yLoc, data, a, b, Sampling,
-         fig=fig, ax=ax1, cmap=ColorMap, marker=False
+         fig=fig, ax=ax1, cmap=ColorMap, marker=False, shapeFile=shapeFile
         )
 
         # if Profile:
@@ -229,7 +229,7 @@ def ViewMagSurveyWidget(survey):
 
 
 def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
-                    fig=None, ax=None, vmin=None, vmax=None,
+                    fig=None, ax=None, vmin=None, vmax=None, shapeFile=None,
                     cmap='RdBu_r', equalizeHist='HistEqualized'):
     """
     Plot the data and line profile inside the spcified limits
@@ -249,6 +249,9 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
                          marker=marker, cmap=cmap,
                          colorbar=False, equalizeHist=equalizeHist)
 
+    if shapeFile is not None:
+        plotShapeFile(shapeFile, ax=ax)
+
     ax.plot(xLine, yLine, 'k.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
     cbar.set_label('TMI (nT)')
@@ -256,7 +259,8 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
             color='k', ha='right')
     ax.grid(True)
-
+    ax.set_xlim([x.min(), x.max()])
+    ax.set_ylim([y.min(), y.max()])
     return
 
 
@@ -601,7 +605,8 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
                      vmin=None, vmax=None, levels=None, resolution=25,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
-                     equalizeHist='HistEqualized', minCurvature=True, scatterData=None):
+                     equalizeHist='HistEqualized', minCurvature=True,
+                     scatterData=None, shapeFile=None):
 
     ls = LightSource(azdeg=azdeg, altdeg=altdeg)
 
@@ -699,10 +704,13 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
           vmin=scatterData['clim'][0],
           vmax=scatterData['clim'][1]
         )
-        axs.set_xlim([extent[0], extent[1]])
-        axs.set_ylim([extent[2], extent[3]])
-        axs.set_aspect('auto')
 
+    if shapeFile is not None:
+        plotShapeFile(shapeFile, ax=axs)
+
+    axs.set_xlim([extent[0], extent[1]])
+    axs.set_ylim([extent[2], extent[3]])
+    axs.set_aspect('auto')
     return X, Y, d_grid, im, CS
 
 
@@ -891,7 +899,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 def dataHillsideWidget(
     survey, EPSGCode=26909,
     saveAs='DataHillshade', dpi=300,
-    scatterData=None
+    scatterData=None, shapeFile=None
   ):
 
     def plotWidget(
@@ -920,7 +928,8 @@ def dataHillsideWidget(
           vmax=VminVmax[1], vmin=VminVmax[0],
           alpha=ColorTransp, alphaHS=HSTransp,
           ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-          equalizeHist=Equalize, scatterData=scatterData)
+          equalizeHist=Equalize, scatterData=scatterData,
+          shapeFile=shapeFile)
 
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
@@ -1066,7 +1075,7 @@ def gridFiltersWidget(
     saveAs=None, ColorTransp=0.9, HSTransp=0.5,
     EPSGCode=26909, dpi=300, scatterData=None,
     SunAzimuth=90, SunAngle=15, vScale=5.,
-    ColorMap='RdBu_r'
+    ColorMap='RdBu_r', shapeFile=None
 ):
 
     gridProps = [
@@ -1145,7 +1154,8 @@ def gridFiltersWidget(
             vmin=vmin, vmax=vmax, contours=50,
             alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-            equalizeHist=equalizeHist, scatterData=scatterData
+            equalizeHist=equalizeHist, scatterData=scatterData,
+            shapeFile=shapeFile
         )
 
         if SaveGrid:
@@ -1278,7 +1288,7 @@ def gridTilt2Depth(
     GridFileName=None, ColorTransp=0.9, HSTransp=0.5,
     ShapeFileName=None,
     EPSGCode=26909, dpi=300, scatterData=None,
-    SunAzimuth=90, SunAngle=15, vScale=5.,
+    SunAzimuth=90, SunAngle=15, vScale=5., shapeFile=None,
     ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
     markerSize=1
 ):
@@ -1344,14 +1354,14 @@ def gridTilt2Depth(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, GridFileName,
-            scatterData
+            scatterData, shapeFile
         )
 
     def plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs,
-            scatterData
+            scatterData, shapeFile
          ):
 
         if SaveGrid:
@@ -1374,7 +1384,8 @@ def gridTilt2Depth(
             vmin=vmin, vmax=vmax, contours=50,
             alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
-            equalizeHist=equalizeHist, scatterData=scatterData
+            equalizeHist=equalizeHist, scatterData=scatterData,
+            shapeFile=shapeFile
         )
 
         if SaveGrid:
@@ -1538,16 +1549,20 @@ def gridTilt2Depth(
     return out
 
 
+def plotShapeFile(shapeFile, ax=None, fill=True, linewidth=1):
+
+    X, Y = DataIO.readShapefile(shapeFile)
+
+    if ax is None:
+        ax = plt.subplot()
+
+    for x, y in zip(X, Y):
+        ax.plot(x, y, 'k', linewidth=linewidth)
+
+    return ax
+
+
 def worldViewerWidget(worldFile, data, grid, z=0):
-
-    X, Y = DataIO.readShapefile(worldFile)
-
-    def plotCountry(X, Y, ax=None, fill=True, linewidth=1):
-
-        for x, y in zip(X, Y):
-            ax.plot(x, y, 'k', linewidth=linewidth)
-
-        return ax
 
     def plotLocs(placeID):
 
@@ -1558,7 +1573,7 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         Zloc = np.ones_like(Xloc)*z
 
         locs = np.c_[mkvc(Xloc), mkvc(Yloc), mkvc(Zloc)]
-        survey = ProblemSetter.setSyntheticProblem(locs, EarthField=dataVals[-3:])
+        survey, _, _ = ProblemSetter.setSyntheticProblem(locs, EarthField=dataVals[-3:])
 
         xyz = survey.srcField.rxList[0].locs
         plt.figure(figsize=(10, 8))
@@ -1579,7 +1594,7 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         cbar.set_label('TMI (nT)')
 
         axs = plt.subplot(1, 2, 2)
-        axs = plotCountry(X, Y, ax=axs, fill=False)
+        axs = plotShapeFile(worldFile, ax=axs, fill=False)
         # axs.set_axis_off()
         axs.set_aspect('equal')
         pos = axs.get_position()
@@ -1673,7 +1688,7 @@ def worldViewerWidget(worldFile, data, grid, z=0):
     return out
 
 
-def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
+def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid', shapeFile=None):
 
     def plotWidget(
             Resolution, Method,
@@ -1713,7 +1728,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid'):
             # Add shading
             X, Y, d_grid, im, CS = plotDataHillside(
                 X, Y, d_grid, alpha=1., contours=Contours,
-                axs=axs, cmap=ColorMap, clabel=False)
+                axs=axs, cmap=ColorMap, clabel=False, shapeFile=shapeFile)
 
             # Add points at the survey locations
             plt.scatter(xLoc, yLoc, s=2, c='k')

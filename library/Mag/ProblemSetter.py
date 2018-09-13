@@ -1,9 +1,6 @@
 
 import numpy as np
-from . import Mag
-from . import MathUtils
-from . import Simulator
-from . import DataIO
+from library.Mag import Simulator, DataIO, MathUtils, Mag
 from SimPEG import PF, Utils, Mesh, Maps
 import ipywidgets as widgets
 from matplotlib.patches import Rectangle
@@ -31,28 +28,12 @@ def blockModel():
 
 
 def setSyntheticProblem(
-        rxLocs, EarthField=[50000, 90, 0],
-        topo=None, discretize=False, plotSections=False
+        rxLocs, EarthField=[50000, 90, 0], discretize=False
      ):
     """
         Set the synthetic problem with multiple blocks.
         Output the figure used in the doc
     """
-
-    # Import the data
-    # topo = np.genfromtxt('TKCtopoDwnS.dat', skip_header=1)
-    # fileName = './DIGHEM_Mag_floor10nt_25m.obs'
-
-    # Shift everything centered at origin
-    cntr = np.mean(rxLocs, axis=0)
-    rxLocs -= np.kron(np.ones((rxLocs.shape[0], 1)), cntr)
-
-    if topo is not None:
-        topo -= np.kron(np.ones((topo.shape[0], 1)), cntr)
-
-    # Create survey
-    survey = Mag.createMagSurvey(rxLocs, EarthField=EarthField)
-    cntr = np.mean(rxLocs, axis=0)
 
     if discretize:
         # Mesh discretization for plotting
@@ -65,12 +46,17 @@ def setSyntheticProblem(
         # Create a mesh
         mesh = Mesh.TensorMesh([hx, hy, hz], x0=x0)
         model = np.zeros(mesh.nC)
+    else:
+        mesh = []
+        model = []
 
-        if topo is not None:
-            actv = Utils.modelutils.surface2ind_topo(mesh, topo)
-        else:
-            actv = np.ones(mesh.nC, dtype='bool')
-        actvMap = Maps.InjectActiveCells(mesh, actv, np.nan)
+    # Shift everything centered at origin
+    cntr = np.mean(rxLocs, axis=0)
+    rxLocs -= np.kron(np.ones((rxLocs.shape[0], 1)), cntr)
+
+    # Create survey
+    survey = Mag.createMagSurvey(rxLocs, EarthField=EarthField)
+    cntr = np.mean(rxLocs, axis=0)
 
     # Cycle through the parameters, create blocks for forward and
     # discretize on to the mesh
@@ -107,71 +93,7 @@ def setSyntheticProblem(
 
             model[ind] += susc
 
-    if np.all([discretize, plotSections]):
-        model = model[actv]
-
-        # All ploting functions
-        fig = plt.figure(figsize=(10, 6))
-        axs = plt.subplot(1, 2, 1)
-        indy = int(mesh.vnC[1]/2)-18
-        indz = -32
-
-        # Plot horizontal section
-        im = mesh.plotSlice(
-            actvMap*model, normal='Z', ax=axs,
-            ind=indz, clim=[0.0, 0.1], pcolorOpts={'cmap': 'jet'}
-        )
-
-        a = np.r_[rxLocs[:, 0].min(), mesh.vectorCCy[indy]]
-        b = np.r_[rxLocs[:, 0].max(), mesh.vectorCCy[indy]]
-
-        plt.scatter(rxLocs[:, 0], rxLocs[:, 1], 10, c='k', marker='.')
-        plt.plot(np.r_[a[0], b[0]], np.r_[a[1], b[1]], 'r--')
-
-        axs.set_title(
-            'Plan view'
-        )
-        axs.set_xlabel('Easting (m)')
-        axs.set_ylabel('Northing (m)')
-        axs.set_aspect('equal')
-        axs.set_xlim(rxLocs[:, 0].min()-100, rxLocs[:, 0].max()+100)
-        axs.set_ylim(rxLocs[:, 1].min()-100, rxLocs[:, 1].max()+100)
-
-        # Plot vertical section
-        axs = plt.subplot(1, 2, 2)
-        indy = int(mesh.vnC[1]/2)-18
-        im = mesh.plotSlice(
-            actvMap*model, normal='Y', ax=axs,
-            ind=indy, clim=[0.0, 0.1], pcolorOpts={'cmap': 'jet'}
-        )
-
-        cbar = plt.colorbar(im[0], orientation='horizontal')
-        cbar.set_label('SI')
-
-        Simulator.plotProfile2D(
-            rxLocs[:, 0], rxLocs[:, 1], rxLocs[:, -1], a, b, 10, ax=axs,
-            coordinate_system='xProfile', ylabel='k:'
-        )
-
-        if topo is not None:
-            Simulator.plotProfile2D(
-                topo[:, 0], topo[:, 1], topo[:, -1], a, b, 10, ax=axs,
-                plotStr=['k-'],
-                coordinate_system='xProfile', ylabel=''
-            )
-
-        axs.set_title(
-            'EW Section'
-        )
-        axs.set_ylim(-1000, 100)
-        axs.set_aspect('equal')
-        axs.set_xlabel('Easting (m)')
-        axs.set_ylabel('Depth (m)')
-        axs.yaxis.set_label_position("right")
-        fig.savefig('./images/SyntheticModel.png', bbox_inches='tight')
-
-        plt.close()
-    return survey
+    return survey, mesh, model
 
 
 def meshBuilder(xyz, h, padDist, meshGlobal=None,
@@ -384,6 +306,95 @@ def refineTree(mesh, xyz, finalize=False, dtype="point", nCpad=[1, 1, 1]):
     return mesh
 
 
-# if __name__ == '__main__':
+if __name__ == '__main__':
 
+    # Load data and topo and build default model
+    assetDir = './../../docs/Notebooks/assets/TKC/'
+    survey = Mag.readMagneticsObservations('DIGHEM_Mag_floor10nt_25m.obs')
+    topo = np.genfromtxt('TKCtopoDwnS.dat', skip_header=1)
+    locs = survey.srcField.rxList[0].locs
 
+    # Build the problem
+    survey, mesh, model = setSyntheticProblem(locs, topo=topo, discretize=True)
+
+    if topo is not None:
+        topo -= np.kron(np.ones((topo.shape[0], 1)), cntr)
+
+    if topo is not None:
+        actv = Utils.modelutils.surface2ind_topo(mesh, topo)
+    else:
+        actv = np.ones(mesh.nC, dtype='bool')
+
+    model = model[actv]
+    actvMap = Maps.InjectActiveCells(mesh, actv, np.nan)
+
+    # All ploting functions
+    fig = plt.figure(figsize=(10, 6))
+    axs = plt.subplot(1, 2, 1)
+    indy = int(mesh.vnC[1]/2)-18
+    indz = -32
+
+    # Plot horizontal section
+    im = mesh.plotSlice(
+        actvMap*model, normal='Z', ax=axs,
+        ind=indz, clim=[0.0, 0.1], pcolorOpts={'cmap': 'jet'}
+    )
+
+    a = np.r_[rxLocs[:, 0].min(), mesh.vectorCCy[indy]]
+    b = np.r_[rxLocs[:, 0].max(), mesh.vectorCCy[indy]]
+
+    plt.scatter(rxLocs[:, 0], rxLocs[:, 1], 10, c='k', marker='.')
+    plt.plot(np.r_[a[0], b[0]], np.r_[a[1], b[1]], 'r--')
+
+    axs.set_title(
+        'Plan view'
+    )
+    axs.set_xlabel('Easting (m)')
+    axs.set_ylabel('Northing (m)')
+    axs.set_aspect('equal')
+    axs.set_xlim(rxLocs[:, 0].min()-100, rxLocs[:, 0].max()+100)
+    axs.set_ylim(rxLocs[:, 1].min()-100, rxLocs[:, 1].max()+100)
+
+    # Plot vertical section
+    axs = plt.subplot(1, 2, 2)
+    indy = int(mesh.vnC[1]/2)-18
+    im = mesh.plotSlice(
+        actvMap*model, normal='Y', ax=axs,
+        ind=indy, clim=[0.0, 0.1], pcolorOpts={'cmap': 'jet'}
+    )
+
+    cbar = plt.colorbar(im[0], orientation='horizontal')
+    cbar.set_label('SI')
+
+    Simulator.plotProfile2D(
+        rxLocs[:, 0], rxLocs[:, 1], rxLocs[:, -1], a, b, 10, ax=axs,
+        coordinate_system='xProfile', ylabel='k:'
+    )
+
+    if topo is not None:
+        Simulator.plotProfile2D(
+            topo[:, 0], topo[:, 1], topo[:, -1], a, b, 10, ax=axs,
+            plotStr=['k-'],
+            coordinate_system='xProfile', ylabel=''
+        )
+
+    axs.set_title(
+        'EW Section'
+    )
+    axs.set_ylim(-1000, 100)
+    axs.set_aspect('equal')
+    axs.set_xlabel('Easting (m)')
+    axs.set_ylabel('Depth (m)')
+    axs.yaxis.set_label_position("right")
+    fig.savefig('./images/SyntheticModel.png', bbox_inches='tight')
+
+    plt.close()
+
+    # Save contours to shapefile
+    zSlice = (actvMap*model).reshape(mesh.vnC, order='F')[:,:,indz]
+    contours = plt.contour(mesh.vectorCCx,mesh.vectorCCy, zSlice.T, [0.03,0.075,0.09]).allsegs[0]
+
+    DataIO.exportShapefile(
+            contours, [1]*len(contours),
+            saveAs='Synthetic_Zcontours',
+            directory="./assets/Synthetic")
