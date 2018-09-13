@@ -1,6 +1,6 @@
 .. _tools:
 
-3. Library of 2D Magnetic Data Analysis Tools
+3. Library of Magnetic Data Analysis Tools
 =============================================
 
 

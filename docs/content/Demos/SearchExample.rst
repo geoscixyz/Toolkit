@@ -11,7 +11,7 @@ data from our simple 3D geology scenario.
 
 For this case study, we use magnetic data from Geoscience BC’s `Search Phase
 II`_ project (Bates et al., 2017). The Search Phase II magnetic gradient and radiometric survey was
-flown in 2016, covering an area of 24,000 km^2 in west-central British Columbia
+flown in 2016, covering an area of 24,000 km\ :sup:`2` in west-central British Columbia
 where several producing and past-producing copper and molybdenum mines are
 located. East-west oriented flight lines were spaced 250 m apart. This was a
 draped survey with a flight height of 80 m. Below is an image of the residual

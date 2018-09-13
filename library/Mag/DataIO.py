@@ -8,10 +8,13 @@ import gdal
 import osr
 import ogr
 import os
+import re
 from shapely.geometry import mapping, LineString
 import fiona
 from fiona.crs import from_epsg
-
+from download import download
+import ipywidgets as widgets
+import shapefile
 
 class dataGrid(object):
     """
@@ -22,9 +25,13 @@ class dataGrid(object):
     nx, ny = 1, 1
     dx, dy = 1., 1.
     values = None
-    valuesUpContinued = None
+    valuesFilled = None
+    valuesFilledUC = None
+    heightUC = None
     inc = 90.
     dec = 90.
+    indVal = None
+    indNan = None
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -57,6 +64,17 @@ class dataGrid(object):
         return self._npadx
 
     @property
+    def gridCC(self):
+
+        if getattr(self, '_gridCC', None) is None:
+
+            X, Y = np.meshgrid(self.hx, self.hy)
+
+            self._gridCC = np.c_[mkvc(X), mkvc(Y)]
+
+        return self._gridCC
+
+    @property
     def npady(self):
 
         if getattr(self, '_npady', None) is None:
@@ -68,11 +86,21 @@ class dataGrid(object):
     def gridPadded(self):
 
         if getattr(self, '_gridPadded', None) is None:
+            if getattr(self, '_valuesFilledUC', None) is not None:
+                # if ~np.array_equal(
+                #             self.valuesFilled[~np.isnan(self.valuesFilled)],
+                #             self.values[~np.isnan(self.indNan)]
+                #         ):
 
-            if self.valuesUpContinued is not None:
-                grid = self.valuesUpContinued
+                #             self._valuesFilled = None
+                grid = self.valuesFilledUC
             else:
-                grid = self.values
+
+                if np.any(np.isnan(self.values)):
+                    self.indNan = np.isnan(mkvc(self.values))
+                    grid = self.valuesFilled
+                else:
+                    grid = self.values
 
             # Add paddings
             dpad = np.c_[
@@ -90,8 +118,6 @@ class dataGrid(object):
             # Tapper the paddings
             rampx = -np.cos(np.pi*np.asarray(range(self.npadx))/self.npadx)
             rampx = np.r_[rampx, np.ones(grid.shape[1]), -rampx]/2. + 0.5
-            # tapperx,_ = meshgrid(rampx,np.ones(dpad.shape[1]))
-            # tapperx[padx:-padx,:] = 1.
 
             rampy = -np.cos(np.pi*np.asarray(range(self.npady))/self.npady)
             rampy = np.r_[rampy, np.ones(grid.shape[0]), -rampy]/2. + 0.5
@@ -100,6 +126,34 @@ class dataGrid(object):
             self._gridPadded = tapperx*tappery*dpad
 
         return self._gridPadded
+
+    @property
+    def valuesFilled(self):
+
+        if getattr(self, '_valuesFilled', None) is None:
+            values = mkvc(self.values)
+            indVal = np.where(~self.indNan)[0]
+
+            tree = cKDTree(self.gridCC[indVal, :])
+            dists, indexes = tree.query(self.gridCC[self.indNan, :])
+
+            uInd = np.unique(indVal[indexes])
+
+            xyz = self.gridCC[uInd, :]
+
+            _, values[self.indNan] = MathUtils.minCurvatureInterp(
+                            xyz, values[uInd], xyzOut=self.gridCC[self.indNan, :])
+
+            self._valuesFilled = values.reshape(self.values.shape, order='F')
+
+        return self._valuesFilled
+
+    @property
+    def valuesFilledUC(self):
+        if getattr(self, '_valuesFilledUC', None) is None:
+            self._valuesFilledUC = self.upwardContinuation()
+
+        return self._valuesFilledUC
 
     @property
     def Kx(self):
@@ -149,8 +203,16 @@ class dataGrid(object):
 
             FHxD = (self.Kx*1j)*self.gridFFT
             fhxd_pad = np.fft.ifft2(FHxD)
-            self._derivativeX = np.real(
+            derivX = np.real(
                 fhxd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+            if self.indNan is not None:
+                derivX = mkvc(derivX)
+
+                derivX[self.indNan] = np.nan
+                derivX = derivX.reshape(self.values.shape, order='F')
+
+            self._derivativeX = derivX
 
         return self._derivativeX
 
@@ -162,8 +224,16 @@ class dataGrid(object):
             FHyD = (self.Ky*1j)*self.gridFFT
 
             fhyd_pad = np.fft.ifft2(FHyD)
-            self._derivativeY = np.real(
+            derivY = np.real(
                 fhyd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+            if self.indNan is not None:
+                derivY = mkvc(derivY)
+
+                derivY[self.indNan] = np.nan
+                derivY = derivY.reshape(self.values.shape, order='F')
+
+            self._derivativeY = derivY
 
         return self._derivativeY
 
@@ -174,9 +244,16 @@ class dataGrid(object):
 
             FHzD = self.gridFFT*np.sqrt(self.Kx**2. + self.Ky**2.)
             fhzd_pad = np.fft.ifft2(FHzD)
-            self._firstVertical = np.real(
+            firstVD = np.real(
                 fhzd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
+            if self.indNan is not None:
+                firstVD = mkvc(firstVD)
+
+                firstVD[self.indNan] = np.nan
+                firstVD = firstVD.reshape(self.values.shape, order='F')
+
+            self._firstVertical = firstVD
         return self._firstVertical
 
     @property
@@ -224,8 +301,16 @@ class dataGrid(object):
                 (h0_xyz[2] + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2.
             )
             rtp_pad = np.fft.ifft2(Frtp)
-            self._RTP = np.real(
+            rtp = np.real(
                 rtp_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+            if self.indNan is not None:
+                rtp = mkvc(rtp)
+
+                rtp[self.indNan] = np.nan
+                rtp = rtp.reshape(self.values.shape, order='F')
+
+            self._RTP = rtp
 
         return self._RTP
 
@@ -234,15 +319,25 @@ class dataGrid(object):
             Function to calculate upward continued data
         """
 
+        self.heightUC = z
         upFact = -(
             np.sqrt(self.Kx**2. + self.Ky**2.) *
             z /
             np.sqrt(self.dx**2. + self.dy**2.)
         )
+
         FzUpw = self.gridFFT*np.exp(upFact)
         zUpw_pad = np.fft.ifft2(FzUpw)
         zUpw = np.real(
             zUpw_pad[self.npady:-self.npady, self.npadx:-self.npadx])
+
+        self._valuesFilledUC = zUpw.copy()
+
+        if self.indNan is not None:
+            zUpw = mkvc(zUpw)
+
+            zUpw[self.indNan] = np.nan
+            zUpw = zUpw.reshape(self.values.shape, order='F')
 
         return zUpw
 
@@ -356,7 +451,6 @@ def arrayToRaster(
         encodeType,
     )
 
-    print(xMin, pixelXSize, 0, yMax, 0, pixelYSize)
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
     datasetSRS = osr.SpatialReference()
@@ -371,6 +465,30 @@ def arrayToRaster(
 
     dataset.FlushCache()  # Write to disk.
     print('Image saved as: ' + fileName + ' Click box again to continue...')
+
+
+def readShapefile(fileName):
+
+    world = shapefile.Reader(fileName)
+    # Extract lines from shape file
+    X, Y = [], []
+    for shape in world.shapeRecords():
+
+        for ii, part in enumerate(shape.shape.parts):
+
+            if ii != len(shape.shape.parts)-1:
+                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]]]
+                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]]]
+
+            else:
+                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:]]
+                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:]]
+
+            if len(x) > 10:
+                X.append(np.vstack(x))
+                Y.append(np.vstack(y))
+
+    return X, Y
 
 
 def exportShapefile(
@@ -411,3 +529,63 @@ def exportShapefile(
                 # geometry of of the original polygon shapefile
                 res['geometry'] = mapping(pline)
                 c.write(res)
+
+
+def fetchData(
+    path="./assets/Search/MAG_UTM09.tiff",
+    localCloud='Local', dtype='CSV', loadFile=False
+):
+
+    def dataLoader(localCloud, path, dtype, loadFile):
+
+        if loadFile:
+
+            if localCloud == 'Cloud':
+                print("Downloading... wait for it...")
+                fileName = re.split('[/?]', path)[-2]
+                out = download(path, './Output/' + fileName, replace=True)
+                path = './Output/' + fileName
+
+            if dtype == 'CSV':
+                data = np.loadtxt(path)
+                print('CSV file loaded. You will need to grid your data')
+
+            elif dtype == 'GeoTiff':
+                data = loadGeoTiffFile(path, plotIt=True)
+
+            elif dtype == 'GRD':
+
+                assert os.name == 'nt', "GRD file reader only available for Windows users. Sorry, you can complain to Geosoft"
+                data = loadGRDFile(path)
+
+            return data
+
+    out = widgets.interactive(dataLoader,
+                              localCloud=widgets.RadioButtons(
+                                    options=['Local', 'Cloud'],
+                                    description='File Type:',
+                                    value=localCloud,
+                                    disabled=False
+                                ),
+                              path=widgets.Text(
+                                    value=path,
+                                    description='Path:',
+                                    disabled=False
+                                ),
+                              dtype=widgets.RadioButtons(
+                                    options=['CSV', 'GeoTiff', 'GRD'],
+                                    value=dtype,
+                                    description='File Type:',
+                                    disabled=False
+                                ),
+                              loadFile=widgets.ToggleButton(
+                                  value=loadFile,
+                                  description='Load/Download',
+                                  disabled=False,
+                                  button_style='',
+                                  tooltip='Description',
+                                  icon='check'
+                                ),
+
+                             )
+    return out

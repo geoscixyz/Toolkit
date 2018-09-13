@@ -1,6 +1,6 @@
 .. _demos:
 
-2. 2D Magnetic Data Analysis
+2. Magnetic Data Analysis
 ============================
 
 In this section, we provide examples and interactive demonstrations to introduce geoscientists to the magnetic data analysis tools available in the Geophysical Toolkit for Geologists.
@@ -10,7 +10,7 @@ The first example provided considers a simple geological scenario from which a m
 .. image:: ../../images/synthetic_profile.PNG
   :align: center
 
-The Toolkit tools are then applied to analyze a real-life magnetic data set from Geoscience BC’s SeArch Phase II project area.
+The Toolkit tools are then applied to analyze a real-life magnetic data set from Geoscience BC’s Search Phase II project area.
 
 .. image:: ../../images/search_profile.PNG
   :align: center
@@ -21,7 +21,7 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
-   SyntheticExample
+   SyntheticExample_test
    SearchExample
 
 
