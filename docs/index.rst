@@ -27,7 +27,7 @@ This site provides a portal to a suite of basic geophysical tools or application
 
 Some **background information** related to the Earth’s magnetic field, magnetic response of rocks, and magnetic data collection are provided in an :ref:`introductory section<Mag_index>`.
 
-To get initiated with the **geophysical data analysis tools** in the **Geophysical Toolkit**, we have set up both :ref:`synthetic<synth_example>` and :ref:`real-life<search_example>` examples that can be walked through by interested geoscientists looking to understand how the tools function. :ref:`Users can also directly upload their own data<tools>` to apply and explore the same applications.
+To get initiated with the **geophysical data analysis tools** in the **Geophysical Toolkit**, we have set up both :ref:`synthetic<synth_example_intro>` and :ref:`real-life<search_example_intro>` examples that can be walked through by interested geoscientists looking to understand how the tools function. :ref:`Users can also directly upload their own data<tools>` to apply and explore the same applications.
 
 Geological knowledge is vital to meaningful interpretation of geophysical data. Therefore, geophysicists and geologists must work together to gain the maximum value from geophysical data! Neither the geophysicist nor the geologist needs to be an expert in the other’s field, they simply need to bring their respective skills and knowledge to the table and start a conversation.
 

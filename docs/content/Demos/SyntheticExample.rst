@@ -14,7 +14,7 @@ The geologic bodies are represented by three different blocks superimposed on a 
 
 **Block 1**: Large eastern magnetic domain, reflective of a magnetic plutonic complex or magnetic volcanic rock package.
 
-**Block 2**: Small, 300 m3 strongly magnetic domain, reflective of a shallow magnetic intrusion.
+**Block 2**: Small, 300 m\ :sup:`3` strongly magnetic domain, reflective of a shallow magnetic intrusion.
 
 **Block 3**: North-west trending, steeply-dipping non-magnetic feature inside the large magnetic block, reflective of a fault zone along which magnetite-destruction has occurred.
 
@@ -27,7 +27,11 @@ The extents of the survey area are approximately 3 km x 3 km.
 .. image:: ../../Notebooks/images/SyntheticModel.png
 
 
+.. toctree::
+   :maxdepth: 1
 
+   Synthetic_Viewer.ipynb
+   
 This geological model will be used to both demonstrate magnetic response and to showcase some of the geophysical tools available in the Geophysical Toolkit. Each processing step is presented separately in a series of Jupyter notebooks, where additional information can be found on that particular application.
 
 

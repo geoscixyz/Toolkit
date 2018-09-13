@@ -38,7 +38,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'edit_on_github',
     'sphinxcontrib.bibtex',
-    'nbsphinx',
     'matplotlib.sphinxext.only_directives',
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.doctest',

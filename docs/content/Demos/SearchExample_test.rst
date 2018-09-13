@@ -1,4 +1,4 @@
-.. _search_example:
+.. _search_example_intro:
 
 2.2. Case Study Using Geoscience BC Search II Data
 ==================================================
