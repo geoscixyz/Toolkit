@@ -899,14 +899,14 @@ def plotProfile2D(x, y, data, a, b, npts,
 def dataHillsideWidget(
     survey, EPSGCode=26909,
     saveAs='DataHillshade', dpi=300,
-    scatterData=None, shapeFile=None
+    scatterData=None, shapeFile=None,
   ):
 
     def plotWidget(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
             Contours, ColorMap, VminVmax, Equalize,
-            SaveGeoTiff
+            SaveGeoTiff, saveAs
          ):
 
         if SaveGeoTiff:
@@ -1037,6 +1037,11 @@ def dataHillsideWidget(
                                   icon='check'
                                 )
 
+    saveAs = widgets.Text(
+        value="MyGeoTiff",
+        description='GeoTiff name:',
+        disabled=False
+        )
     out = widgets.interactive_output(plotWidget,
                               {
                                     'SunAzimuth': SunAzimuth,
@@ -1048,13 +1053,14 @@ def dataHillsideWidget(
                                     'ColorMap': ColorMap,
                                     'VminVmax': VminVmax,
                                     'Equalize': Equalize,
+                                    'saveAs': saveAs,
                                     'SaveGeoTiff': SaveGeoTiff
                                 }
                               )
 
     left = widgets.VBox(
             [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
-             Contours, ColorMap, VminVmax, Equalize, SaveGeoTiff],
+             Contours, ColorMap, VminVmax, Equalize, saveAs, SaveGeoTiff],
             layout=Layout(
                 width='35%', height='400px', margin='60px 0px 0px 0px'
             )
@@ -1088,7 +1094,7 @@ def gridFiltersWidget(
     def plotWidget(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, UpDist, inc, dec, SaveGrid,
+            ColorMap, Filters, UpDist, inc, dec, SaveGrid, saveAs
          ):
 
         # If changed upward distance, reset the FFT
@@ -1236,6 +1242,11 @@ def gridFiltersWidget(
         tooltip='Description',
         icon='check'
         )
+    saveAs = widgets.Text(
+        value="MyGeoTiff",
+        description='GeoTiff name:',
+        disabled=False
+        )
 
     inc = widgets.FloatText(
         value=73,
@@ -1259,13 +1270,14 @@ def gridFiltersWidget(
                               'UpDist': UpDist,
                               'inc': inc,
                               'dec': dec,
+                              'saveAs': saveAs,
                               'SaveGrid': SaveGrid,
                             }
                         )
 
     left = widgets.VBox(
             [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
-             ColorMap, Filters, UpDist, inc, dec, SaveGrid],
+             ColorMap, Filters, UpDist, inc, dec, saveAs, SaveGrid],
             layout=Layout(
                 width='35%', height='400px', margin='60px 0px 0px 0px'
             )
@@ -1794,7 +1806,7 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid', shapeFile=None
     return out
 
 
-def setDataExtentWidget(survey):
+def setDataExtentWidget(survey, East=None, North=None):
     """
         Small application to carve out a subset of a larger data set
     """
@@ -1856,6 +1868,12 @@ def setDataExtentWidget(survey):
         xlim = survey.limits[:2]
         ylim = survey.limits[2:]
 
+        if East is None:
+            East = np.mean(xLoc)
+
+        if North is None:
+            North = np.mean(yLoc)
+
     else:
         print("Only implemented for class 'dataGrid'")
         # xLoc = survey.srcField.rxList[0].locs[:, 0]
@@ -1866,8 +1884,8 @@ def setDataExtentWidget(survey):
 
     out = widgets.interactive(
             dataSelector,
-            East=widgets.FloatSlider(min=xlim[0], max=xlim[1], step=500, value=669500, continuous_update=False),
-            North=widgets.FloatSlider(min=ylim[0], max=ylim[1], step=10, value=6069500, continuous_update=False),
+            East=widgets.FloatSlider(min=xlim[0], max=xlim[1], step=500, value=East, continuous_update=False),
+            North=widgets.FloatSlider(min=ylim[0], max=ylim[1], step=10, value=North, continuous_update=False),
             Width=widgets.FloatSlider(min=1000, max=100000, step=1000, value=30000, continuous_update=False),
             Height=widgets.FloatSlider(min=1000, max=100000, step=1000, value=30000, continuous_update=False)
             )

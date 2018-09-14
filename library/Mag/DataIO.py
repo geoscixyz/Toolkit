@@ -15,6 +15,7 @@ from fiona.crs import from_epsg
 from download import download
 import ipywidgets as widgets
 import shapefile
+import zipfile
 
 class dataGrid(object):
     """
@@ -32,6 +33,7 @@ class dataGrid(object):
     dec = 90.
     indVal = None
     indNan = None
+    EPSGCode = None
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -464,7 +466,8 @@ def arrayToRaster(
             dataset.GetRasterBand(i+1).WriteArray(array[:, :, i])
 
     dataset.FlushCache()  # Write to disk.
-    print('Image saved as: ' + fileName + ' Click box again to continue...')
+    print('Image saved as: ' + fileName)
+    print(' Click Export box again to continue...')
 
 
 def readShapefile(fileName):
@@ -532,60 +535,137 @@ def exportShapefile(
 
 
 def fetchData(
-    path="./assets/Search/MAG_UTM09.tiff",
-    localCloud='Local', dtype='CSV', loadFile=False
+    path="./assets/Search/", checkDir=False, file="", EPSGcode=None,
+    localCloud='Local', dtype='CSV', loadDir=False, loadFile=False
 ):
 
-    def dataLoader(localCloud, path, dtype, loadFile):
+    def fileLoader(localCloud, path, loadDir, checkDir, files, EPSGcode, dtype, loadFile):
 
-        if loadFile:
-
+        if loadDir:
+            print(checkDir)
             if localCloud == 'Cloud':
                 print("Downloading... wait for it...")
-                fileName = re.split('[/?]', path)[-2]
-                out = download(path, './Output/' + fileName, replace=True)
-                path = './Output/' + fileName
 
+                if "?dl=0" in path:
+                    fileName = re.split('[/?]', path)[-2]
+                else:
+                    fileName = re.split('[/]', path)[-1]
+                out = download(path, './Output/' + fileName, replace=True)
+                path = './Output/'
+
+                if '.zip' in fileName:
+                    with zipfile.ZipFile(path+fileName) as zf:
+                        zf.extractall(path)
+
+                    if os.path.isdir(path+fileName):
+
+                        path = path+fileName + os.path.sep
+
+                    zf.close()
+
+        if loadFile:
+            print('Loading file:' + files)
+            print('Please standby ...')
             if dtype == 'CSV':
-                data = np.loadtxt(path)
+                data = np.loadtxt(files)
                 print('CSV file loaded. You will need to grid your data')
 
             elif dtype == 'GeoTiff':
-                data = loadGeoTiffFile(path, plotIt=True)
-
+                data = loadGeoTiffFile(files)
+                data.EPSGCode = EPSGcode
+                print('Load complete')
             elif dtype == 'GRD':
 
                 assert os.name == 'nt', "GRD file reader only available for Windows users. Sorry, you can complain to Geosoft"
-                data = loadGRDFile(path)
+                data = loadGRDFile(files)
+                data.EPSGCode = EPSGcode
+                print('Load complete')
+            return data, dtype
 
-            return data
+    def changeFileList(_):
+        loadDir.value = False
 
-    out = widgets.interactive(dataLoader,
-                              localCloud=widgets.RadioButtons(
-                                    options=['Local', 'Cloud'],
-                                    description='File Type:',
-                                    value=localCloud,
-                                    disabled=False
-                                ),
-                              path=widgets.Text(
-                                    value=path,
-                                    description='Path:',
-                                    disabled=False
-                                ),
-                              dtype=widgets.RadioButtons(
-                                    options=['CSV', 'GeoTiff', 'GRD'],
-                                    value=dtype,
-                                    description='File Type:',
-                                    disabled=False
-                                ),
-                              loadFile=widgets.ToggleButton(
-                                  value=loadFile,
-                                  description='Load/Download',
-                                  disabled=False,
-                                  button_style='',
-                                  tooltip='Description',
-                                  icon='check'
-                                ),
+        if localCloud.value == 'Cloud':
+            lookinto = "./Output/"
 
-                             )
+        else:
+            lookinto = path.value
+
+        fileList = []
+        for pathWalk, subdirs, fileNames in os.walk(lookinto):
+            for name in fileNames:
+               fileList += [os.path.join(pathWalk, name)]
+
+        files.options = fileList
+
+    localCloud = widgets.RadioButtons(
+        options=['Local', 'Cloud'],
+        description='File Type:',
+        value=localCloud,
+        disabled=False
+    )
+    path = widgets.Text(
+        value=path,
+        description='Path:',
+        disabled=False
+    )
+    loadDir = widgets.ToggleButton(
+        value=loadDir,
+        description='Download',
+        disabled=False,
+        button_style='',
+        tooltip='Description',
+        icon='check'
+    )
+    checkDir = widgets.ToggleButton(
+        value=checkDir,
+        description='Check folder',
+        disabled=False,
+        button_style='',
+        tooltip='Description',
+        icon='check'
+    )
+    checkDir.observe(changeFileList)
+    # files = os.listdir(path.value)
+
+    loadFile = widgets.ToggleButton(
+        value=loadFile,
+        description='Load File',
+        disabled=False,
+        button_style='',
+        tooltip='Description',
+        icon='check'
+    )
+
+    if ~isinstance(file, list):
+        file = [file]
+
+    files = widgets.Dropdown(
+        options=file,
+        description='Files:',
+        disabled=False,
+    )
+    EPSGcode = widgets.FloatText(
+        value=EPSGcode,
+        description='EPSG code:',
+        disabled=False
+    )
+    dtype = widgets.RadioButtons(
+        options=['CSV', 'GeoTiff', 'GRD'],
+        value=dtype,
+        description='File Type:',
+        disabled=False
+    )
+    out = widgets.interactive(fileLoader,
+                              localCloud=localCloud,
+                              path=path,
+                              loadDir=loadDir,
+                              checkDir=checkDir,
+                              files=files,
+                              EPSGcode=EPSGcode,
+                              dtype=dtype,
+                              loadFile=loadFile
+    )
+
     return out
+
