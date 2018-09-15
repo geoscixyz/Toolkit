@@ -6,7 +6,7 @@
 Gridding the magnetic data
 --------------------------
 
-Magnetic data should be gridded prior to applying transforms and filters. This means that the flight line data must be interpolated on a regular 2D grid. There are numerous possible ways to grid data (Briggs, 1974; Parker et al., 1983). The minimum curvature method is shown to be robust and yield a sensible and smooth result, so we have chosen minimum curvature as the default option to complete the gridding for later filtering of the synthetic model data.
+Magnetic data should be gridded prior to applying transforms and filters. This means that the flight line data must be interpolated on a regular 2D grid. There are numerous possible ways to grid data (:cite:`Briggs1974`, :cite:`Parker1983`). The minimum curvature method is shown to be robust and yield a sensible and smooth result, so we have chosen minimum curvature as the default option to complete the gridding for later filtering of the synthetic model data.
 
 The left image below shows the data gridded using minimum curvature, and the right image shows the data gridded using nearest-neighbor.
 
@@ -32,7 +32,7 @@ The left and right images show the synthetic magnetic data without and with sun-
     :align: center
     :figwidth: 100 %
 
-**Color maps**. Some color maps will do an obviously better job of enhancing a large range of features (color maps with a larger color range for example), while others may be used to highlight specific ranges of data, and yet others used simply because of an interpreter's personal preference. Choice of color map is an often-debated topic in geophysics and in other fields requiring image analysis (e.g. Light and Bartlein, 2004; Borland and Taylor, 2007; Niccoli and Lynch, 2012; Froner et al., 2013). An important point to consider is that some color maps have the 'brightest' colors at the top of the scale, for example, grey scale and viridis: 
+**Color maps**. Some color maps will do an obviously better job of enhancing a large range of features (color maps with a larger color range for example), while others may be used to highlight specific ranges of data, and yet others used simply because of an interpreter's personal preference. Choice of color map is an often-debated topic in geophysics and in other fields requiring image analysis (e.g. :cite:`Light2004`, :cite:`Borland2007`, :cite:`Niccoli2012`, :cite:`Froner2013`). An important point to consider is that some color maps have the 'brightest' colors at the top of the scale, for example, grey scale and viridis: 
 
 .. figure:: ./images/gray_15per_ppt.PNG
 .. figure:: ./images/viridis_15per_ppt.PNG

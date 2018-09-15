@@ -78,24 +78,15 @@ The most important, and impactful, strategy for interpreting geology from magnet
 Magnetic data interpretation resources
 --------------------------------------
 
-Dentith and Mudge
-Isles and Rankin
+:cite:`Isles2013` 
+:cite:`Dentith2014`
 
-:cite:`SGL2017`, :cite:`Blakely1996`, :cite:`Blakely2016`, :cite:`Borland2007`
-:cite:`Briggs1974`, :cite:`Clark1991`, :cite:`Cooper2003`,
-:cite:`Dentith2014`, :cite:`Froner2013`
-:cite:`Isles2013`,
-:cite:`Light2004`,
-:cite:`Macleod1993`,
-:cite:`Miller1994`,
-:cite:`Milligan1997`,
+
+
+:cite:`SGL2017`, :cite:`Blakely1996`,
+:cite:`Cooper2003`,
 :cite:`Nabighian1972`,
-:cite:`Niccoli2012`,
-:cite:`Parker1983`,
-:cite:`Roest1992`,
 :cite:`Salem2005`,
-:cite:`Salem2007`,
-:cite:`Verduzco2004`,
 
 
 .. links

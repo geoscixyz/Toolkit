@@ -14,7 +14,7 @@ The geologic bodies are represented by three different blocks superimposed on a 
 
 **Block 2**: Small, 300 m\ :sup:`3` strongly magnetic domain, reflective of a shallow magnetic intrusion.
 
-**Block 3**: North-west trending, steeply-dipping non-magnetic feature inside the large magnetic block, reflective of a fault zone along which magnetite-destruction has occurred.
+**Block 3**: North-west trending, steeply-dipping (-80 degree dip), non-magnetic feature inside the large magnetic block, reflective of a fault zone along which magnetite-destruction has occurred.
 
 **Background**: Weakly magnetic background, reflective of weakly magnetic volcanic or sedimentary rocks.
 
@@ -34,9 +34,9 @@ The magnetic response (total field anomaly) of the geologic model is calculated 
     :align: center
     :figwidth: 40 %
 
-An east-west profile through the magnetic data is shown below. The responses of the smaller and larger magnetic blocks are obvious in this profile, and occur directly over the sources (due to the magnetic field inclination being vertical in this example). The fault within the large eastern magnetic block is observed as a more subtle dip in the magnetic response.
+An east-west profile through the magnetic data is shown below. The responses of the smaller and larger magnetic blocks are obvious in this profile, and occur directly over the sources (due to the magnetic field inclination being vertical in this example). The fault within the large eastern magnetic block is observed as a more subtle dip in the magnetic response, slightly offset from the top of the body due to its northeasterly dip.
 
-.. figure:: ./images/synth_mag_profile.PNG
+.. figure:: ./images/synthEWprofile.PNG
     :align: center
     :figwidth: 100 %
 

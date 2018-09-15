@@ -22,6 +22,6 @@ Contents:
    :maxdepth: 1
 
    SyntheticExample_test
-   SearchExample
+   SearchExample_test
 
 
