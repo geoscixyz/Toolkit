@@ -46,6 +46,18 @@ Contents:
    references
 
 
+The Apps
+^^^^^^^^
+
+.. image:: https://mybinder.org/badge.svg
+    :target: https://hub.mybinder.org/user/geoscixyz-toolkit-oc7pv26i/notebooks/docs/Notebooks/index.ipynb
+    :align: center
+
+.. image:: ./images/Geotoolkit_Binder_landing.png
+    :target: https://hub.mybinder.org/user/geoscixyz-toolkit-oc7pv26i/notebooks/docs/Notebooks/index.ipynb
+    :align: center
+
+
 
 Feedback:
 ^^^^^^^^^
