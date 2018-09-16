@@ -542,7 +542,7 @@ def fetchData(
     def fileLoader(localCloud, path, loadDir, checkDir, files, EPSGcode, dtype, loadFile):
 
         if loadDir:
-            print(checkDir)
+
             if localCloud == 'Cloud':
                 print("Downloading... wait for it...")
 
@@ -598,6 +598,10 @@ def fetchData(
 
         files.options = fileList
 
+    if not isinstance(file, list):
+        print(file)
+        file = [file]
+
     localCloud = widgets.RadioButtons(
         options=['Local', 'Cloud'],
         description='File Type:',
@@ -636,9 +640,6 @@ def fetchData(
         tooltip='Description',
         icon='check'
     )
-
-    if ~isinstance(file, list):
-        file = [file]
 
     files = widgets.Dropdown(
         options=file,

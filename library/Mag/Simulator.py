@@ -1112,19 +1112,19 @@ def gridFiltersWidget(
             survey.dec = dec
             data = survey.RTP
 
+        # if Filters == 'TMI':
+        #     data = survey.upwardContinuation()
+        #     ind = ~np.isnan(data)
+        #     vmin, vmax = data[ind].min(), data[ind].max()
+
+        # else:
         if Filters == 'TMI':
-            data = survey.values
-            ind = ~np.isnan(data)
-            vmin, vmax = data[ind].min(), data[ind].max()
-
+            data = survey.upwardContinuation(z=UpDist)
         else:
-            if Filters == 'upwardContinuation':
-                data = survey.upwardContinuation(z=UpDist)
-            else:
-                data = getattr(survey, '{}'.format(Filters))
+            data = getattr(survey, '{}'.format(Filters))
 
-            ind = ~np.isnan(data)
-            vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
+        ind = ~np.isnan(data)
+        vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
 
         vScale *= np.abs(survey.values[ind].max() - survey.values[ind].min()) * np.abs(data[ind].max() - data[ind].min())
 
@@ -1222,7 +1222,7 @@ def gridFiltersWidget(
         )
     Filters = widgets.Dropdown(
         options=[
-            'TMI', 'upwardContinuation',
+            'TMI',
             'derivativeX', 'derivativeY', 'firstVertical',
             'totalHorizontal', 'tiltAngle', 'analyticSignal',
             'RTP'],
@@ -1331,19 +1331,19 @@ def gridTilt2Depth(
             survey._gridPadded = None
             survey._gridFFT = None
 
+        # if Filters == 'TMI':
+        #     data = survey.values
+        #     ind = ~np.isnan(data)
+        #     vmin, vmax = data[ind].min(), data[ind].max()
+
+        # else:
         if Filters == 'TMI':
-            data = survey.values
-            ind = ~np.isnan(data)
-            vmin, vmax = data[ind].min(), data[ind].max()
-
+            data = survey.upwardContinuation(z=UpDist)
         else:
-            if Filters == 'upwardContinuation':
-                data = survey.upwardContinuation(z=UpDist)
-            else:
-                data = getattr(survey, '{}'.format(Filters))
+            data = getattr(survey, '{}'.format(Filters))
 
-            ind = ~np.isnan(data)
-            vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
+        ind = ~np.isnan(data)
+        vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
 
         # Compute estimated depth
         polylines, attributes = MathUtils.estimateDepth(survey)
@@ -1466,7 +1466,7 @@ def gridTilt2Depth(
         )
     Filters = widgets.Dropdown(
         options=[
-            'TMI', 'upwardContinuation',
+            'TMI',
             'tiltAngle'],
         value=gridFilter,
         description='Grid Filters',
