@@ -30,7 +30,7 @@ class dataGrid(object):
     valuesFilledUC = None
     heightUC = None
     inc = 90.
-    dec = 90.
+    dec = 0.
     indVal = None
     indNan = None
     EPSGCode = None

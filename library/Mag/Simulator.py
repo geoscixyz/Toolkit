@@ -73,10 +73,23 @@ def cmaps():
     """
 
     return [
-              'viridis', 'plasma', 'magma', 'RdBu_r',
-              'Greys_r', 'jet', 'rainbow', 'pink',
-               'bone', 'hsv', 'nipy_spectral'
-            ]
+        'viridis', 'plasma', 'magma', 'RdBu_r',
+        'Greys_r', 'jet', 'rainbow', 'pink',
+        'bone', 'hsv', 'nipy_spectral'
+        ]
+
+
+def units():
+    """
+        Returns a dictionary of units for all filters
+    """
+
+    return {
+        'derivativeX': '[nT/m]', 'derivativeY': '[nT/m]',
+        'firstVertical': '[nT/m]', 'totalHorizontal': '[nT/m]',
+        'tiltAngle': '[Degree]', 'analyticSignal': '[nT/m]',
+        'RTP': '[nT]', 'TMI': '[nT]'
+        }
 
 
 def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
@@ -1112,12 +1125,6 @@ def gridFiltersWidget(
             survey.dec = dec
             data = survey.RTP
 
-        # if Filters == 'TMI':
-        #     data = survey.upwardContinuation()
-        #     ind = ~np.isnan(data)
-        #     vmin, vmax = data[ind].min(), data[ind].max()
-
-        # else:
         if Filters == 'TMI':
             data = survey.upwardContinuation(z=UpDist)
         else:
@@ -1167,7 +1174,7 @@ def gridFiltersWidget(
         if SaveGrid:
 
             if saveAs is None:
-                saveAs = gridFilter
+                saveAs = Filters
 
             plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
             plt.close()
@@ -1184,7 +1191,7 @@ def gridFiltersWidget(
             # plt.scatter(xLoc, yLoc, s=2, c='k')
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
-            cbar.set_label(gridFilter)
+            cbar.set_label(Filters + " " +units()[Filters])
 
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
@@ -1331,12 +1338,6 @@ def gridTilt2Depth(
             survey._gridPadded = None
             survey._gridFFT = None
 
-        # if Filters == 'TMI':
-        #     data = survey.values
-        #     ind = ~np.isnan(data)
-        #     vmin, vmax = data[ind].min(), data[ind].max()
-
-        # else:
         if Filters == 'TMI':
             data = survey.upwardContinuation(z=UpDist)
         else:
@@ -1403,7 +1404,7 @@ def gridTilt2Depth(
         if SaveGrid:
 
             if saveAs is None:
-                saveAs = gridFilter
+                saveAs = Filters
 
             plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
             plt.close()
@@ -1420,7 +1421,7 @@ def gridTilt2Depth(
             # plt.scatter(xLoc, yLoc, s=2, c='k')
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
-            cbar.set_label(gridFilter)
+            cbar.set_label(Filters + " " +units()[Filters])
 
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
