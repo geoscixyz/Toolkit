@@ -61,6 +61,7 @@ A chart showing the range of magnetic susceptibility values for common rock type
    :align: center
    :name: magnetic_susceptibility_chart
 
+(adapted from :cite:`Clark1991`)
 
 
 The very large range in mag sus per rock type means that magnetic susceptibility values cannot be assumed based on lithology, which is why collecting and measuring mag sus data from representative field samples is so important.

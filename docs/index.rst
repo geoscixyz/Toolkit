@@ -1,5 +1,5 @@
-MDRU-GIF Geophysical Toolkit for Geologists
-===========================================
+Geophysical Toolkit for Geologists
+==================================
 
  .. .. image:: ./images/intro.png
  ..   :width: 200 px
