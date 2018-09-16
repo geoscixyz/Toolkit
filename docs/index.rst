@@ -50,11 +50,11 @@ The Apps
 ^^^^^^^^
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://hub.mybinder.org/user/geoscixyz-toolkit-oc7pv26i/notebooks/docs/Notebooks/index.ipynb
+    :target: .. image:: https://mybinder.org/badge.svg :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2Findex.ipynb
     :align: center
 
 .. image:: ./images/Geotoolkit_Binder_landing.png
-    :target: https://hub.mybinder.org/user/geoscixyz-toolkit-oc7pv26i/notebooks/docs/Notebooks/index.ipynb
+    :target: .. image:: https://mybinder.org/badge.svg :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2Findex.ipynb
     :align: center
 
 

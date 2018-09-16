@@ -29,11 +29,11 @@ class dataGrid(object):
     valuesFilled = None
     valuesFilledUC = None
     heightUC = None
-    inc = 90.
-    dec = 0.
+    inc = np.nan
+    dec = np.nan
     indVal = None
     indNan = None
-    EPSGCode = None
+    EPSGcode = None
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -298,6 +298,11 @@ class dataGrid(object):
 
         if getattr(self, '_RTP', None) is None:
 
+            if np.isnan(self.inc):
+                print("Attibute 'inc' needs to be set")
+            if np.isnan(self.dec):
+                print("Attibute 'dec' needs to be set")
+
             h0_xyz = MathUtils.dipazm_2_xyz(self.inc, self.dec)
             Frtp = self.gridFFT / (
                 (h0_xyz[2] + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2.
@@ -406,6 +411,9 @@ def loadGeoTiffFile(fileName, plotIt=True):
     data.y0 = y0 - data.ny*data.dy
     data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, y0]
 
+    proj = osr.SpatialReference(wkt=rasterObject.GetProjection())
+    data.EPSGcode = proj.GetAttrValue('AUTHORITY', 1)
+
     if plotIt:
         xLoc = np.asarray(range(data.nx))*data.dx+data.x0
         yLoc = np.asarray(range(data.ny))*data.dy+data.y0
@@ -424,7 +432,7 @@ def loadGeoTiffFile(fileName, plotIt=True):
 
 
 def arrayToRaster(
-    array, fileName, EPSGCode,
+    array, fileName, EPSGcode,
     xMin, xMax, yMin, yMax,
     numBands, dataType='image'
 ):
@@ -456,7 +464,7 @@ def arrayToRaster(
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
     datasetSRS = osr.SpatialReference()
-    datasetSRS.ImportFromEPSG(EPSGCode)
+    datasetSRS.ImportFromEPSG(EPSGcode)
     dataset.SetProjection(datasetSRS.ExportToWkt())
 
     if numBands == 1:
@@ -495,7 +503,7 @@ def readShapefile(fileName):
 
 
 def exportShapefile(
-    polylines, attributes, EPSGCode=26909,
+    polylines, attributes, EPSGcode=26909,
     saveAs='MyShape', label='AvgDepth', attType='int', directory="Output"
 ):
 
@@ -507,7 +515,7 @@ def exportShapefile(
     if not os.path.isdir(directory):
         os.makedirs(directory)
 
-    crs = from_epsg(EPSGCode)
+    crs = from_epsg(EPSGcode)
 
     # Define a polygon feature geometry with one attribute
     schema = {
@@ -535,11 +543,14 @@ def exportShapefile(
 
 
 def fetchData(
-    path="./assets/Search/", checkDir=False, file="", EPSGcode=None,
+    path="./assets/Search/", checkDir=False, file="",
     localCloud='Local', dtype='CSV', loadDir=False, loadFile=False
 ):
 
-    def fileLoader(localCloud, path, loadDir, checkDir, files, EPSGcode, dtype, loadFile):
+    def fileLoader(
+        localCloud, path, loadDir, checkDir, files,
+        dtype, loadFile
+    ):
 
         if loadDir:
 
@@ -572,13 +583,11 @@ def fetchData(
 
             elif dtype == 'GeoTiff':
                 data = loadGeoTiffFile(files)
-                data.EPSGCode = EPSGcode
                 print('Load complete')
             elif dtype == 'GRD':
 
                 assert os.name == 'nt', "GRD file reader only available for Windows users. Sorry, you can complain to Geosoft"
                 data = loadGRDFile(files)
-                data.EPSGCode = EPSGcode
                 print('Load complete')
             return data, dtype
 
@@ -646,11 +655,6 @@ def fetchData(
         description='Files:',
         disabled=False,
     )
-    EPSGcode = widgets.FloatText(
-        value=EPSGcode,
-        description='EPSG code:',
-        disabled=False
-    )
     dtype = widgets.RadioButtons(
         options=['CSV', 'GeoTiff', 'GRD'],
         value=dtype,
@@ -663,7 +667,6 @@ def fetchData(
                               loadDir=loadDir,
                               checkDir=checkDir,
                               files=files,
-                              EPSGcode=EPSGcode,
                               dtype=dtype,
                               loadFile=loadFile
     )
