@@ -15,7 +15,7 @@ We use the **tilt-depth method** (:cite:`Salem2007`, :cite:`Blakely2016`) to fin
 
 (Figure from :cite:`Salem2007`)
 
-Click here to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources with the synthetic geologic model. 
+Click here to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources within the synthetic geologic model. 
 
 The images below show the TMI (left image) and the tilt angle (right image) with edges and source depths estimated using the tilt-depth method. 
 

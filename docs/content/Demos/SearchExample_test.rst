@@ -42,7 +42,11 @@ This section presents the Search Phase II magnetic data, and provides an interac
 
 In this section, a subset of magnetic data from the Search Phase II dataset is processed using the suite of 2D magnetic filters presented in the synthetic model case study.
 
-**2.2.3. Edge detection and depth to source**
+.. toctree::
+   :maxdepth: 1
+
+   SearchTiltDepth
+
 
 The edge-detection and depth to source technique previously applied to the magnetic data generated from the our synthetic 3D geologic model, is applied here to a subset of the Search Phase II magnetic data.
 
