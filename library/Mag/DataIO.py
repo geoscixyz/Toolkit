@@ -15,6 +15,7 @@ from fiona.crs import from_epsg
 from download import download
 import ipywidgets as widgets
 import shapefile
+import zipfile
 
 class dataGrid(object):
     """
@@ -28,10 +29,11 @@ class dataGrid(object):
     valuesFilled = None
     valuesFilledUC = None
     heightUC = None
-    inc = 90.
-    dec = 90.
+    inc = np.nan
+    dec = np.nan
     indVal = None
     indNan = None
+    EPSGcode = None
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -296,6 +298,11 @@ class dataGrid(object):
 
         if getattr(self, '_RTP', None) is None:
 
+            if np.isnan(self.inc):
+                print("Attibute 'inc' needs to be set")
+            if np.isnan(self.dec):
+                print("Attibute 'dec' needs to be set")
+
             h0_xyz = MathUtils.dipazm_2_xyz(self.inc, self.dec)
             Frtp = self.gridFFT / (
                 (h0_xyz[2] + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2.
@@ -404,6 +411,9 @@ def loadGeoTiffFile(fileName, plotIt=True):
     data.y0 = y0 - data.ny*data.dy
     data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, y0]
 
+    proj = osr.SpatialReference(wkt=rasterObject.GetProjection())
+    data.EPSGcode = proj.GetAttrValue('AUTHORITY', 1)
+
     if plotIt:
         xLoc = np.asarray(range(data.nx))*data.dx+data.x0
         yLoc = np.asarray(range(data.ny))*data.dy+data.y0
@@ -422,7 +432,7 @@ def loadGeoTiffFile(fileName, plotIt=True):
 
 
 def arrayToRaster(
-    array, fileName, EPSGCode,
+    array, fileName, EPSGcode,
     xMin, xMax, yMin, yMax,
     numBands, dataType='image'
 ):
@@ -454,7 +464,7 @@ def arrayToRaster(
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
     datasetSRS = osr.SpatialReference()
-    datasetSRS.ImportFromEPSG(EPSGCode)
+    datasetSRS.ImportFromEPSG(EPSGcode)
     dataset.SetProjection(datasetSRS.ExportToWkt())
 
     if numBands == 1:
@@ -464,7 +474,8 @@ def arrayToRaster(
             dataset.GetRasterBand(i+1).WriteArray(array[:, :, i])
 
     dataset.FlushCache()  # Write to disk.
-    print('Image saved as: ' + fileName + ' Click box again to continue...')
+    print('Image saved as: ' + fileName)
+    print(' Click Export box again to continue...')
 
 
 def readShapefile(fileName):
@@ -492,7 +503,7 @@ def readShapefile(fileName):
 
 
 def exportShapefile(
-    polylines, attributes, EPSGCode=26909,
+    polylines, attributes, EPSGcode=26909,
     saveAs='MyShape', label='AvgDepth', attType='int', directory="Output"
 ):
 
@@ -504,7 +515,7 @@ def exportShapefile(
     if not os.path.isdir(directory):
         os.makedirs(directory)
 
-    crs = from_epsg(EPSGCode)
+    crs = from_epsg(EPSGcode)
 
     # Define a polygon feature geometry with one attribute
     schema = {
@@ -532,60 +543,133 @@ def exportShapefile(
 
 
 def fetchData(
-    path="./assets/Search/MAG_UTM09.tiff",
-    localCloud='Local', dtype='CSV', loadFile=False
+    path="./assets/Search/", checkDir=False, file="",
+    localCloud='Local', dtype='CSV', loadDir=False, loadFile=False
 ):
 
-    def dataLoader(localCloud, path, dtype, loadFile):
+    def fileLoader(
+        localCloud, path, loadDir, checkDir, files,
+        dtype, loadFile
+    ):
 
-        if loadFile:
+        if loadDir:
 
             if localCloud == 'Cloud':
                 print("Downloading... wait for it...")
-                fileName = re.split('[/?]', path)[-2]
-                out = download(path, './Output/' + fileName, replace=True)
-                path = './Output/' + fileName
 
+                if "?dl=0" in path:
+                    fileName = re.split('[/?]', path)[-2]
+                else:
+                    fileName = re.split('[/]', path)[-1]
+                out = download(path, './Output/' + fileName, replace=True)
+                path = './Output/'
+
+                if '.zip' in fileName:
+                    with zipfile.ZipFile(path+fileName) as zf:
+                        zf.extractall(path)
+
+                    if os.path.isdir(path+fileName):
+
+                        path = path+fileName + os.path.sep
+
+                    zf.close()
+
+        if loadFile:
+            print('Loading file:' + files)
+            print('Please standby ...')
             if dtype == 'CSV':
-                data = np.loadtxt(path)
+                data = np.loadtxt(files)
                 print('CSV file loaded. You will need to grid your data')
 
             elif dtype == 'GeoTiff':
-                data = loadGeoTiffFile(path, plotIt=True)
-
+                data = loadGeoTiffFile(files)
+                print('Load complete')
             elif dtype == 'GRD':
 
                 assert os.name == 'nt', "GRD file reader only available for Windows users. Sorry, you can complain to Geosoft"
-                data = loadGRDFile(path)
+                data = loadGRDFile(files)
+                print('Load complete')
+            return data, dtype
 
-            return data
+    def changeFileList(_):
+        loadDir.value = False
 
-    out = widgets.interactive(dataLoader,
-                              localCloud=widgets.RadioButtons(
-                                    options=['Local', 'Cloud'],
-                                    description='File Type:',
-                                    value=localCloud,
-                                    disabled=False
-                                ),
-                              path=widgets.Text(
-                                    value=path,
-                                    description='Path:',
-                                    disabled=False
-                                ),
-                              dtype=widgets.RadioButtons(
-                                    options=['CSV', 'GeoTiff', 'GRD'],
-                                    value=dtype,
-                                    description='File Type:',
-                                    disabled=False
-                                ),
-                              loadFile=widgets.ToggleButton(
-                                  value=loadFile,
-                                  description='Load/Download',
-                                  disabled=False,
-                                  button_style='',
-                                  tooltip='Description',
-                                  icon='check'
-                                ),
+        if localCloud.value == 'Cloud':
+            lookinto = "./Output/"
 
-                             )
+        else:
+            lookinto = path.value
+
+        fileList = []
+        for pathWalk, subdirs, fileNames in os.walk(lookinto):
+            for name in fileNames:
+               fileList += [os.path.join(pathWalk, name)]
+
+        files.options = fileList
+
+    if not isinstance(file, list):
+        print(file)
+        file = [file]
+
+    localCloud = widgets.RadioButtons(
+        options=['Local', 'Cloud'],
+        description='File Type:',
+        value=localCloud,
+        disabled=False
+    )
+    path = widgets.Text(
+        value=path,
+        description='Path:',
+        disabled=False
+    )
+    loadDir = widgets.ToggleButton(
+        value=loadDir,
+        description='Download',
+        disabled=False,
+        button_style='',
+        tooltip='Description',
+        icon='check'
+    )
+    checkDir = widgets.ToggleButton(
+        value=checkDir,
+        description='Check folder',
+        disabled=False,
+        button_style='',
+        tooltip='Description',
+        icon='check'
+    )
+    checkDir.observe(changeFileList)
+    # files = os.listdir(path.value)
+
+    loadFile = widgets.ToggleButton(
+        value=loadFile,
+        description='Load File',
+        disabled=False,
+        button_style='',
+        tooltip='Description',
+        icon='check'
+    )
+
+    files = widgets.Dropdown(
+        options=file,
+        description='Files:',
+        disabled=False,
+    )
+    dtype = widgets.RadioButtons(
+        options=['CSV', 'GeoTiff', 'GRD'],
+        value=dtype,
+        description='File Type:',
+        disabled=False
+    )
+    out = widgets.interactive(fileLoader,
+                              localCloud=localCloud,
+                              path=path,
+                              loadDir=loadDir,
+                              checkDir=checkDir,
+                              files=files,
+                              dtype=dtype,
+                              loadFile=loadFile
+    )
+
     return out
+
