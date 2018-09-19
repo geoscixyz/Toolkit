@@ -1384,7 +1384,8 @@ def gridTilt2Depth(
         plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, GridFileName,
+            ColorMap, Filters, vmin, vmax, 'HistEqualized',
+            SaveGrid, GridFileName,
             scatterData, shapeFile
         )
 
