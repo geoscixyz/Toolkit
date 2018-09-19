@@ -509,7 +509,6 @@ def arrayToRaster(
     dataset.FlushCache()  # Write to disk.
 
 
-
 def readShapefile(fileName):
 
     world = shapefile.Reader(fileName)
@@ -536,7 +535,7 @@ def readShapefile(fileName):
 
 def exportShapefile(
     polylines, attributes, EPSGcode=26909,
-    saveAs='MyShape', label='AvgDepth', attType='int', directory="Output"
+    saveAs='./Output/MyShape', label='AvgDepth', attType='int'
 ):
 
     """
@@ -544,8 +543,8 @@ def exportShapefile(
 
     """
 
-    if not os.path.isdir(directory):
-        os.makedirs(directory)
+    # if not os.path.isdir(directory):
+    #     os.makedirs(directory)
 
     crs = from_epsg(EPSGcode)
 
@@ -557,7 +556,7 @@ def exportShapefile(
     }
 
     with fiona.open(
-        directory + os.path.sep + saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs
+        saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs
     ) as c:
 
         # If there are multiple geometries, put the "for" loop here
