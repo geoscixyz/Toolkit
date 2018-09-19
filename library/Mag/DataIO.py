@@ -507,8 +507,7 @@ def arrayToRaster(
             dataset.GetRasterBand(i+1).WriteArray(array[:, :, i])
 
     dataset.FlushCache()  # Write to disk.
-    print('Image saved as: ' + fileName)
-    print(' Click Export box again to continue...')
+
 
 
 def readShapefile(fileName):
