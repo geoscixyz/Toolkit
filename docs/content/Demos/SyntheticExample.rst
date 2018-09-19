@@ -37,7 +37,7 @@ magnetic field orientation.
 
 .. image:: ./images/synthGridding.png
     :align: right
-    :width: 40%
+    :width: 30%
 
 This section discusses data gridding, an important initial data processing
 step required prior to applying filters and enhancements to magnetic data.
@@ -50,6 +50,10 @@ the synthetic geologic model.
 
    SyntheticVis
 
+
+.. image:: ./images/synth_vis_viridis_shaded_contours.PNG
+    :align: right
+    :width: 30%
 
 
 This section discusses image enhancement and visualization of magnetic data,
@@ -65,6 +69,10 @@ to.
 
    SyntheticFilters
 
+.. image:: ./images/Filters_synth_TotHoriz.PNG
+    :align: right
+    :width: 30%
+
 Total field magnetic data, viewed with sun shading or various color
 enhancements, is a great approach to initially exploring a magnetic dataset.
 Subtle variations within the magnetic data can be obscured however, usually by
@@ -79,6 +87,10 @@ and vertical derivatives, analytic signal, and tilt angle.
    :maxdepth: 1
 
    SyntheticTiltDepth
+
+.. image:: ./images/tilt_synthetic_edges_depths_grey.PNG
+    :align: right
+    :width: 40%
 
 Interpretation of magnetic data is ideally done by geoscientists with
 knowledge of the geology, lithology, and physical rock properties of typical
