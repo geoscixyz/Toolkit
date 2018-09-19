@@ -17,6 +17,15 @@ import ipywidgets as widgets
 import shapefile
 import zipfile
 
+
+gridProps = [
+    'valuesFilledUC', 'valuesFilled',
+    'derivativeX', 'derivativeY', 'firstVertical',
+    'totalHorizontal', 'tiltAngle', 'analyticSignal',
+    'gridFFT', 'gridPadded',
+]
+
+
 class dataGrid(object):
     """
         Grid data object
@@ -128,6 +137,24 @@ class dataGrid(object):
             self._gridPadded = tapperx*tappery*dpad
 
         return self._gridPadded
+
+    @property
+    def values(self):
+        """
+            Data values
+        """
+
+        if getattr(self, '_values', None) is None:
+
+            print("Values on the grid are not set")
+
+            return
+
+        if getattr(self, '_RTP', None) is not None:
+
+            return self._RTP
+        else:
+            return self._values
 
     @property
     def valuesFilled(self):
@@ -293,10 +320,9 @@ class dataGrid(object):
 
         return self._analyticSignal
 
-    @property
-    def RTP(self):
+    def setRTP(self, isRTP):
 
-        if getattr(self, '_RTP', None) is None:
+        if isRTP:
 
             if np.isnan(self.inc):
                 print("Attibute 'inc' needs to be set")
@@ -319,7 +345,14 @@ class dataGrid(object):
 
             self._RTP = rtp
 
-        return self._RTP
+            for prop in gridProps:
+                setattr(self, '_{}'.format(prop), None)
+
+        else:
+            self._RTP = None
+            for prop in gridProps:
+                setattr(self, '_{}'.format(prop), None)
+
 
     def upwardContinuation(self, z=0):
         """
@@ -401,7 +434,7 @@ def loadGeoTiffFile(fileName, plotIt=True):
 
     rasterObject = gdal.Open(fileName)
     band = rasterObject.GetRasterBand(1)
-    data.values = band.ReadAsArray()
+    data._values = band.ReadAsArray()
     data.nx = data.values.shape[1]
     data.ny = data.values.shape[0]
     data.x0 = rasterObject.GetGeoTransform()[0]

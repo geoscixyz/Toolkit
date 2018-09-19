@@ -180,6 +180,15 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
 
     def MagSurvey2D(East, North, Azimuth, Length, Sampling, ):
 
+        # Calculate the original map extents
+        if isinstance(survey, DataIO.dataGrid):
+            xLoc = survey.hx
+            yLoc = survey.hy
+            data = survey.values
+        else:
+            xLoc = survey.srcField.rxList[0].locs[:, 0]
+            yLoc = survey.srcField.rxList[0].locs[:, 1]
+            data = survey.dobs
         # Get the line extent from the 2D survey for now
         ColorMap = "RdBu_r"
         Azimuth = np.deg2rad((450 - Azimuth) % 360)
@@ -822,11 +831,10 @@ def plotData2D(x, y, d, title=None,
     if title is not None:
         plt.title(title)
 
-    plt.yticks(rotation='vertical')
-
     if shapeFile is not None:
         plotShapeFile(shapeFile, ax=ax)
 
+    plt.yticks(rotation='vertical')
     ylabel = np.round(np.linspace(y.min(), y.max(), 5) * 1e-3) * 1e+3
     ax.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
     ax.set_yticks(ylabel[1:4])
@@ -915,7 +923,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 
 def dataHillsideWidget(
-    survey, EPSGcode=26909,
+    survey, EPSGcode=26909, HSTransp=0.5, SunAzimuth=270,
     saveAs='DataHillshade', dpi=300,
     scatterData=None, shapeFile=None,
   ):
@@ -927,15 +935,26 @@ def dataHillsideWidget(
             SaveGeoTiff, saveAs
          ):
 
+        # Calculate the original map extents
+        if isinstance(survey, DataIO.dataGrid):
+            xLoc = survey.hx
+            yLoc = survey.hy
+            data = survey.values
+
+        else:
+            xLoc = survey.srcField.rxList[0].locs[:, 0]
+            yLoc = survey.srcField.rxList[0].locs[:, 1]
+            data = survey.dobs
+
         if SaveGeoTiff:
             fig = plt.figure()
-            fig.set_size_inches(9, 9)
+            fig.set_size_inches(7, 7)
             axs = plt.Axes(fig, [0., 0., 1., 1.])
             axs.set_axis_off()
             fig.add_axes(axs)
 
         else:
-            fig = plt.figure(figsize=(9, 9))
+            fig = plt.figure(figsize=(7, 7))
             axs = plt.subplot()
 
         # Add shading
@@ -969,7 +988,15 @@ def dataHillsideWidget(
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label('TMI (nT)')
-
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
@@ -997,7 +1024,7 @@ def dataHillsideWidget(
         yLoc = survey.srcField.rxList[0].locs[:, 1]
         data = survey.dobs
     SunAzimuth = widgets.FloatSlider(
-        min=0, max=360, step=5, value=90, continuous_update=False,
+        min=0, max=360, step=5, value=SunAzimuth, continuous_update=False,
         description='SunAzimuth'
         )
     SunAngle = widgets.FloatSlider(
@@ -1009,7 +1036,7 @@ def dataHillsideWidget(
         description='ColorTransp'
         )
     HSTransp = widgets.FloatSlider(
-        min=0, max=1, step=0.05, value=0.50, continuous_update=False,
+        min=0, max=1, step=0.05, value=HSTransp, continuous_update=False,
         description='HSTransp'
         )
 
@@ -1110,13 +1137,13 @@ def gridFiltersWidget(
         'valuesFilledUC', 'valuesFilled',
         'derivativeX', 'derivativeY', 'firstVertical',
         'totalHorizontal', 'tiltAngle', 'analyticSignal',
-        'RTP', 'gridFFT', 'gridPadded',
+        'gridFFT', 'gridPadded',
       ]
 
     def plotWidget(
             SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, UpDist, inc, dec, SaveGrid, saveAs
+            ColorMap, Filters, UpDist, SaveGrid, saveAs
          ):
 
         # If changed upward distance, reset the FFT
@@ -1127,12 +1154,6 @@ def gridFiltersWidget(
             data = survey.upwardContinuation(z=UpDist)
             survey._gridPadded = None
             survey._gridFFT = None
-
-        if ((survey.inc != inc) | (survey.dec != dec)):
-            survey._RTP = None
-            survey.inc = inc
-            survey.dec = dec
-            data = survey.RTP
 
         if Filters == 'TMI':
             data = survey.upwardContinuation(z=UpDist)
@@ -1158,14 +1179,14 @@ def gridFiltersWidget(
 
         if SaveGrid:
             fig = plt.figure()
-            fig.set_size_inches(9, 9)
+            fig.set_size_inches(7, 7)
             axs = plt.Axes(fig, [0., 0., 1., 1.])
             axs.set_axis_off()
             fig.add_axes(axs)
 
         else:
 
-            fig = plt.figure(figsize=(10, 10))
+            fig = plt.figure(figsize=(7, 7))
             axs = plt.subplot()
 
         # Add shading
@@ -1267,22 +1288,6 @@ def gridFiltersWidget(
         disabled=False
         )
 
-    if ~np.isnan(inc):
-        survey.inc = inc
-
-    if ~np.isnan(dec):
-        survey.dec = dec
-
-    inc = widgets.FloatText(
-        value=survey.inc,
-        description='Inclination:',
-        disabled=False)
-
-    dec = widgets.FloatText(
-        value=survey.dec,
-        description='Declination:',
-        disabled=False)
-
     out = widgets.interactive_output(plotWidget,
                             {
                               'SunAzimuth': SunAzimuth,
@@ -1293,8 +1298,6 @@ def gridFiltersWidget(
                               'ColorMap': ColorMap,
                               'Filters': Filters,
                               'UpDist': UpDist,
-                              'inc': inc,
-                              'dec': dec,
                               'saveAs': saveAs,
                               'SaveGrid': SaveGrid,
                             }
@@ -1302,7 +1305,7 @@ def gridFiltersWidget(
 
     left = widgets.VBox(
             [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
-             ColorMap, Filters, UpDist, inc, dec, saveAs, SaveGrid],
+             ColorMap, Filters, UpDist, saveAs, SaveGrid],
             layout=Layout(
                 width='35%', height='400px', margin='60px 0px 0px 0px'
             )
@@ -1398,14 +1401,14 @@ def gridTilt2Depth(
 
         if SaveGrid:
             fig = plt.figure()
-            fig.set_size_inches(9, 9)
+            fig.set_size_inches(7, 7)
             axs = plt.Axes(fig, [0., 0., 1., 1.])
             axs.set_axis_off()
             fig.add_axes(axs)
 
         else:
 
-            fig = plt.figure(figsize=(10, 10))
+            fig = plt.figure(figsize=(7, 7))
             axs = plt.subplot()
 
         # Add shading
@@ -1443,8 +1446,16 @@ def gridTilt2Depth(
             # plt.scatter(xLoc, yLoc, s=2, c='k')
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
-            cbar.set_label(Filters + " " +units()[Filters])
-
+            # cbar.set_label(Filters + " " +units()[Filters])
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
@@ -1652,7 +1663,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
         # Add axes with rotating arrow
         pos = axs.get_position()
         arrowAxs = fig.add_axes(
-          [10, 10,  pos.width*.5, pos.height*0.5], projection='3d'
+          [7, 7,  pos.width*.5, pos.height*0.5], projection='3d'
         )
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
@@ -1761,7 +1772,7 @@ def dataGriddingWidget(
 
         gridOut = DataIO.dataGrid()
 
-        gridOut.values = d_grid
+        gridOut._values = d_grid
         gridOut.nx, gridOut.ny = gridOut.values.shape[1], gridOut.values.shape[0]
         gridOut.x0, gridOut.y0 = X.min(), Y.min()
         gridOut.dx = (X.max() - X.min()) / gridOut.values.shape[1]
@@ -1783,7 +1794,7 @@ def dataGriddingWidget(
                 dataType='grid')
 
         else:
-            fig = plt.figure(figsize=(9, 9))
+            fig = plt.figure(figsize=(7, 7))
             axs = plt.subplot()
             # Add shading
             X, Y, d_grid, im, CS = plotDataHillside(
@@ -1795,7 +1806,15 @@ def dataGriddingWidget(
             axs.set_aspect('auto')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label('TMI (nT)')
-
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
@@ -1915,19 +1934,21 @@ def dataGriddingWidget(
 
 def dataGridGeoref(
     survey, EPSGcode=np.nan, saveAs="MyGeoTiff",
-    shapeFile=None, inc=np.nan, dec=np.nan,
+    shapeFile=None, inc=np.nan, dec=np.nan, applyRTP=False,
 ):
 
     def plotWidget(
             ColorMap,
             EPSGcode, inc, dec,
-            GetIncDec, saveAs, SaveGrid
+            GetIncDec, applyRTP, saveAs, SaveGrid
          ):
 
         if not np.isnan(EPSGcode):
             survey.EPSGcode = int(EPSGcode)
 
         survey.inc, survey.dec = inc, dec
+
+        survey.setRTP(applyRTP)
 
         if SaveGrid:
             if np.isnan(EPSGcode):
@@ -1940,7 +1961,7 @@ def dataGridGeoref(
                 dataType='grid')
 
         else:
-            fig = plt.figure(figsize=(9, 9))
+            fig = plt.figure(figsize=(7, 7))
             axs = plt.subplot()
             # Add shading
             X, Y, d_grid, im, CS = plotDataHillside(
@@ -1952,7 +1973,15 @@ def dataGridGeoref(
             axs.set_aspect('auto')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label('TMI (nT)')
-
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
@@ -2025,6 +2054,16 @@ def dataGridGeoref(
         )
 
     GetIncDec.observe(fetchURL)
+
+    applyRTP = widgets.ToggleButton(
+        value=applyRTP,
+        description='Reduce to pole',
+        disabled=False,
+        button_style='',
+        tooltip='Transform to RTP data',
+        icon='check'
+        )
+
     saveAs = widgets.Text(
         value=saveAs,
         description='GeoTiff name:',
@@ -2044,6 +2083,7 @@ def dataGridGeoref(
                               EPSGcode=EPSGcode,
                               inc=inc, dec=dec,
                               GetIncDec=GetIncDec,
+                              applyRTP=applyRTP,
                               saveAs=saveAs,
                               SaveGrid=SaveGrid
                               )
@@ -2090,9 +2130,10 @@ def setDataExtentWidget(survey, East=None, North=None):
         dataSub = DataIO.dataGrid()
         dataSub.limits = lims
         # coordinate_system = grid.coordinate_system
-        dataSub.values = survey.values[:, indx]
-        dataSub.values = dataSub.values[indy, :]
+        temp = survey.values[:, indx]
+        temp = temp[indy, :]
 
+        dataSub._values = temp
         dataSub.nx, dataSub.ny = nx, ny
         dataSub.dx, dataSub.dy = survey.dx, survey.dy
         dataSub.x0, dataSub.y0 = East-Width/2, North-Height/2
