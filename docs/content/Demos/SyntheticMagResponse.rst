@@ -10,6 +10,8 @@ For this demonstration, a simple 3D geologic model was built attempting to captu
 
 The geologic bodies are represented by three different blocks superimposed on a background:
 
+.. image:: ../../../Notebooks/images/SyntheticModel.png
+
 **Block 1**: Large eastern magnetic domain, reflective of a magnetic plutonic complex or magnetic volcanic rock package.
 
 **Block 2**: Small, 300 m\ :sup:`3` strongly magnetic domain, reflective of a shallow magnetic intrusion.
@@ -22,13 +24,11 @@ The extents of the survey area are approximately 3 km x 3 km.
 
 
 
-.. image:: ../../Notebooks/images/SyntheticModel.png
-
 
 Magnetic response of a simple geologic model
 --------------------------------------------
 
-The magnetic response (total field anomaly) of the geologic model is calculated on a series of east-west flight lines running roughly perpendicular to the general strike of geologic boundaries and structures featured in the model. Flight line spacing is 200 m. Data was collected at a flight height of 40 m. Topography is assumed to be flat in this example. 
+The magnetic response (total field anomaly) of the geologic model is calculated on a series of east-west flight lines running roughly perpendicular to the general strike of geologic boundaries and structures featured in the model. Flight line spacing is 200 m. Data was collected at a flight height of 40 m. Topography is assumed to be flat in this example.
 
 .. figure:: ./images/GeoTIFFSynthetic.png
     :align: center
@@ -36,13 +36,13 @@ The magnetic response (total field anomaly) of the geologic model is calculated 
 
 An east-west profile through the magnetic data is shown below. The responses of the smaller and larger magnetic blocks are obvious in this profile, and occur directly over the sources (due to the magnetic field inclination being vertical in this example). The fault within the large eastern magnetic block is observed as a more subtle drop in the magnetic response, slightly offset from the top of the body due to its northeasterly dip.
 
-Click below on the **'launch binder'** button or on the image to open an interactive Jupyter notebook to further explore the magnetic response and profile of the synthetic geologic model. Be patient, the notebook will take a moment to load. 
+Click below on the **'launch binder'** button or on the image to open an interactive Jupyter notebook to further explore the magnetic response and profile of the synthetic geologic model. Be patient, the notebook will take a moment to load.
 
 
 .. image:: https://mybinder.org/badge.svg
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Viewer.ipynb
     :align: center
-    
+
 .. image:: ./images/synthEWprofile.PNG
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Viewer.ipynb
     :align: center
@@ -54,13 +54,13 @@ Magnetic field effect on response
 
 As discussed in Section 1 on the Toolkit website (Magnetic Data - Background), the magnetic response will depend on the inclination, declination, and field strength of the magnetic field at the survey location. The image below shows the magnetic response at the geographic North Pole, where the Earth's magnetic field is near-vertical.
 
-Click on the **'launch binder'** button or on the image to open an interactive Jupyter notebook to investigate how the magnetic response changes with varying global locations. 
+Click on the **'launch binder'** button or on the image to open an interactive Jupyter notebook to investigate how the magnetic response changes with varying global locations.
 
 
 .. image:: https://mybinder.org/badge.svg
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Viewer_Worldwide.ipynb
     :align: center
-    
+
 .. image:: ./images/synth_mag_location_global.PNG
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Viewer_Worldwide.ipynb
     :align: center
