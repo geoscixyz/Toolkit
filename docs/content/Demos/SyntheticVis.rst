@@ -1,20 +1,7 @@
-.. _synth_grid_vis:
+.. _synth_vis:
 
-2.1.2. Synthetic - Data Gridding and Visualization
-==================================================
-
-Gridding the magnetic data
---------------------------
-
-Magnetic data should be gridded prior to applying transforms and filters. This means that the flight line data must be interpolated on a regular 2D grid. There are numerous possible ways to grid data (:cite:`Briggs1974`, :cite:`Parker1983`). The minimum curvature method is shown to be robust and yield a sensible and smooth result, so we have chosen minimum curvature as the default option to complete the gridding for later filtering of the synthetic model data.
-
-The left image below shows the data gridded using minimum curvature, and the right image shows the data gridded using nearest-neighbor.
-
-.. figure:: ./images/mincurv_nearest.png
-    :align: center
-    :figwidth: 100 %
-
-Click here to try out some additional gridding methods.
+2.1.3. Synthetic - Magnetic Data Visualization
+==============================================
 
 
 Data visualization and image enhancement
@@ -22,7 +9,16 @@ Data visualization and image enhancement
 
 Simple enhancements to the image can help an interpreter better visualize features within magnetic data. Applying sun-shading from various angles, experimenting with different colour maps, and colour stretches are a simple means to explore the data initially. 
 
-Click here to try out various image enhancement schemes using the synthetic magnetic data. Some details on image and colour enhancements and examples are given below. 
+Click on the **'launch binder'** button to try out various image enhancement schemes using the synthetic magnetic data. Some details on image and colour enhancements and examples are given below. 
+
+.. image:: https://mybinder.org/badge.svg
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Visualization.ipynb
+    :align: center
+    
+.. image:: ./images/synth_vis_notebook_snapshot.PNG
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Visualization.ipynb
+    :align: center
+    
 
 **Sun-shading**. Sun-shading, or hill-shading can be used to emphasize highs and lows in the magnetic data - magnetic highs appear as topographic highs, and magnetic lows as topographic lows. This can help interpreters see more subtle variations in the data. Sun-shading can be oriented in any azimuth, and at any angle from 0 to 90 degrees. It helps to choose an aziumth that is perpendicular to the overall geological strike of the study area, and an angle that is neither too shallow or deep. 
 

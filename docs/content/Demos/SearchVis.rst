@@ -14,7 +14,16 @@ Gridded residual magnetic data from Geoscience BC's Search Phase II project (Ano
     :figwidth: 100 %
 
 
-Click here to access an interactive notebook allowing you to explore application of various visual enhancements to the Search Phase II data. 
+Click below on the **'launch binder'** button or on the image to access an interactive notebook allowing you to explore application of various visual enhancements to the Search Phase II data. Continue below for some examples of image enhancement as applied to the Search II data. 
+
+
+.. image:: https://mybinder.org/badge.svg
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSearch_Viewer.ipynb
+    :align: center
+    
+.. image:: ./images/search_vis_notebook_snapshot.PNG
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSearch_Viewer.ipynb
+    :align: center
 
 
 The interactive notebook allows users to choose a subset of magnetic data from the larger Search II dataset.
@@ -33,7 +42,7 @@ The interactive notebook allows users to choose a subset of magnetic data from t
 Data visualization and image enhancement
 ----------------------------------------
 
-As in the synthetic model example presented previously (Section 2.1.2), we can explore different ways of presenting and enhancing the magnetic image to find optimal visual parameters for interpreting features of interest.
+As in the synthetic model example presented previously (:ref:`Section 2.1.3<synth_filters>`), we can explore different ways of presenting and enhancing the magnetic image to find optimal visual parameters for interpreting features of interest.
 
 For example, here is the specified subset of data with and without sun-shading applied:
 
