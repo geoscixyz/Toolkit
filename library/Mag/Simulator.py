@@ -279,9 +279,9 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
     ax.plot(xLine, yLine, 'k.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
     cbar.set_label('TMI (nT)')
-    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='left')
+    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='right')
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
-            color='k', ha='right')
+            color='k', ha='left')
     ax.grid(True)
     ax.set_xlim([x.min(), x.max()])
     ax.set_ylim([y.min(), y.max()])
@@ -625,8 +625,8 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
-                     vmin=None, vmax=None, levels=None, resolution=25,
+def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
+                     vmin=None, vmax=None, resolution=25,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
                      equalizeHist='HistEqualized', minCurvature=True,
@@ -704,21 +704,14 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
 
-        # clevels = np.linspace(vmin, vmax, contours)
-        # im = axs.contourf(
-        #     X, Y, d_grid, contours, levels=clevels,
-        #     cmap=my_cmap, alpha=alpha
-        # )
+        if contours > 0:
+            clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+            CS = axs.contour(
+                X, Y, d_grid, contours, levels=clevels,
+                colors='k', linewidths=0.5
+            )
 
-
-    if levels is not None:
-        CS = axs.contour(
-            X, Y, d_grid, levels.shape[0],
-            levels=levels, colors='k', linewidths=0.5
-        )
-
-        if clabel:
-            plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
+            # plt.clabel(CS, inline=1, fontsize=5, fmt='%i')
 
     if scatterData is not None:
         plt.scatter(
@@ -739,7 +732,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
 
 
 def plotData2D(x, y, d, title=None,
-               vmin=None, vmax=None, contours=None, fig=None, ax=None,
+               vmin=None, vmax=None, contours=0, fig=None, ax=None,
                colorbar=True, marker=True, cmap="RdBu_r",
                equalizeHist='HistEqualized', shapeFile=None):
     """ Function plot_obs(rxLoc,d)
@@ -824,9 +817,13 @@ def plotData2D(x, y, d, title=None,
         if colorbar:
             cbar = plt.colorbar(fraction=0.02)
 
-        if contours is not None:
-            plt.contour(X, Y, d_grid, levels=contours, colors='k',
-                        vmin=vmin, vmax=vmax)
+        if contours > 0:
+            clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+            CS = axs.contour(
+                X, Y, d_grid, contours, levels=clevels,
+                colors='k', linewidths=0.5
+            )
+            # plt.clabel(CS, inline=1, fontsize=5, fmt='%i')
 
     if title is not None:
         plt.title(title)
@@ -924,7 +921,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 def dataHillsideWidget(
     survey, EPSGcode=26909, HSTransp=0.5, SunAzimuth=270,
-    saveAs='DataHillshade', dpi=300,
+    saveAs='DataHillshade', dpi=300, contours=0,
     scatterData=None, shapeFile=None,
   ):
 
@@ -1046,7 +1043,7 @@ def dataHillsideWidget(
         )
 
     Contours = widgets.IntSlider(
-        min=10, max=100, step=10, value=50, continuous_update=False,
+        min=0, max=100, step=10, value=contours, continuous_update=False,
         description='Contours'
         )
     ColorMap = widgets.Dropdown(
@@ -1740,7 +1737,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan,
-    Method='linear'
+    Method='linear', Contours=0
 ):
 
     def plotWidget(
@@ -1870,8 +1867,8 @@ def dataGriddingWidget(
         disabled=False,
         )
     Contours = widgets.IntSlider(
-        min=10, max=100, step=10,
-        value=50, continuous_update=False
+        min=0, max=100, step=10,
+        value=Contours, continuous_update=False
         )
     ColorMap = widgets.Dropdown(
         options=cmaps(),
