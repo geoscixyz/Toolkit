@@ -382,7 +382,7 @@ class dataGrid(object):
         return zUpw
 
 
-def loadGRDFile(fileName, plotIt=True):
+def loadGRDFile(fileName, plotIt=False):
     """
         Load a data matrix in Geosoft *.grd format and return
         a dictionary with gridded data
@@ -425,7 +425,7 @@ def loadGRDFile(fileName, plotIt=True):
     return data
 
 
-def loadGeoTiffFile(fileName, plotIt=True):
+def loadGeoTiffFile(fileName, plotIt=False):
     """
         Load a data matrix in Geosoft *.grd format and return
         a dictionary with gridded data
