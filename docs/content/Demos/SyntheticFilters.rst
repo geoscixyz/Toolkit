@@ -1,6 +1,6 @@
 .. _synth_filters:
 
-2.1.3. Synthetic - 2D Magnetic Data Filters
+2.1.4. Synthetic - 2D Magnetic Data Filters
 ===========================================
 
 2D magnetic data filters are commonly applied to magnetic data to allow us to view that data in different ways. They can highlight shallower or deeper magnetic sources, and can emphasize gradients in the magnetic data that occur at geological contacts and in association with structure.
@@ -9,7 +9,15 @@ We use the same synthetic model here as in the previous notebook to demonstrate 
 
 Short descriptions of select filters are provided in the sections below. Summaries of various filters and their role in gravity and magnetic data interpretation can be found in :cite:`Roest1992`, :cite:`Macleod1993`, :cite:`Miller1994`, :cite:`Milligan1997`, :cite:`Verduzco2004`, :cite:`Isles2013`, :cite:`Dentith2014`.  
 
-Click here to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.
+Click on the **'launch binder'** button here to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.
+
+.. image:: https://mybinder.org/badge.svg
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Filters.ipynb
+    :align: center
+    
+.. image:: ./images/synth_filter_notebook_snapshot.PNG
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Filters.ipynb
+    :align: center
 
 
 Upward continuation
@@ -24,7 +32,7 @@ In our synthetic example, the small magnetic anomaly and the narrow fault featur
     :figwidth: 100 %
 
 
-.. _XY_deriv:
+.. _synthfilters_XY_deriv:
 
 X and Y derivatives of the magnetic response
 --------------------------------------------
@@ -52,7 +60,7 @@ Grids showing the X (left image) and Y (right image) derivatives are shown below
     :figwidth: 100 %
 
 
-.. _vert_deriv:
+.. _synthfilters_vert_deriv:
 
 Vertical derivative
 -------------------
@@ -67,7 +75,7 @@ Notice how the first vertical derivative peaks directly over the small magnetic 
     :align: center
     :figwidth: 50 %
 
-.. _tot_horiz_deriv:
+.. _synthfilters_tot_horiz_deriv:
 
 Total horizontal derivative
 ---------------------------
@@ -87,7 +95,7 @@ The total horizonal derivative can be seen to peak here over the edges of the sm
     :figwidth: 50 %
 
 
-.. _tilt_angle:
+.. _synthfilters_tilt_angle:
 
 Tilt angle
 ----------
@@ -112,7 +120,7 @@ In the grid image below, you can see that zero values trace the edge of the smal
     :figwidth: 50 %
 
 
-.. _an_sig:
+.. _synthfilters_an_sig:
 
 Analytic signal
 ---------------

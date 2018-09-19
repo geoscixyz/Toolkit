@@ -1,27 +1,9 @@
-.. _synth_example:
+.. _synth_example_intro:
 
 2.1. Analysis of Simple Bodies
 ==============================
 
 As a primer to interpreting magnetic data, let’s get familiar with the magnetic responses of some simple geologic bodies. We will then grid the magnetic data, and investigate different visual enhancements of the data, and apply several tools that will aid us in our geological interpretation of the magnetic data.
-
-The geologic model
-------------------
-
-For this demonstration, a simple 3D geologic model was built attempting to capture several different types of geologic bodies.
-
-The geologic bodies are represented by three different blocks superimposed on a background:
-
-**Block 1**: Large eastern magnetic domain, reflective of a magnetic plutonic complex or magnetic volcanic rock package.
-
-**Block 2**: Small, 300 m\ :sup:`3` strongly magnetic domain, reflective of a shallow magnetic intrusion.
-
-**Block 3**: North-west trending, steeply-dipping non-magnetic feature inside the large magnetic block, reflective of a fault zone along which magnetite-destruction has occurred.
-
-**Background**: Weakly magnetic background, reflective of weakly magnetic volcanic or sedimentary rocks.
-
-The extents of the survey area are approximately 3 km x 3 km.
-
 
 
 .. image:: ../../Notebooks/images/SyntheticModel.png
@@ -30,44 +12,41 @@ The extents of the survey area are approximately 3 km x 3 km.
 .. toctree::
    :maxdepth: 1
 
-   Synthetic_Viewer.ipynb
-   
-This geological model will be used to both demonstrate magnetic response and to showcase some of the geophysical tools available in the Geophysical Toolkit. Each processing step is presented separately in a series of Jupyter notebooks, where additional information can be found on that particular application.
+   SyntheticMagResponse
+
+Here we explore the magnetic response over our synthetic geologic model. We can view profiles through the data, and also investigate how the magnetic response varies depending on the location of the magnetic survey and the magnetic field orientation.
 
 
-Synthetic model case study notebooks
-------------------------------------
+.. toctree::
+   :maxdepth: 1
 
-**2.1.1. Magnetic data response**
-
-This first notebook simply explores the magnetic response over our synthetic geologic model. Here we have the option of viewing profiles through the data, and we also investigate how the magnetic response varies depending on the location of the magnetic survey and the magnetic field orientation.  
-
-Link to Notebook_2_1_1_
-
-.. _Notebook_2_1_1: ../../Notebooks/Synthetic_Viewer.ipynb
+   SyntheticGrid
 
 
-**2.1.2. Magnetic data gridding and visualization**
-
-This notebook discusses first-pass observations and image processing of magnetic data calculated from a simple 3D geologic model. It represents the initial steps an interpreter might take toward building an understanding of their magnetic dataset. In this notebook, the magnetic response of the model is calculated, magnetic profiles are viewed, the data are gridded, and various image enhancements are applied to aid data interpretation.  
-
-Link to Notebook_2_1_2_
-
-.. _Notebook_2_1_2: ../../Notebooks/Synthetic_Gridding.ipynb
+This section discusses data gridding, an important initial data processing step required prior to applying filters and enhancements to magnetic data. Several gridding methods can be explored here using the data calculated from the synthetic geologic model.
 
 
-**2.1.3. 2D magnetic data filters**
+.. toctree::
+   :maxdepth: 1
 
-Total field magnetic data, viewed with sun shading or various color enhancements, is a great approach to initially exploring a magnetic dataset. Subtle variations within the magnetic data can be obscured however, usually by larger or deeper magnetic bodies. Deeper or shallower sources, and more subtle features in the magnetic data can be emphasized through the use of magnetic data filters. This notebook describes and demonstrates the effect of several commonly used magnetic data filters, including upward continuation, horizontal and vertical derivatives, analytic signal, and tilt angle.         
+   SyntheticVis
 
-Link to Notebook_2_1_3_
 
-.. _Notebook_2_1_3: ../../Notebooks/Synthetic_Filters.ipynb
+This section discusses image enhancement and visualization of magnetic data, and demonstrates effects of this type of processing using the magnetic data from the synthetic 3D geologic model. The applied filters and enhancements reflect the initial processing steps an interpreter might take toward building an understanding of their magnetic data and of the geology it is responding to.   
 
-**2.1.4. Edge detection and depth to source**
 
-Interpretation of magnetic data is ideally done by geoscientists with knowledge of the geology, lithology, and physical rock properties of typical rock types within a project area. Commonly this is done manually, through analysis of various magnetic data products discussed in the two previous notebooks, and alongside other available geoscientific data. There are however, some quick tools at our disposal to automatically pick 'edges' within magnetic data, and help us to approximate source depth. The resulting products can provide further guidance for geologic interpretations. This notebook explains and applies one such edge and depth detection method to magnetic data calculated from the synthetic 3D model.   
-  
-Link to Notebook_2_1_4_
+.. toctree::
+   :maxdepth: 1
 
-.. _Notebook_2_1_4: ../../Notebooks/Synthetic_Tilt_Depth_Estimation.ipynb
+   SyntheticFilters
+
+Total field magnetic data, viewed with sun shading or various color enhancements, is a great approach to initially exploring a magnetic dataset. Subtle variations within the magnetic data can be obscured however, usually by larger or deeper magnetic bodies. Deeper or shallower sources, and more subtle features in the magnetic data can be emphasized through the use of magnetic data filters. This section describes and demonstrates the effect of several commonly used magnetic data filters, including upward continuation, horizontal and vertical derivatives, analytic signal, and tilt angle.         
+
+
+.. toctree::
+   :maxdepth: 1
+
+   SyntheticTiltDepth
+
+Interpretation of magnetic data is ideally done by geoscientists with knowledge of the geology, lithology, and physical rock properties of typical rock types within a project area. Commonly this is done manually, through analysis of various magnetic data products discussed in the two previous notebooks, and alongside other available geoscientific data. There are however, some quick tools at our disposal to automatically pick 'edges' within magnetic data, and help us to approximate source depth. The resulting products can provide further guidance for geologic interpretations. This section explains and applies one such edge and depth detection method to magnetic data calculated from the synthetic 3D model.   
+ 

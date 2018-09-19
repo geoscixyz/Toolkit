@@ -1,7 +1,7 @@
 .. _demos:
 
-2. Magnetic Data Analysis
-============================
+2. Magnetic Data Analysis - Case Studies
+========================================
 
 In this section, we provide examples and interactive demonstrations to introduce geoscientists to the magnetic data analysis tools available in the Geophysical Toolkit for Geologists.
 
@@ -21,7 +21,7 @@ Contents:
 .. toctree::
    :maxdepth: 1
 
-   SyntheticExample_test
-   SearchExample_test
+   SyntheticExample
+   SearchExample
 
 

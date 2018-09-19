@@ -1,6 +1,6 @@
 .. _synth_tilt_depth:
 
-2.1.4. Synthetic - Edge Detection and Depth to Source
+2.1.5. Synthetic - Edge Detection and Depth to Source
 =====================================================
 
 Additional useful information to aid geologic interpretation can be derived from a suite of high quality magnetic data, again using some simple techniques. Source edges and depths can be estimated from magnetic gradients where there is sufficient magnetic susceptibility contrast between adjacent geologic bodies or features.
@@ -15,10 +15,18 @@ We use the **tilt-depth method** (:cite:`Salem2007`, :cite:`Blakely2016`) to fin
 
 (Figure from :cite:`Salem2007`)
 
-Click here to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources with the synthetic geologic model. 
-
 The images below show the TMI (left image) and the tilt angle (right image) with edges and source depths estimated using the tilt-depth method. 
 
 .. figure:: ./images/tilt_TMI_and_depth.png
     :align: center
     :figwidth: 100 %      
+
+Click below on the **'launch binder'** button to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources within the synthetic geologic model. 
+
+.. image:: https://mybinder.org/badge.svg
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Tilt_Depth_Estimation.ipynb
+    :align: center
+    
+.. image:: ./images/synth_tiltdepth_notebook_snapshot.PNG
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Tilt_Depth_Estimation.ipynb
+    :align: center
