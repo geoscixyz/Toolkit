@@ -1,4 +1,4 @@
-.. _search_example:
+.. _search_example_intro:
 
 2.2. Case Study Using Geoscience BC Search II Data
 ==================================================
@@ -22,23 +22,31 @@ magnetic field.
   :align: center
 
 
-In dealing with ‘real’ data, there are some additional data preparation considerations that may need to be addressed before proceeding to data analysis and interpretation. Data cropping (to a specific area of interest), downsampling (to reduce the number of data), and gridding may need to be done. For this example we use existing gridded data making it easy to jump to visualization and interpretation. We do provide some tools in our Toolkit gallery in :ref:`Section 3<tools>` to help users do additional data preparation if required.
+In dealing with ‘real’ data, there are some additional data preparation considerations that may need to be addressed before proceeding to data analysis and interpretation. Data cropping (to a specific area of interest), downsampling (to reduce the number of data), and gridding may need to be done. For this example we use existing gridded data making it easy to jump to visualization and interpretation. We do provide some tools in our Toolkit gallery in :ref:`Section 3<usertools>` to help users do additional data preparation if required.
 
-The links below will redirect you to Jupyter notebooks for exploring the Geophysical Toolkit applications as applied to the Geoscience BC Search II magnetic data.
+The links below will redirect you to sections exploring the Geophysical Toolkit applications as applied to the Geoscience BC Search II magnetic data.
 
 
-Search II data case study notebooks
------------------------------------
 
-**2.2.1. Magnetic data visualization**
+.. toctree::
+   :maxdepth: 1
 
-This notebook applies sunshading and image enhancements previously introduced in the synthetic modelling section to a subset of the Search Phase II magnetic data set.
+   SearchVis
 
-**2.2.2. 2D magnetic data filters**
+This section presents the Search Phase II magnetic data, and provides an interactive notebook for applying sunshading and image enhancements previously introduced in the synthetic modelling section to a subset of the Search II data.
 
-In this notebook, a subset of magnetic data from the Search Phase II dataset is processed using the suite of 2D magnetic filters presented in the synthetic model case study.
+.. toctree::
+   :maxdepth: 1
 
-**2.2.3. Edge detection and depth to source**
+   SearchFilters
+
+In this section, a subset of magnetic data from the Search Phase II dataset is processed using the suite of 2D magnetic filters presented in the synthetic model case study.
+
+.. toctree::
+   :maxdepth: 1
+
+   SearchTiltDepth
+
 
 The edge-detection and depth to source technique previously applied to the magnetic data generated from the our synthetic 3D geologic model, is applied here to a subset of the Search Phase II magnetic data.
 

@@ -23,6 +23,9 @@ from matplotlib.ticker import FormatStrFormatter
 import matplotlib as mpl
 from skimage import exposure
 from matplotlib.patches import Rectangle
+import webbrowser
+from osgeo import ogr, osr
+import os
 import PIL
 
 def PFSimulator(prism, survey):
@@ -73,10 +76,23 @@ def cmaps():
     """
 
     return [
-              'viridis', 'plasma', 'magma', 'RdBu_r',
-              'Greys_r', 'jet', 'rainbow', 'pink',
-               'bone', 'hsv', 'nipy_spectral'
-            ]
+        'viridis', 'plasma', 'magma', 'RdBu_r',
+        'Greys_r', 'jet', 'rainbow', 'pink',
+        'bone', 'hsv', 'nipy_spectral'
+        ]
+
+
+def units():
+    """
+        Returns a dictionary of units for all filters
+    """
+
+    return {
+        'derivativeX': '[nT/m]', 'derivativeY': '[nT/m]',
+        'firstVertical': '[nT/m]', 'totalHorizontal': '[nT/m]',
+        'tiltAngle': '[Degree]', 'analyticSignal': '[nT/m]',
+        'RTP': '[nT]', 'TMI': '[nT]'
+        }
 
 
 def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
@@ -165,6 +181,15 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
 
     def MagSurvey2D(East, North, Azimuth, Length, Sampling, ):
 
+        # Calculate the original map extents
+        if isinstance(survey, DataIO.dataGrid):
+            xLoc = survey.hx
+            yLoc = survey.hy
+            data = survey.values
+        else:
+            xLoc = survey.srcField.rxList[0].locs[:, 0]
+            yLoc = survey.srcField.rxList[0].locs[:, 1]
+            data = survey.dobs
         # Get the line extent from the 2D survey for now
         ColorMap = "RdBu_r"
         Azimuth = np.deg2rad((450 - Azimuth) % 360)
@@ -244,20 +269,20 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
     xLine, yLine = linefun(a[0], b[0], a[1], b[1], npts)
 
     # Use SimPEG.PF ploting function
-    fig, im, cbar = plotData2D(x, y, data, fig=fig,  ax=ax,
-                         vmin=vmin, vmax=vmax,
-                         marker=marker, cmap=cmap,
-                         colorbar=False, equalizeHist=equalizeHist)
-
-    if shapeFile is not None:
-        plotShapeFile(shapeFile, ax=ax)
+    fig, im, cbar = plotData2D(
+        x, y, data, fig=fig,  ax=ax,
+        vmin=vmin, vmax=vmax,
+        marker=marker, cmap=cmap,
+        colorbar=False, equalizeHist=equalizeHist,
+        shapeFile=shapeFile
+    )
 
     ax.plot(xLine, yLine, 'k.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
     cbar.set_label('TMI (nT)')
-    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='left')
+    ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='right')
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
-            color='k', ha='right')
+            color='k', ha='left')
     ax.grid(True)
     ax.set_xlim([x.min(), x.max()])
     ax.set_ylim([y.min(), y.max()])
@@ -330,7 +355,7 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
     rxLoc = survey.srcField.rxList[0].locs
 
     if fig is None:
-        fig = plt.figure(figsize=(7, 7))
+        fig = plt.figure(figsize=(9, 9))
 
     if axs is None:
         axs = fig.add_subplot(111, projection='3d')
@@ -601,8 +626,8 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
-                     vmin=None, vmax=None, levels=None, resolution=25,
+def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
+                     vmin=None, vmax=None, resolution=25,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
                      equalizeHist='HistEqualized', minCurvature=True,
@@ -680,21 +705,22 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
 
-        # clevels = np.linspace(vmin, vmax, contours)
-        # im = axs.contourf(
-        #     X, Y, d_grid, contours, levels=clevels,
-        #     cmap=my_cmap, alpha=alpha
-        # )
+        if contours > 0:
+            clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
 
+            if np.all(clevels == 0):
+                clevels = np.linspace(vmin, vmax, contours)
 
-    if levels is not None:
-        CS = axs.contour(
-            X, Y, d_grid, levels.shape[0],
-            levels=levels, colors='k', linewidths=0.5
-        )
+            clevels = np.unique(clevels)
+            # Insert zero contour
+            if ~np.any(clevels == 0):
+                clevels = np.sort(np.r_[clevels, 0])
+            CS = axs.contour(
+                X, Y, d_grid, contours, levels=clevels,
+                colors='k', linewidths=0.5
+            )
 
-        if clabel:
-            plt.clabel(CS, inline=1, fontsize=10, fmt='%i')
+            # plt.clabel(CS, inline=1, fontsize=5, fmt='%i')
 
     if scatterData is not None:
         plt.scatter(
@@ -715,9 +741,9 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=25,
 
 
 def plotData2D(x, y, d, title=None,
-               vmin=None, vmax=None, contours=None, fig=None, ax=None,
+               vmin=None, vmax=None, contours=0, fig=None, ax=None,
                colorbar=True, marker=True, cmap="RdBu_r",
-               equalizeHist='HistEqualized'):
+               equalizeHist='HistEqualized', shapeFile=None):
     """ Function plot_obs(rxLoc,d)
     Generate a 2d interpolated plot from scatter points of data
 
@@ -800,15 +826,29 @@ def plotData2D(x, y, d, title=None,
         if colorbar:
             cbar = plt.colorbar(fraction=0.02)
 
-        if contours is not None:
-            plt.contour(X, Y, d_grid, levels=contours, colors='k',
-                        vmin=vmin, vmax=vmax)
+        if contours > 0:
+            clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+
+            if np.all(clevels == 0):
+                clevels = np.linspace(vmin, vmax, contours)
+
+            clevels = np.unique(clevels)
+            # Insert zero contour
+            if ~np.any(clevels == 0):
+                clevels = np.sort(np.r_[clevels, 0])
+            CS = axs.contour(
+                X, Y, d_grid, contours, levels=clevels,
+                colors='k', linewidths=0.5
+            )
+            # plt.clabel(CS, inline=1, fontsize=5, fmt='%i')
 
     if title is not None:
         plt.title(title)
 
-    plt.yticks(rotation='vertical')
+    if shapeFile is not None:
+        plotShapeFile(shapeFile, ax=ax)
 
+    plt.yticks(rotation='vertical')
     ylabel = np.round(np.linspace(y.min(), y.max(), 5) * 1e-3) * 1e+3
     ax.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
     ax.set_yticks(ylabel[1:4])
@@ -897,8 +937,8 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 
 def dataHillsideWidget(
-    survey, EPSGCode=26909,
-    saveAs='DataHillshade', dpi=300,
+    survey, EPSGcode=26909, HSTransp=0.5, SunAzimuth=270,
+    saveAs='./Output/DataHillshade', dpi=300, contours=0,
     scatterData=None, shapeFile=None,
   ):
 
@@ -908,6 +948,17 @@ def dataHillsideWidget(
             Contours, ColorMap, VminVmax, Equalize,
             SaveGeoTiff, saveAs
          ):
+
+        # Calculate the original map extents
+        if isinstance(survey, DataIO.dataGrid):
+            xLoc = survey.hx
+            yLoc = survey.hy
+            data = survey.values
+
+        else:
+            xLoc = survey.srcField.rxList[0].locs[:, 0]
+            yLoc = survey.srcField.rxList[0].locs[:, 1]
+            data = survey.dobs
 
         if SaveGeoTiff:
             fig = plt.figure()
@@ -934,21 +985,32 @@ def dataHillsideWidget(
         # Add points at the survey locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
         if SaveGeoTiff:
-            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
+            plt.savefig(saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
+            img = np.asarray(PIL.Image.open(saveAs + '.png'))
+
+            if survey.EPSGcode is not None:
+                EPSGcode = survey.EPSGcode
 
             DataIO.arrayToRaster(
-                img, "Output/" + saveAs + '.tiff',
-                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+                img, saveAs + '.tiff',
+                EPSGcode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
-
+            os.remove(saveAs + '.png')
         else:
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label('TMI (nT)')
-
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
@@ -975,8 +1037,16 @@ def dataHillsideWidget(
         xLoc = survey.srcField.rxList[0].locs[:, 0]
         yLoc = survey.srcField.rxList[0].locs[:, 1]
         data = survey.dobs
+
+    # Trigger the save and uncheck button
+    def saveIt(_):
+
+        if SaveGeoTiff.value:
+            SaveGeoTiff.value = False
+            print('Image saved as: ' + saveAs.value)
+
     SunAzimuth = widgets.FloatSlider(
-        min=0, max=360, step=5, value=90, continuous_update=False,
+        min=0, max=360, step=5, value=SunAzimuth, continuous_update=False,
         description='SunAzimuth'
         )
     SunAngle = widgets.FloatSlider(
@@ -988,7 +1058,7 @@ def dataHillsideWidget(
         description='ColorTransp'
         )
     HSTransp = widgets.FloatSlider(
-        min=0, max=1, step=0.05, value=0.50, continuous_update=False,
+        min=0, max=1, step=0.05, value=HSTransp, continuous_update=False,
         description='HSTransp'
         )
 
@@ -998,7 +1068,7 @@ def dataHillsideWidget(
         )
 
     Contours = widgets.IntSlider(
-        min=10, max=100, step=10, value=50, continuous_update=False,
+        min=0, max=100, step=2, value=contours, continuous_update=False,
         description='Contours'
         )
     ColorMap = widgets.Dropdown(
@@ -1037,8 +1107,9 @@ def dataHillsideWidget(
                                   icon='check'
                                 )
 
+    SaveGeoTiff.observe(saveIt)
     saveAs = widgets.Text(
-        value="MyGeoTiff",
+        value=saveAs,
         description='GeoTiff name:',
         disabled=False
         )
@@ -1062,14 +1133,14 @@ def dataHillsideWidget(
             [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
              Contours, ColorMap, VminVmax, Equalize, saveAs, SaveGeoTiff],
             layout=Layout(
-                width='35%', height='400px', margin='60px 0px 0px 0px'
+                width='35%', height='600px', margin='60px 0px 0px 0px'
             )
         )
 
     image = widgets.VBox(
               [out],
               layout=Layout(
-                  width='65%', height='400px', margin='0px 0px 0px 0px'
+                  width='65%', height='600px', margin='0px 0px 0px 0px'
               )
             )
 
@@ -1078,23 +1149,25 @@ def dataHillsideWidget(
 
 def gridFiltersWidget(
     survey, gridFilter='derivativeX',
-    saveAs=None, ColorTransp=0.9, HSTransp=0.5,
-    EPSGCode=26909, dpi=300, scatterData=None,
+    ColorTransp=0.9, HSTransp=0.5,
+    EPSGcode=np.nan, dpi=300, scatterData=None,
+    inc=np.nan, dec=np.nan, Contours=0,
     SunAzimuth=90, SunAngle=15, vScale=5.,
-    ColorMap='RdBu_r', shapeFile=None
+    ColorMap='RdBu_r', shapeFile=None,
+    saveAs="./Output/MyGeoTiff",
 ):
 
     gridProps = [
         'valuesFilledUC', 'valuesFilled',
         'derivativeX', 'derivativeY', 'firstVertical',
         'totalHorizontal', 'tiltAngle', 'analyticSignal',
-        'RTP', 'gridFFT', 'gridPadded',
+        'gridFFT', 'gridPadded',
       ]
 
     def plotWidget(
             SunAzimuth, SunAngle,
-            ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, UpDist, inc, dec, SaveGrid, saveAs
+            ColorTransp, HSTransp, vScale, Contours,
+            ColorMap, Filters, UpDist, SaveGrid, saveAs
          ):
 
         # If changed upward distance, reset the FFT
@@ -1106,37 +1179,28 @@ def gridFiltersWidget(
             survey._gridPadded = None
             survey._gridFFT = None
 
-        if ((survey.inc != inc) | (survey.dec != dec)):
-            survey._RTP = None
-            survey.inc = inc
-            survey.dec = dec
-            data = survey.RTP
-
         if Filters == 'TMI':
-            data = survey.values
-            ind = ~np.isnan(data)
-            vmin, vmax = data[ind].min(), data[ind].max()
-
+            data = survey.upwardContinuation(z=UpDist)
         else:
-            if Filters == 'upwardContinuation':
-                data = survey.upwardContinuation(z=UpDist)
-            else:
-                data = getattr(survey, '{}'.format(Filters))
+            data = getattr(survey, '{}'.format(Filters))
 
-            ind = ~np.isnan(data)
-            vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
+        ind = ~np.isnan(data)
+        vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
 
-        vScale *= np.abs(survey.values[ind].max() - survey.values[ind].min()) * np.abs(data[ind].max() - data[ind].min())
+        vScale *= (
+            np.abs(survey.values[ind].max() - survey.values[ind].min()) *
+            np.abs(data[ind].max() - data[ind].min())
+        )
 
         plotIt(
             data, SunAzimuth, SunAngle,
-            ColorTransp, HSTransp, vScale,
+            ColorTransp, HSTransp, vScale, Contours,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, saveAs
         )
 
     def plotIt(
             data, SunAzimuth, SunAngle,
-            ColorTransp, HSTransp, vScale,
+            ColorTransp, HSTransp, vScale, Contours,
             ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs
          ):
 
@@ -1149,7 +1213,7 @@ def gridFiltersWidget(
 
         else:
 
-            fig = plt.figure(figsize=(10, 10))
+            fig = plt.figure(figsize=(9, 9))
             axs = plt.subplot()
 
         # Add shading
@@ -1157,7 +1221,7 @@ def gridFiltersWidget(
             survey.hx, survey.hy, data,
             axs=axs, cmap=ColorMap,
             clabel=False, resolution=10,
-            vmin=vmin, vmax=vmax, contours=50,
+            vmin=vmin, vmax=vmax, contours=Contours,
             alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
             equalizeHist=equalizeHist, scatterData=scatterData,
@@ -1167,24 +1231,27 @@ def gridFiltersWidget(
         if SaveGrid:
 
             if saveAs is None:
-                saveAs = gridFilter
+                saveAs = Filters
 
-            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
+            plt.savefig(saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
+            img = np.asarray(PIL.Image.open(saveAs + '.png'))
+
+            if survey.EPSGcode is not None:
+                EPSGcode = survey.EPSGcode
 
             DataIO.arrayToRaster(
-                img, "Output/" + saveAs + '.tiff',
-                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+                img, saveAs + '.tiff',
+                EPSGcode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
-
+            os.remove(saveAs + '.png')
         else:
             # Add points at the survey locations
             # plt.scatter(xLoc, yLoc, s=2, c='k')
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
-            cbar.set_label(gridFilter)
+            cbar.set_label(Filters + " " +units()[Filters])
 
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
@@ -1193,6 +1260,12 @@ def gridFiltersWidget(
             plt.show()
 
     assert isinstance(survey, DataIO.dataGrid), "Only implemented for objects of class DataIO.dataGrid"
+
+    def saveIt(_):
+        if SaveGrid.value:
+            SaveGrid.value = False
+            print('Image saved as: ' + saveAs.value)
+
     SunAzimuth = widgets.FloatSlider(
         min=0, max=360, step=5, value=SunAzimuth,
         continuous_update=False,
@@ -1220,12 +1293,16 @@ def gridFiltersWidget(
         description='ColorMap',
         disabled=False,
         )
+    Contours = widgets.IntSlider(
+        min=0, max=100, step=2,
+        description="Contours",
+        value=Contours, continuous_update=False
+        )
     Filters = widgets.Dropdown(
         options=[
-            'TMI', 'upwardContinuation',
+            'TMI',
             'derivativeX', 'derivativeY', 'firstVertical',
-            'totalHorizontal', 'tiltAngle', 'analyticSignal',
-            'RTP'],
+            'totalHorizontal', 'tiltAngle', 'analyticSignal'],
         value=gridFilter,
         description='Grid Filters',
         disabled=False,
@@ -1242,21 +1319,13 @@ def gridFiltersWidget(
         tooltip='Description',
         icon='check'
         )
+
+    SaveGrid.observe(saveIt)
     saveAs = widgets.Text(
-        value="MyGeoTiff",
+        value=saveAs,
         description='GeoTiff name:',
         disabled=False
         )
-
-    inc = widgets.FloatText(
-        value=73,
-        description='Inclination:',
-        disabled=False)
-
-    dec = widgets.FloatText(
-        value=17,
-        description='Declination:',
-        disabled=False)
 
     out = widgets.interactive_output(plotWidget,
                             {
@@ -1265,28 +1334,27 @@ def gridFiltersWidget(
                               'ColorTransp': ColorTransp,
                               'HSTransp': HSTransp,
                               'vScale': vScale,
+                              'Contours': Contours,
                               'ColorMap': ColorMap,
                               'Filters': Filters,
                               'UpDist': UpDist,
-                              'inc': inc,
-                              'dec': dec,
                               'saveAs': saveAs,
                               'SaveGrid': SaveGrid,
                             }
                         )
 
     left = widgets.VBox(
-            [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
-             ColorMap, Filters, UpDist, inc, dec, saveAs, SaveGrid],
+            [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale, Contours,
+             ColorMap, Filters, UpDist, saveAs, SaveGrid],
             layout=Layout(
-                width='35%', height='400px', margin='60px 0px 0px 0px'
+                width='35%', height='600px', margin='60px 0px 0px 0px'
             )
         )
 
     image = widgets.VBox(
               [out],
               layout=Layout(
-                  width='65%', height='400px', margin='0px 0px 0px 0px'
+                  width='65%', height='600px', margin='0px 0px 0px 0px'
               )
             )
 
@@ -1297,12 +1365,13 @@ def gridFiltersWidget(
 
 def gridTilt2Depth(
     survey, gridFilter='tiltAngle',
-    GridFileName=None, ColorTransp=0.9, HSTransp=0.5,
-    ShapeFileName=None,
-    EPSGCode=26909, dpi=300, scatterData=None,
+    ColorTransp=0.9, HSTransp=0.5,
+    EPSGcode=26909, dpi=300, scatterData=None,
     SunAzimuth=90, SunAngle=15, vScale=5., shapeFile=None,
     ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
-    markerSize=1
+    markerSize=1,
+    ShapeFileName="./Output/EstimatedDepth",
+    GridFileName="./Output/MyGeoTiff"
 ):
 
     gridProps = [
@@ -1332,25 +1401,22 @@ def gridTilt2Depth(
             survey._gridFFT = None
 
         if Filters == 'TMI':
-            data = survey.values
-            ind = ~np.isnan(data)
-            vmin, vmax = data[ind].min(), data[ind].max()
-
+            data = survey.upwardContinuation(z=UpDist)
         else:
-            if Filters == 'upwardContinuation':
-                data = survey.upwardContinuation(z=UpDist)
-            else:
-                data = getattr(survey, '{}'.format(Filters))
+            data = getattr(survey, '{}'.format(Filters))
 
-            ind = ~np.isnan(data)
-            vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
+        ind = ~np.isnan(data)
+        vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
 
         # Compute estimated depth
         polylines, attributes = MathUtils.estimateDepth(survey)
 
         if SaveShape:
             # Export to shapefile
-            DataIO.exportShapefile(polylines, attributes, EPSGCode=EPSGCode, saveAs=ShapeFileName, label='AvgDepth')
+            DataIO.exportShapefile(
+                polylines, attributes,
+                EPSGcode=EPSGcode, saveAs=ShapeFileName,
+                label='AvgDepth')
 
         scatterData = {}
         scatterData['x'] = np.vstack(polylines)[:, 0]
@@ -1365,14 +1431,16 @@ def gridTilt2Depth(
         plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, 'HistEqualized', SaveGrid, GridFileName,
+            ColorMap, Filters, vmin, vmax, 'HistEqualized',
+            SaveGrid, GridFileName,
             scatterData, shapeFile
         )
 
     def plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale,
-            ColorMap, Filters, vmin, vmax, equalizeHist, SaveGrid, saveAs,
+            ColorMap, Filters, vmin, vmax, equalizeHist,
+            SaveGrid, saveAs,
             scatterData, shapeFile
          ):
 
@@ -1385,7 +1453,7 @@ def gridTilt2Depth(
 
         else:
 
-            fig = plt.figure(figsize=(10, 10))
+            fig = plt.figure(figsize=(9, 9))
             axs = plt.subplot()
 
         # Add shading
@@ -1393,7 +1461,7 @@ def gridTilt2Depth(
             survey.hx, survey.hy, data,
             axs=axs, cmap=ColorMap,
             clabel=False, resolution=10,
-            vmin=vmin, vmax=vmax, contours=50,
+            vmin=vmin, vmax=vmax, contours=0,
             alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
             equalizeHist=equalizeHist, scatterData=scatterData,
@@ -1403,25 +1471,38 @@ def gridTilt2Depth(
         if SaveGrid:
 
             if saveAs is None:
-                saveAs = gridFilter
+                saveAs = Filters
 
-            plt.savefig("Output/" + saveAs + '.png', dpi=dpi)
+            plt.savefig(saveAs + '.png', dpi=dpi)
             plt.close()
 
-            img = np.asarray(PIL.Image.open("Output/" + saveAs + '.png'))
+            img = np.asarray(PIL.Image.open(saveAs + '.png'))
+
+            if survey.EPSGcode is not None:
+                EPSGcode = survey.EPSGcode
 
             DataIO.arrayToRaster(
-                img, "Output/" + saveAs + '.tiff',
-                EPSGCode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+                img, saveAs + '.tiff',
+                EPSGcode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
             )
+
+            os.remove(saveAs + '.png')
 
         else:
             # Add points at the survey locations
             # plt.scatter(xLoc, yLoc, s=2, c='k')
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
-            cbar.set_label(gridFilter)
-
+            cbar.set_label(Filters + " " +units()[Filters])
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
@@ -1436,6 +1517,18 @@ def gridTilt2Depth(
             cb.set_label("Depth (m)", size=12)
 
     assert isinstance(survey, DataIO.dataGrid), "Only implemented for objects of class DataIO.dataGrid"
+
+    def saveIt(_):
+
+        if SaveGrid.value:
+            SaveGrid.value = False
+            print('Image saved as: ' + GridFileName.value)
+
+    def saveShape(_):
+
+        if SaveShape.value:
+            SaveShape.value = False
+            print('Shapefile saved as: ' + ShapeFileName.value)
 
     SunAzimuth = widgets.FloatSlider(
         min=0, max=360, step=5, value=SunAzimuth,
@@ -1466,7 +1559,7 @@ def gridTilt2Depth(
         )
     Filters = widgets.Dropdown(
         options=[
-            'TMI', 'upwardContinuation',
+            'TMI',
             'tiltAngle'],
         value=gridFilter,
         description='Grid Filters',
@@ -1484,6 +1577,8 @@ def gridTilt2Depth(
         tooltip='Description',
         icon='check'
         )
+
+    SaveGrid.observe(saveIt)
     SaveShape = widgets.ToggleButton(
         value=False,
         description='Export Shapefile',
@@ -1492,25 +1587,27 @@ def gridTilt2Depth(
         tooltip='Description',
         icon='check'
         )
+
+    SaveShape.observe(saveShape)
     GridFileName = widgets.Text(
-        value="MyGeoTiff",
+        value=GridFileName,
         description='GeoTiff name:',
         disabled=False
         )
     ShapeFileName = widgets.Text(
-        value="EstimatedDepth",
+        value=ShapeFileName,
         description='Shapefile name:',
         disabled=False
         )
     ContourColor = widgets.Dropdown(
         options=cmaps(),
         value='viridis',
-        description='ContourColor',
+        description='Depth Color',
         disabled=False,
         )
     ContourSize = widgets.FloatSlider(
-        min=1, max=10, step=1., value=1,
-        description='ContourSize', continuous_update=False
+        min=0.1, max=10, step=0.1, value=1,
+        description='Marker Size', continuous_update=False
         )
 
     out = widgets.interactive_output(plotWidget,
@@ -1552,7 +1649,7 @@ def gridTilt2Depth(
     image = widgets.VBox(
               [out],
               layout=Layout(
-                  width='65%', height='400px', margin='0px 0px 0px 0px'
+                  width='65%', height='800px', margin='0px 0px 0px 0px'
               )
             )
 
@@ -1574,7 +1671,7 @@ def plotShapeFile(shapeFile, ax=None, fill=True, linewidth=1):
     return ax
 
 
-def worldViewerWidget(worldFile, data, grid, z=0):
+def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 
     def plotLocs(placeID):
 
@@ -1592,7 +1689,8 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         ax1 = plt.subplot(1, 2, 1)
         fig, im, cbar = plotData2D(
           xyz[:, 0], xyz[:, 1], survey.dobs,
-          ax=ax1, cmap='RdBu_r', marker=False, colorbar=False
+          ax=ax1, cmap='RdBu_r', marker=False, colorbar=False,
+          shapeFile=shapeFile
         )
 
         ax1.set_xticks([0])
@@ -1602,6 +1700,8 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         ax1.set_yticklabels([MathUtils.decimalDegrees2DMS(dataVals[0], "Latitude")])
         ax1.set_ylabel('Latitude')
         ax1.grid(True)
+        ax1.set_xlim([Xloc.min(), Xloc.max()])
+        ax1.set_ylim([Yloc.min(), Yloc.max()])
         cbar = plt.colorbar(im, orientation='horizontal')
         cbar.set_label('TMI (nT)')
 
@@ -1626,7 +1726,7 @@ def worldViewerWidget(worldFile, data, grid, z=0):
         # Add axes with rotating arrow
         pos = axs.get_position()
         arrowAxs = fig.add_axes(
-          [10, 10,  pos.width*.5, pos.height*0.5], projection='3d'
+          [7, 7,  pos.width*.5, pos.height*0.5], projection='3d'
         )
         block_xyz = np.asarray([
                         [-.2, -.2, .2, .2, 0],
@@ -1700,12 +1800,17 @@ def worldViewerWidget(worldFile, data, grid, z=0):
     return out
 
 
-def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid', shapeFile=None):
+def dataGriddingWidget(
+    survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff",
+    shapeFile=None, inc=np.nan, dec=np.nan,
+    Method='minimumCurvature', Contours=0
+):
 
     def plotWidget(
             Resolution, Method,
-            Contours, ColorMap,
-            SaveGrid
+            ColorMap,
+            EPSGcode,
+            GetIncDec, saveAs, SaveGrid
          ):
 
         if Method == 'minimumCurvature':
@@ -1728,10 +1833,27 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid', shapeFile=None
 
             d_grid = griddata(np.c_[xLoc, yLoc], data, (X, Y), method=Method)
 
+        gridOut = DataIO.dataGrid()
+
+        gridOut._values = d_grid
+        gridOut.nx, gridOut.ny = gridOut.values.shape[1], gridOut.values.shape[0]
+        gridOut.x0, gridOut.y0 = X.min(), Y.min()
+        gridOut.dx = (X.max() - X.min()) / gridOut.values.shape[1]
+        gridOut.dy = (Y.max() - Y.min()) / gridOut.values.shape[0]
+        gridOut.limits = np.r_[gridOut.x0, gridOut.x0+gridOut.nx*gridOut.dx, gridOut.y0, gridOut.y0+gridOut.ny*gridOut.dy]
+
+        if not np.isnan(EPSGcode):
+            gridOut.EPSGcode = int(EPSGcode)
+
+
         if SaveGrid:
+            if np.isnan(EPSGcode):
+                print("Need to assign an EPSGcode before exporting")
+                return
             DataIO.arrayToRaster(
                 d_grid, saveAs + '.tiff',
-                EPSGCode, X.min(), X.max(),  Y.min(), Y.max(), 1,
+                gridOut.EPSGcode, X.min(), X.max(),
+                Y.min(), Y.max(), 1,
                 dataType='grid')
 
         else:
@@ -1747,21 +1869,21 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid', shapeFile=None
             axs.set_aspect('auto')
             cbar = plt.colorbar(im, fraction=0.02)
             cbar.set_label('TMI (nT)')
-
+            plt.yticks(rotation='vertical')
+            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+            axs.set_yticks(ylabel[1:4])
+            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+            xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+            axs.set_xticks(xlabel[1:4])
+            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
             axs.set_xlabel("Easting (m)", size=14)
             axs.set_ylabel("Northing (m)", size=14)
             axs.grid('on', color='k', linestyle='--')
             plt.show()
 
         # Create grid object
-        gridOut = DataIO.dataGrid()
-
-        gridOut.values = d_grid
-        gridOut.nx, gridOut.ny = gridOut.values.shape[1], gridOut.values.shape[0]
-        gridOut.x0, gridOut.y0 = X.min(), Y.min()
-        gridOut.dx = (X.max() - X.min()) / gridOut.values.shape[1]
-        gridOut.dy = (Y.max() - Y.min()) / gridOut.values.shape[0]
-        gridOut.limits = np.r_[gridOut.x0, gridOut.x0+gridOut.nx*gridOut.dx, gridOut.y0, gridOut.y0+gridOut.ny*gridOut.dy]
         return gridOut
 
     # Calculate the original map extents
@@ -1769,40 +1891,265 @@ def dataGriddingWidget(survey, EPSGCode=26909, saveAs='DataGrid', shapeFile=None
     yLoc = survey[:, 1]
     data = survey[:, -1]
 
+    def fetchURL(_):
+        if GetIncDec.value:
+            GetIncDec.value = False
+            if np.isnan(EPSGcode.value):
+                print("Enter EPSGcode first")
+                return
+
+            x, y, z = np.mean(xLoc), np.mean(yLoc), 0.
+            # input SpatialReference
+            inSpatialRef = osr.SpatialReference()
+            inSpatialRef.ImportFromEPSG(int(EPSGcode.value))
+
+            # output SpatialReference
+            outSpatialRef = osr.SpatialReference()
+            outSpatialRef.ImportFromEPSG(4326)
+
+            # create the CoordinateTransformation
+            coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+
+            latLon = coordTrans.TransformPoint(x, y, z)
+            url = (
+                "https://www.ngdc.noaa.gov/geomag-web/calculators/calculateIgrfwmm?lat1=" +
+                str(latLon[1]) + "&lon1=" + str(latLon[0]) +
+                "&model=IGRF&startYear=2000&endYear=2019&resultFormat=html"
+                )
+            out = webbrowser.open(url)
+
+    def saveIt(_):
+
+        if SaveGrid.value:
+            SaveGrid.value = False
+            print('Image saved as: ' + saveAs.value)
+
+    Resolution = widgets.FloatText(
+        value=25,
+        description='Grid (m):',
+        disabled=False
+        )
+    Method = widgets.Dropdown(
+        options=[
+          'nearest', 'linear', 'cubic',
+          'minimumCurvature'
+          ],
+        value=Method,
+        description='Method',
+        disabled=False,
+        )
+    ColorMap = widgets.Dropdown(
+        options=cmaps(),
+        value='RdBu_r',
+        description='ColorMap',
+        disabled=False,
+        )
+    EPSGcode = widgets.FloatText(
+        value=EPSGcode,
+        description='EPSG code:',
+        disabled=False
+    )
+
+    GetIncDec = widgets.ToggleButton(
+        value=False,
+        description='Fetch Inc/Dec',
+        disabled=False,
+        button_style='',
+        tooltip='Connect to NOAA API',
+        icon='check'
+        )
+
+    GetIncDec.observe(fetchURL)
+    saveAs = widgets.Text(
+        value=saveAs,
+        description='GeoTiff name:',
+        disabled=False
+        )
+    SaveGrid = widgets.ToggleButton(
+        value=False,
+        description='Export Grid',
+        disabled=False,
+        button_style='',
+        tooltip='Write file',
+        icon='check'
+        )
+
+    SaveGrid.observe(saveIt)
     out = widgets.interactive(plotWidget,
-                              Resolution=widgets.FloatText(
-                                        value=25,
-                                        description='Grid (m):',
-                                        disabled=False
-                                ),
-                              Method=widgets.Dropdown(
-                                  options=[
-                                    'nearest', 'linear', 'cubic',
-                                    'minimumCurvature'
-                                    ],
-                                  value='minimumCurvature',
-                                  description='Method',
-                                  disabled=False,
-                                ),
-                              Contours=widgets.IntSlider(
-                                    min=10, max=100, step=10,
-                                    value=50, continuous_update=False
-                                ),
-                              ColorMap=widgets.Dropdown(
-                                  options=cmaps(),
-                                  value='RdBu_r',
-                                  description='ColorMap',
-                                  disabled=False,
-                                ),
-                              SaveGrid=widgets.ToggleButton(
-                                  value=False,
-                                  description='Export Grid',
-                                  disabled=False,
-                                  button_style='',
-                                  tooltip='Description',
-                                  icon='check'
-                                )
+                              Resolution=Resolution,
+                              Method=Method,
+                              ColorMap=ColorMap,
+                              EPSGcode=EPSGcode,
+                              GetIncDec=GetIncDec,
+                              saveAs=saveAs,
+                              SaveGrid=SaveGrid
                               )
+
+    return out
+
+
+def dataGridGeoref(
+    survey, EPSGcode=np.nan, saveAs="./Output/MyGeoTiff",
+    shapeFile=None, inc=np.nan, dec=np.nan, applyRTP=False,
+):
+
+    def plotWidget(
+            ColorMap,
+            EPSGcode, inc, dec,
+            GetIncDec, applyRTP
+         ):
+
+        if not np.isnan(EPSGcode):
+            survey.EPSGcode = int(EPSGcode)
+
+        survey.inc, survey.dec = inc, dec
+
+        survey.setRTP(applyRTP)
+
+        # if SaveGrid:
+        #     if np.isnan(EPSGcode):
+        #         print("Need to assign an EPSGcode before exporting")
+        #         return
+        #     DataIO.arrayToRaster(
+        #         survey.values, saveAs + '.tiff',
+        #         survey.EPSGcode, X.min(), X.max(),
+        #         Y.min(), Y.max(), 1,
+        #         dataType='grid')
+
+        # else:
+        fig = plt.figure(figsize=(9, 9))
+        axs = plt.subplot()
+        # Add shading
+        X, Y, d_grid, im, CS = plotDataHillside(
+            survey.hx, survey.hy, survey.values, alpha=1.,
+            axs=axs, cmap=ColorMap, clabel=False, shapeFile=shapeFile)
+
+        # Add points at the survey locations
+        # plt.scatter(xLoc, yLoc, s=2, c='k')
+        axs.set_aspect('auto')
+        cbar = plt.colorbar(im, fraction=0.02)
+        cbar.set_label('TMI (nT)')
+        plt.yticks(rotation='vertical')
+        ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
+        axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
+        axs.set_yticks(ylabel[1:4])
+        axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+        xlabel = np.round(np.linspace(X.min(), X.max(), 5) * 1e-3) * 1e+3
+        axs.set_xticklabels(xlabel[1:4], size=12, va='center')
+        axs.set_xticks(xlabel[1:4])
+        axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
+        axs.set_xlabel("Easting (m)", size=14)
+        axs.set_ylabel("Northing (m)", size=14)
+        axs.grid('on', color='k', linestyle='--')
+        plt.show()
+
+        # Create grid object
+        return survey
+
+    assert isinstance(survey, DataIO.dataGrid), "Only implemented for objects of class DataIO.dataGrid"
+
+    def fetchURL(_):
+        if GetIncDec.value:
+            GetIncDec.value = False
+            if np.isnan(EPSGcode.value):
+                print("Enter EPSGcode first")
+                return
+
+            x, y, z = np.mean(survey.hx), np.mean(survey.hy), 0.
+            # input SpatialReference
+            inSpatialRef = osr.SpatialReference()
+            inSpatialRef.ImportFromEPSG(int(EPSGcode.value))
+
+            # output SpatialReference
+            outSpatialRef = osr.SpatialReference()
+            outSpatialRef.ImportFromEPSG(4326)
+
+            # create the CoordinateTransformation
+            coordTrans = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+
+            latLon = coordTrans.TransformPoint(x, y, z)
+            url = (
+                "https://www.ngdc.noaa.gov/geomag-web/calculators/calculateIgrfwmm?lat1=" +
+                str(latLon[1]) + "&lon1=" + str(latLon[0]) +
+                "&model=IGRF&startYear=2000&endYear=2019&resultFormat=html"
+                )
+            out = webbrowser.open(url)
+
+    def saveIt(_):
+
+        if SaveGrid.value:
+            SaveGrid.value = False
+            print('Image saved as: ' + saveAs.value)
+
+    ColorMap = widgets.Dropdown(
+        options=cmaps(),
+        value='RdBu_r',
+        description='ColorMap',
+        disabled=False,
+        )
+
+    if survey.EPSGcode is not None:
+        EPSGcode = survey.EPSGcode
+
+    EPSGcode = widgets.FloatText(
+        value=EPSGcode,
+        description='EPSG code:',
+        disabled=False
+    )
+    inc = widgets.FloatText(
+        value=inc,
+        description='Inclination angle positive downward from horizontal:',
+        disabled=False
+        )
+    dec = widgets.FloatText(
+        value=dec,
+        description='Declination angle positve clockwise from North:',
+        disabled=False
+        )
+    GetIncDec = widgets.ToggleButton(
+        value=False,
+        description='Fetch Inc/Dec',
+        disabled=False,
+        button_style='',
+        tooltip='Connect to NOAA API',
+        icon='check'
+        )
+
+    GetIncDec.observe(fetchURL)
+
+    applyRTP = widgets.ToggleButton(
+        value=applyRTP,
+        description='Reduce to pole',
+        disabled=False,
+        button_style='',
+        tooltip='Transform to RTP data',
+        icon='check'
+        )
+
+    saveAs = widgets.Text(
+        value=saveAs,
+        description='GeoTiff name:',
+        disabled=False
+        )
+    SaveGrid = widgets.ToggleButton(
+        value=False,
+        description='Export Grid',
+        disabled=False,
+        button_style='',
+        tooltip='Write file',
+        icon='check'
+        )
+    SaveGrid.observe(saveIt)
+    out = widgets.interactive(plotWidget,
+                              ColorMap=ColorMap,
+                              EPSGcode=EPSGcode,
+                              inc=inc, dec=dec,
+                              GetIncDec=GetIncDec,
+                              applyRTP=applyRTP,
+                              saveAs=saveAs,
+                              SaveGrid=SaveGrid
+                              )
+
     return out
 
 
@@ -1846,9 +2193,10 @@ def setDataExtentWidget(survey, East=None, North=None):
         dataSub = DataIO.dataGrid()
         dataSub.limits = lims
         # coordinate_system = grid.coordinate_system
-        dataSub.values = survey.values[:, indx]
-        dataSub.values = dataSub.values[indy, :]
+        temp = survey.values[:, indx]
+        temp = temp[indy, :]
 
+        dataSub._values = temp
         dataSub.nx, dataSub.ny = nx, ny
         dataSub.dx, dataSub.dy = survey.dx, survey.dy
         dataSub.x0, dataSub.y0 = East-Width/2, North-Height/2
