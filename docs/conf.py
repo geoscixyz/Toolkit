@@ -38,8 +38,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'edit_on_github',
     'sphinxcontrib.bibtex',
-    'matplotlib.sphinxext.only_directives',
-    'matplotlib.sphinxext.plot_directive',
+#     'matplotlib.sphinxext.only_directives',
+#     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.doctest',
     'numpydoc'
 ]
