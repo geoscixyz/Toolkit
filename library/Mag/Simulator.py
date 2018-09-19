@@ -711,8 +711,10 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
             if np.all(clevels == 0):
                 clevels = np.linspace(vmin, vmax, contours)
 
+            clevels = np.unique(clevels)
             # Insert zero contour
-            clevels = np.sort(np.r_[clevels, 0])
+            if ~np.any(clevels == 0):
+                clevels = np.sort(np.r_[clevels, 0])
             CS = axs.contour(
                 X, Y, d_grid, contours, levels=clevels,
                 colors='k', linewidths=0.5
@@ -826,11 +828,14 @@ def plotData2D(x, y, d, title=None,
 
         if contours > 0:
             clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+
             if np.all(clevels == 0):
                 clevels = np.linspace(vmin, vmax, contours)
 
+            clevels = np.unique(clevels)
             # Insert zero contour
-            clevels = np.sort(np.r_[clevels, 0])
+            if ~np.any(clevels == 0):
+                clevels = np.sort(np.r_[clevels, 0])
             CS = axs.contour(
                 X, Y, d_grid, contours, levels=clevels,
                 colors='k', linewidths=0.5
@@ -1297,8 +1302,7 @@ def gridFiltersWidget(
         options=[
             'TMI',
             'derivativeX', 'derivativeY', 'firstVertical',
-            'totalHorizontal', 'tiltAngle', 'analyticSignal',
-            'RTP'],
+            'totalHorizontal', 'tiltAngle', 'analyticSignal'],
         value=gridFilter,
         description='Grid Filters',
         disabled=False,
@@ -1489,7 +1493,7 @@ def gridTilt2Depth(
             # plt.scatter(xLoc, yLoc, s=2, c='k')
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
-            # cbar.set_label(Filters + " " +units()[Filters])
+            cbar.set_label(Filters + " " +units()[Filters])
             plt.yticks(rotation='vertical')
             ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) * 1e-3) * 1e+3
             axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
@@ -1598,12 +1602,12 @@ def gridTilt2Depth(
     ContourColor = widgets.Dropdown(
         options=cmaps(),
         value='viridis',
-        description='ContourColor',
+        description='Depth Color',
         disabled=False,
         )
     ContourSize = widgets.FloatSlider(
-        min=1, max=10, step=1., value=1,
-        description='ContourSize', continuous_update=False
+        min=0.1, max=10, step=0.1, value=1,
+        description='Marker Size', continuous_update=False
         )
 
     out = widgets.interactive_output(plotWidget,
@@ -1799,13 +1803,13 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan,
-    Method='linear', Contours=0
+    Method='minimumCurvature', Contours=0
 ):
 
     def plotWidget(
             Resolution, Method,
             ColorMap,
-            EPSGcode, inc, dec,
+            EPSGcode,
             GetIncDec, saveAs, SaveGrid
          ):
 
@@ -1840,7 +1844,7 @@ def dataGriddingWidget(
 
         if not np.isnan(EPSGcode):
             gridOut.EPSGcode = int(EPSGcode)
-        gridOut.inc, gridOut.dec = inc, dec
+
 
         if SaveGrid:
             if np.isnan(EPSGcode):
