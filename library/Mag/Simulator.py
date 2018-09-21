@@ -2245,8 +2245,8 @@ def dataGridGeoref(
 
 
 def setDataExtentWidget(
-    survey, East=None, North=None,
-    EPSGcode=np.nan, saveAs="./Output/MyGeoTiff"
+    survey, East=None, North=None, nCx=100, nCy=100,
+    EPSGcode=None, saveAs="./Output/MyGeoTiff"
 ):
     """
         Small application to carve out a subset of a larger data set
@@ -2369,11 +2369,11 @@ def setDataExtentWidget(
         min=ylim[0], max=ylim[1], step=dy, value=North, continuous_update=False
         )
     Width = widgets.FloatSlider(
-        min=2*dx, max=np.abs(xlim[1] - xlim[0]), step=dx, value=100*dx,
+        min=2*dx, max=np.abs(xlim[1] - xlim[0]), step=dx, value=nCx*dx,
         continuous_update=False
         )
     Height = widgets.FloatSlider(
-        min=2*dy, max=np.abs(ylim[1] - ylim[0]), step=dy, value=100*dy,
+        min=2*dy, max=np.abs(ylim[1] - ylim[0]), step=dy, value=nCy*dy,
         continuous_update=False
         )
     saveAs = widgets.Text(

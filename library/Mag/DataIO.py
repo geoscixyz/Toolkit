@@ -502,7 +502,7 @@ def writeGeotiff(
 
     datasetSRS = osr.SpatialReference()
 
-    datasetSRS.ImportFromEPSG(EPSGcode)
+    datasetSRS.ImportFromEPSG(int(EPSGcode))
 
     dataset.SetProjection(datasetSRS.ExportToWkt())
 
@@ -540,7 +540,7 @@ def readShapefile(fileName):
 
 
 def exportShapefile(
-    polylines, attributes, EPSGcode=26909,
+    polylines, attributes, EPSGcode=3156,
     saveAs='./Output/MyShape', label='AvgDepth', attType='int'
 ):
 
@@ -552,7 +552,7 @@ def exportShapefile(
     # if not os.path.isdir(directory):
     #     os.makedirs(directory)
 
-    crs = from_epsg(EPSGcode)
+    crs = from_epsg(int(EPSGcode))
 
     # Define a polygon feature geometry with one attribute
     schema = {
