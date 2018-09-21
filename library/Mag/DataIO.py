@@ -403,7 +403,9 @@ def loadGRDFile(fileName, plotIt=False):
         lim = grid.extent_2d()
         data.limits = np.r_[lim[0], lim[2], lim[1], lim[3]]
         # coordinate_system = grid.coordinate_system
-        data._values = grid.xyzv()[:, :, 3]
+        temp = grid.xyzv()[:, :, 3]
+        temp[temp == -99999] = np.nan
+        data._values = temp
         data.nx, data.ny = grid.nx, grid.ny
         data.dx, data.dy = grid.dx, grid.dy
         data.x0, data.y0 = grid.x0, grid.y0
@@ -434,7 +436,9 @@ def loadGeoTiffFile(fileName, plotIt=False):
 
     rasterObject = gdal.Open(fileName)
     band = rasterObject.GetRasterBand(1)
-    data._values = np.flipud(band.ReadAsArray())
+    temp = np.flipud(band.ReadAsArray())
+    temp[temp == -99999] = np.nan
+    data._values = temp
     data.nx = data.values.shape[1]
     data.ny = data.values.shape[0]
     data.x0 = rasterObject.GetGeoTransform()[0]

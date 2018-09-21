@@ -2341,6 +2341,11 @@ def setDataExtentWidget(
         yLoc = np.asarray(range(survey.ny))*survey.dy+survey.y0
         xlim = survey.limits[:2]
         ylim = survey.limits[2:]
+        dx = survey.dx
+        dy = survey.dy
+        nx = survey.nx
+        ny = survey.ny
+
 
         if East is None:
             East = np.mean(xLoc)
@@ -2358,17 +2363,17 @@ def setDataExtentWidget(
             print('Image saved as: ' + saveAs.value)
 
     East = widgets.FloatSlider(
-        min=xlim[0], max=xlim[1], step=500, value=East, continuous_update=False
+        min=xlim[0], max=xlim[1], step=dx, value=East, continuous_update=False
         )
     North = widgets.FloatSlider(
-        min=ylim[0], max=ylim[1], step=10, value=North, continuous_update=False
+        min=ylim[0], max=ylim[1], step=dy, value=North, continuous_update=False
         )
     Width = widgets.FloatSlider(
-        min=1000, max=np.abs(xlim[1] - xlim[0]), step=1000, value=30000,
+        min=2*dx, max=np.abs(xlim[1] - xlim[0]), step=dx, value=100*dx,
         continuous_update=False
         )
     Height = widgets.FloatSlider(
-        min=1000, max=np.abs(ylim[1] - ylim[0]), step=1000, value=30000,
+        min=2*dy, max=np.abs(ylim[1] - ylim[0]), step=dy, value=100*dy,
         continuous_update=False
         )
     saveAs = widgets.Text(
