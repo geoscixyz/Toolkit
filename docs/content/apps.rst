@@ -8,6 +8,6 @@ The Apps
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2Findex.ipynb
     :align: center
 
-.. image:: ./images/Geotoolkit_Binder_landing.png
+.. image:: ../images/Geotoolkit_Binder_landing.png
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2Findex.ipynb
     :align: center

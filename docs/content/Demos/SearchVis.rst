@@ -14,15 +14,15 @@ Gridded residual magnetic data from Geoscience BC's Search Phase II project (Ano
     :figwidth: 100 %
 
 
-Click below on the **'launch binder'** button or on the image to access an interactive notebook allowing you to explore application of various visual enhancements to the Search Phase II data. Continue below for some examples of image enhancement as applied to the Search II data. 
+Click below on the **'launch binder'** button or on the image to access an interactive notebook allowing you to explore application of various visual enhancements to the Search Phase II data. Continue below for some examples of image enhancement as applied to the Search II data.
 
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSearch_Viewer.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSearch_Viewer.ipynb
     :align: center
-    
+
 .. image:: ./images/search_vis_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSearch_Viewer.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSearch_Viewer.ipynb
     :align: center
 
 
@@ -63,7 +63,7 @@ Again, either a linear or a histogram equalized colour stretch can be applied:
     :align: center
     :figwidth: 100 %
 
-**The interactive module will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located Tiff files and can be loaded into any software that accepts these types of files, including Google Earth and ArcMap. 
+**The interactive module will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located Tiff files and can be loaded into any software that accepts these types of files, including Google Earth and ArcMap.
 
 The below image shows a located image of the Search II magnetic data in Google Earth.
 
