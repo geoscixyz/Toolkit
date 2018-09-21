@@ -1,18 +1,7 @@
-.. _tools:
+.. _usertools:
 
-3. Library of 2D Magnetic Data Analysis Tools
-=============================================
+3. Load and Explore Your Data
+=============================
 
-
-Gallery
-
-Data prep - data downsampling and cropping
-
-Data gridding
-
-Visualization and enhancements
-
-2D filters
-
-Edge detection and depth to source
+Here we present a single app which will allow you to upload, prepare, manipulate, and export your own magnetic data. 
 
