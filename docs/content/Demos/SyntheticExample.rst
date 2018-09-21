@@ -30,14 +30,14 @@ response varies depending on the location of the magnetic survey and the
 magnetic field orientation.
 
 
+.. image:: ./images/synthGridding.png
+    :align: right
+    :width: 30%
+
 .. toctree::
    :maxdepth: 1
 
    SyntheticGrid
-
-.. image:: ./images/synthGridding.png
-    :align: right
-    :width: 30%
 
 This section discusses data gridding, an important initial data processing
 step required prior to applying filters and enhancements to magnetic data.
