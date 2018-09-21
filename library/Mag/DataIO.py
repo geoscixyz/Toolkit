@@ -403,7 +403,9 @@ def loadGRDFile(fileName, plotIt=False):
         lim = grid.extent_2d()
         data.limits = np.r_[lim[0], lim[2], lim[1], lim[3]]
         # coordinate_system = grid.coordinate_system
-        data.values = grid.xyzv()[:, :, 3]
+        temp = grid.xyzv()[:, :, 3]
+        temp[temp == -99999] = np.nan
+        data._values = temp
         data.nx, data.ny = grid.nx, grid.ny
         data.dx, data.dy = grid.dx, grid.dy
         data.x0, data.y0 = grid.x0, grid.y0
@@ -434,13 +436,15 @@ def loadGeoTiffFile(fileName, plotIt=False):
 
     rasterObject = gdal.Open(fileName)
     band = rasterObject.GetRasterBand(1)
-    data._values = band.ReadAsArray()
+    temp = np.flipud(band.ReadAsArray())
+    temp[temp == -99999] = np.nan
+    data._values = temp
     data.nx = data.values.shape[1]
     data.ny = data.values.shape[0]
     data.x0 = rasterObject.GetGeoTransform()[0]
     y0 = rasterObject.GetGeoTransform()[3]
-    data.dx = np.round(rasterObject.GetGeoTransform()[1])
-    data.dy = np.round(np.abs(rasterObject.GetGeoTransform()[5]))
+    data.dx = rasterObject.GetGeoTransform()[1]
+    data.dy = np.abs(rasterObject.GetGeoTransform()[5])
     data.y0 = y0 - data.ny*data.dy
     data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, y0]
 
@@ -464,7 +468,7 @@ def loadGeoTiffFile(fileName, plotIt=False):
     return data
 
 
-def arrayToRaster(
+def writeGeotiff(
     array, fileName, EPSGcode,
     xMin, xMax, yMin, yMax,
     numBands, dataType='image'
@@ -497,14 +501,16 @@ def arrayToRaster(
     dataset.SetGeoTransform((xMin, pixelXSize, 0, yMax, 0, pixelYSize))
 
     datasetSRS = osr.SpatialReference()
+
     datasetSRS.ImportFromEPSG(EPSGcode)
+
     dataset.SetProjection(datasetSRS.ExportToWkt())
 
     if numBands == 1:
-        dataset.GetRasterBand(1).WriteArray(array)
+        dataset.GetRasterBand(1).WriteArray(np.flipud(array))
     else:
         for i in range(0, numBands):
-            dataset.GetRasterBand(i+1).WriteArray(array[:, :, i])
+            dataset.GetRasterBand(i+1).WriteArray(np.flipud(array[:, :, i]))
 
     dataset.FlushCache()  # Write to disk.
 
@@ -624,7 +630,7 @@ def fetchData(
 
     def changeFileList(_):
         loadDir.value = False
-
+        checkDir.value = False
         if localCloud.value == 'Cloud':
             lookinto = "./Output/"
 
@@ -642,6 +648,11 @@ def fetchData(
         print(file)
         file = [file]
 
+    def loadIt(_):
+
+        if loadFile.value:
+            loadFile.value = False
+
     localCloud = widgets.RadioButtons(
         options=['Local', 'Cloud'],
         description='File Type:',
@@ -658,7 +669,7 @@ def fetchData(
         description='Download',
         disabled=False,
         button_style='',
-        tooltip='Description',
+        tooltip='Fetch file on Cloud or Locally',
         icon='check'
     )
     checkDir = widgets.ToggleButton(
@@ -666,7 +677,7 @@ def fetchData(
         description='Check folder',
         disabled=False,
         button_style='',
-        tooltip='Description',
+        tooltip='Fetch files in Local folder',
         icon='check'
     )
     checkDir.observe(changeFileList)
@@ -677,10 +688,10 @@ def fetchData(
         description='Load File',
         disabled=False,
         button_style='',
-        tooltip='Description',
+        tooltip='Load data to memory',
         icon='check'
     )
-
+    # loadFile.observe(loadIt)
     files = widgets.Dropdown(
         options=file,
         description='Files:',
@@ -704,3 +715,12 @@ def fetchData(
 
     return out
 
+
+def gdalWarp(fileNameOut, fileNameIn, EPSGcode):
+    """
+        Load a file and reproject
+    """
+
+    grid = gdal.Open(fileNameIn)
+
+    gdal.Warp(fileNameOut, grid, dstSRS='EPSG:' + str(int(EPSGcode)))

@@ -11,22 +11,22 @@ We use the **tilt-depth method** (:cite:`Salem2007`, :cite:`Blakely2016`) to fin
 
 .. figure:: ./images/tilt_45_deg_Salem.JPG
     :align: center
-    :figwidth: 50 %      
+    :figwidth: 50 %
 
 (Figure from :cite:`Salem2007`)
 
-The images below show the TMI (left image) and the tilt angle (right image) with edges and source depths estimated using the tilt-depth method. 
+The images below show the TMI (left image) and the tilt angle (right image) with edges and source depths estimated using the tilt-depth method.
 
 .. figure:: ./images/tilt_TMI_and_depth.png
     :align: center
-    :figwidth: 100 %      
+    :figwidth: 100 %
 
-Click below on the **'launch binder'** button to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources within the synthetic geologic model. 
+Click below on the **'launch binder'** button to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources within the synthetic geologic model.
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Tilt_Depth_Estimation.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSynthetic_Tilt_Depth_Estimation.ipynb
     :align: center
-    
+
 .. image:: ./images/synth_tiltdepth_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Tilt_Depth_Estimation.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSynthetic_Tilt_Depth_Estimation.ipynb
     :align: center
