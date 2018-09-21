@@ -7,23 +7,23 @@
 
 We use the same synthetic model here as in the previous notebook to demonstrate the effects of various 2D magnetic filters.
 
-Short descriptions of select filters are provided in the sections below. Summaries of various filters and their role in gravity and magnetic data interpretation can be found in :cite:`Roest1992`, :cite:`Macleod1993`, :cite:`Miller1994`, :cite:`Milligan1997`, :cite:`Verduzco2004`, :cite:`Isles2013`, :cite:`Dentith2014`.  
+Short descriptions of select filters are provided in the sections below. Summaries of various filters and their role in gravity and magnetic data interpretation can be found in :cite:`Roest1992`, :cite:`Macleod1993`, :cite:`Miller1994`, :cite:`Milligan1997`, :cite:`Verduzco2004`, :cite:`Isles2013`, :cite:`Dentith2014`.
 
 Click on the **'launch binder'** button here to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Filters.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSynthetic_Filters.ipynb
     :align: center
-    
+
 .. image:: ./images/synth_filter_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2Fdocs%2FNotebooks%2FSynthetic_Filters.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSynthetic_Filters.ipynb
     :align: center
 
 
 Upward continuation
 -------------------
 
-Upward continuation can be considered a ‘wavelength’ filter. Upward continuation simulates the magnetic response that would be observed if data were collected at a greater height above the Earth’s surface than it was actually collected. The result is that longer-wavelength, deeper features are emphasized over shorter-wavelength, near-surface features. It is effective for interpretation of deeper geology, or for reducing noise that may be found in data collected very close to the ground. 
+Upward continuation can be considered a ‘wavelength’ filter. Upward continuation simulates the magnetic response that would be observed if data were collected at a greater height above the Earth’s surface than it was actually collected. The result is that longer-wavelength, deeper features are emphasized over shorter-wavelength, near-surface features. It is effective for interpretation of deeper geology, or for reducing noise that may be found in data collected very close to the ground.
 
 In our synthetic example, the small magnetic anomaly and the narrow fault feature quickly become indistinct with increased survey height (upward continuued to 50 m), however the larger deeper magnetic body persists in the data. The left image below shows the TMI, and the right image shows the upward continued magnetic data.
 
@@ -37,7 +37,7 @@ In our synthetic example, the small magnetic anomaly and the narrow fault featur
 X and Y derivatives of the magnetic response
 --------------------------------------------
 
-Calculating horizontal and vertical derivatives of the magnetic response gives us a way to better visualize local gradients in the data that can be obscured by larger and deeper features in the total field response. X and Y derivatives are calculated based on the difference observed in the magnetic response between adjacent points, or grid cells, in the X and Y directions, respectively: 
+Calculating horizontal and vertical derivatives of the magnetic response gives us a way to better visualize local gradients in the data that can be obscured by larger and deeper features in the total field response. X and Y derivatives are calculated based on the difference observed in the magnetic response between adjacent points, or grid cells, in the X and Y directions, respectively:
 
 
 .. math::
@@ -52,7 +52,7 @@ Calculating horizontal and vertical derivatives of the magnetic response gives u
 
 where B is the magnetic field. Steep gradients usually occur at geologic contacts, faults, or fractures, where there is a distinct contrast in magnetic susceptibility. Interpreters should not consider X and Y derivative results independently, and should be sure to evaluate both, since visualizing gradients in one direction will de-emphasize features trending in the perpendicular direction. The X and Y derivatives are also used in the calculation of several other magnetic data filters.
 
-Grids showing the X (left image) and Y (right image) derivatives are shown below. Note the emphases on east and west geological boundaries using the X derivative, and on the north and south geological boundaries using the Y derivative (best seen in relation to the smaller magnetic anomaly). 
+Grids showing the X (left image) and Y (right image) derivatives are shown below. Note the emphases on east and west geological boundaries using the X derivative, and on the north and south geological boundaries using the Y derivative (best seen in relation to the smaller magnetic anomaly).
 
 
 .. figure:: ./images/Filters_synth_XY_Deriv.png
@@ -65,11 +65,11 @@ Grids showing the X (left image) and Y (right image) derivatives are shown below
 Vertical derivative
 -------------------
 
-A very commonly used magnetic filter is the first vertical derivative. This process considers the change in the magnetic response when calculated at two different heights above the ground. 
+A very commonly used magnetic filter is the first vertical derivative. This process considers the change in the magnetic response when calculated at two different heights above the ground.
 
-The effect is to emphasize near-surface features where the difference between the responses calculated at two different heights will be largest. First vertical derivative anomalies will highlight edges of magnetic sources, and appear over the top of the source if the contact or feature is vertical. 
+The effect is to emphasize near-surface features where the difference between the responses calculated at two different heights will be largest. First vertical derivative anomalies will highlight edges of magnetic sources, and appear over the top of the source if the contact or feature is vertical.
 
-Notice how the first vertical derivative peaks directly over the small magnetic body from the synthetic geologic model. It also highlights the edge, and main body, of the large eastern magnetic block. The de-magnetized NW-trending fault inside the eastern block appears offset in the data as a result of it's north-easterly dip.  
+Notice how the first vertical derivative peaks directly over the small magnetic body from the synthetic geologic model. It also highlights the edge, and main body, of the large eastern magnetic block. The de-magnetized NW-trending fault inside the eastern block appears offset in the data as a result of it's north-easterly dip.
 
 .. figure:: ./images/Filters_synth_VertDeriv.PNG
     :align: center
@@ -80,7 +80,7 @@ Notice how the first vertical derivative peaks directly over the small magnetic 
 Total horizontal derivative
 ---------------------------
 
-The total horizontal derivative combines the X and Y derivatives: 
+The total horizontal derivative combines the X and Y derivatives:
 
 .. math::
 
@@ -88,7 +88,7 @@ The total horizontal derivative combines the X and Y derivatives:
 
 Gradients in both directions are now accounted for in a single map. The highest total horizontal derivative values occur at the edges or boundaries of magnetic sources. It does not detect narrow sources as effectively as the vertical derivative.
 
-The total horizonal derivative can be seen to peak here over the edges of the small magnetic body, and along the margin of the large magnetic block in the east. Again, the magnetic patterns internal to the eastern block are complicated due to the dipping nature of the demagnetized fault. 
+The total horizonal derivative can be seen to peak here over the edges of the small magnetic body, and along the margin of the large magnetic block in the east. Again, the magnetic patterns internal to the eastern block are complicated due to the dipping nature of the demagnetized fault.
 
 .. figure:: ./images/Filters_synth_TotHoriz.PNG
     :align: center
@@ -101,7 +101,7 @@ Tilt angle
 ----------
 
 
-The tilt derivative, or tilt angle, normalizes the vertical derivative by the horizontal derivatives: 
+The tilt derivative, or tilt angle, normalizes the vertical derivative by the horizontal derivatives:
 
 
 .. math::
@@ -125,7 +125,7 @@ In the grid image below, you can see that zero values trace the edge of the smal
 Analytic signal
 ---------------
 
-Analytic signal is also known as the total gradient. It is calculated from the vertical and horizontal derivatives: 
+Analytic signal is also known as the total gradient. It is calculated from the vertical and horizontal derivatives:
 
 
 .. math::
