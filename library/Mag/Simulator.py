@@ -1184,7 +1184,7 @@ def gridFiltersWidget(
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
     inc=np.nan, dec=np.nan, Contours=0,
-    SunAzimuth=90, SunAngle=15, vScale=5.,
+    SunAzimuth=270, SunAngle=15, vScale=5.,
     ColorMap='RdBu_r', shapeFile=None,
     saveAs="./Output/MyGeoTiff",
 ):
@@ -1428,7 +1428,7 @@ def gridTilt2Depth(
     survey, gridFilter='tiltAngle',
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
-    SunAzimuth=90, SunAngle=15, vScale=5., shapeFile=None,
+    SunAzimuth=270, SunAngle=15, vScale=5., shapeFile=None,
     ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
     markerSize=1,
     ShapeFileName="./Output/EstimatedDepth",
@@ -2245,8 +2245,8 @@ def dataGridGeoref(
 
 
 def setDataExtentWidget(
-    survey, East=None, North=None,
-    EPSGcode=np.nan, saveAs="./Output/MyGeoTiff"
+    survey, East=None, North=None, nCx=100, nCy=100,
+    EPSGcode=None, saveAs="./Output/MyGeoTiff"
 ):
     """
         Small application to carve out a subset of a larger data set
@@ -2341,6 +2341,11 @@ def setDataExtentWidget(
         yLoc = np.asarray(range(survey.ny))*survey.dy+survey.y0
         xlim = survey.limits[:2]
         ylim = survey.limits[2:]
+        dx = survey.dx
+        dy = survey.dy
+        nx = survey.nx
+        ny = survey.ny
+
 
         if East is None:
             East = np.mean(xLoc)
@@ -2358,17 +2363,17 @@ def setDataExtentWidget(
             print('Image saved as: ' + saveAs.value)
 
     East = widgets.FloatSlider(
-        min=xlim[0], max=xlim[1], step=500, value=East, continuous_update=False
+        min=xlim[0], max=xlim[1], step=dx, value=East, continuous_update=False
         )
     North = widgets.FloatSlider(
-        min=ylim[0], max=ylim[1], step=10, value=North, continuous_update=False
+        min=ylim[0], max=ylim[1], step=dy, value=North, continuous_update=False
         )
     Width = widgets.FloatSlider(
-        min=1000, max=np.abs(xlim[1] - xlim[0]), step=1000, value=30000,
+        min=2*dx, max=np.abs(xlim[1] - xlim[0]), step=dx, value=nCx*dx,
         continuous_update=False
         )
     Height = widgets.FloatSlider(
-        min=1000, max=np.abs(ylim[1] - ylim[0]), step=1000, value=30000,
+        min=2*dy, max=np.abs(ylim[1] - ylim[0]), step=dy, value=nCy*dy,
         continuous_update=False
         )
     saveAs = widgets.Text(
