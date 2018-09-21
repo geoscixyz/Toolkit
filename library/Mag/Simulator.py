@@ -1184,7 +1184,7 @@ def gridFiltersWidget(
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
     inc=np.nan, dec=np.nan, Contours=0,
-    SunAzimuth=90, SunAngle=15, vScale=5.,
+    SunAzimuth=270, SunAngle=15, vScale=5.,
     ColorMap='RdBu_r', shapeFile=None,
     saveAs="./Output/MyGeoTiff",
 ):
@@ -1428,7 +1428,7 @@ def gridTilt2Depth(
     survey, gridFilter='tiltAngle',
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
-    SunAzimuth=90, SunAngle=15, vScale=5., shapeFile=None,
+    SunAzimuth=270, SunAngle=15, vScale=5., shapeFile=None,
     ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
     markerSize=1,
     ShapeFileName="./Output/EstimatedDepth",
