@@ -11,21 +11,27 @@ Important things to consider before and during interpretation of magnetic data
 Rock Properties
 ---------------
 
-Collection of magnetic susceptibility data from representative rock types, and their altered equivalents, within a project area is an important pre-requisite to geologic interpretation of magnetic data. This data provides confidence for interpretatation and is critical data for any kind of advanced forward or inverse geophysical modelling that allows geoscientists to model geology in 2D and 3D in the subsurface. In the complete absense of rock property data from a project area, rock property data from an area with known equivalent rock types can be useful in guiding interpretation. Or else, interpreters can spend some time in the initial stages of data evaluation simply comparing geophysical data to geology recorded on maps to try to identify consistent patterns that may indicate that particular lithologies are generally weakly, moderately, or strongly magnetic. The magnetic susceptibility table shown :ref:`here<magnetic_susceptibility_chart>` demonstrates the large range in magnetic susceptibility values recorded for different common rock types. While very broad differences in average magnetic susceptibilities of different lithologies are discernable from such a table, interpreters should avoid assuming these averages are representative of the rock types in their project area.
+.. image:: ./images/mag_sus_data_wsamps_GBC_QW.PNG
+    :align: right
+    :width: 60%
+
+**Collection of magnetic susceptibility data from representative rock types, and their altered equivalents, within a project area is an important pre-requisite to geologic interpretation of magnetic data.** This data provides confidence for interpretatation and is critical data for any kind of advanced forward or inverse geophysical modelling that allows geoscientists to model geology in 2D and 3D in the subsurface. Left shows an image of variably altered porphyry deposit samples and their relationship to magnetic response (:cite:`Mitchinson2013`). In the complete absense of rock property data from a project area, rock property data from an area with known equivalent rock types can be useful in guiding interpretation. Or else, interpreters can spend some time in the initial stages of data evaluation simply comparing geophysical data to geology recorded on maps to try to identify consistent patterns that may indicate that particular lithologies are generally weakly, moderately, or strongly magnetic. The magnetic susceptibility table shown :ref:`here<magnetic_susceptibility_chart>` demonstrates the large range in magnetic susceptibility values recorded for different common rock types. While very broad differences in average magnetic susceptibilities of different lithologies are discernable from such a table, interpreters should avoid assuming these averages are representative of the rock types in their project area.
 
 
 Responses from cover sequences
 ------------------------------
 
-It is common for overburden material, or cover sequences to be magnetically transparent, but it is not always the case! Eroded or glacially derived material that is has not undergone significant weathering can contain magnetite or other magnetic minerals. Magnetite is also rarely formed in particular surficial environments (references). Magnetite or other magnetic minerals in cover sequences might be recognized from surficial material studies (laboratory or petrographic analyses), or their presence may be noticed in the character of the magnetic response. The interpreter should question whether a response is consistent with expectations of what the bedrock geology is, or if it diverges from that. Shallow or surficial magnetic responses will likely be best identified in high resolution magnetic data or in filtered data products that emphasize subtle magnetic features. It should be noted however that noise can also be over-emphasized in particular filtered magnetic products such as second vertical derivative and downward continuation, and care should be taken to not misinterpret noise as surficial response.
+**It is common for overburden material, or cover sequences to be magnetically transparent, but it is not always the case!** Eroded or glacially derived material that is has not undergone significant weathering can contain magnetite or other magnetic minerals. Magnetite is also rarely formed in particular surficial environments (references). Magnetite or other magnetic minerals in cover sequences might be recognized from surficial material studies (laboratory or petrographic analyses), or their presence may be noticed in the character of the magnetic response. The interpreter should question whether a response is consistent with expectations of what the bedrock geology is, or if it diverges from that. Shallow or surficial magnetic responses will likely be best identified in high resolution magnetic data or in filtered data products that emphasize subtle magnetic features. It should be noted however that noise can also be over-emphasized in particular filtered magnetic products such as second vertical derivative and downward continuation, and care should be taken to not misinterpret noise as surficial response.
 
 
 Depth of magnetic source, and interfering sources
 -------------------------------------------------
 
-Often magnetic (and other geophysical data) are used to interpret geology and to build geologic maps where rock exposure is limited. Magnetic responses that guide interpretations are of course from sources sitting at a range of depths below the surface, and often are superimposed on one another. The superimposition of sources is a difficult problem, and the individual bodies are unlikely to be distinguished from one another unless surficial mapping or drilling information supports the existance and location of distinct bodies. To thoroughly address varying source depths during map-making, lithologic contacts could be digitized with an indication of their interpreted depths. Alternatively, two or more maps can be generated with geologic information interpreted at shallow and deep levels. Depth information, as discussed and demonstrated in Section 2, can be assessed using various magnetic filters (vertical derivatives, and upward or downward continuation), or estimated using depth to source methods.
+.. image:: ./images/Dentith_Mudge_shallow_deep_interp.png
+    :align: right
+    :width: 60%
 
-reference to isles and rankin of interps at different levels and discussion about how to deal with this.
+Often magnetic (and other geophysical data) are used to interpret geology and to build geologic maps where rock exposure is limited. Magnetic anomalies however, may represent several superimposed magnetic sources. **The interference of sources is a difficult problem, and individual bodies are unlikely to be distinguished from one another unless surficial mapping or drilling information supports the existance and location of distinct bodies.** To thoroughly address varying source depths during map-making, lithologic contacts could be digitized with an indication of their interpreted depths. Alternatively, two or more maps can be generated with geologic information interpreted at shallow and deep levels (:cite:`Dentith2014` provides an excellent example of this as illustrated in the image to the right). Depth information, as discussed and demonstrated in :ref:`Section 2<demos>`, can be assessed using various magnetic filters (vertical derivatives, and upward continuation), or estimated using depth to source methods.
 
 
 Consider regional geophysical data to gain context
@@ -38,11 +44,6 @@ Assess regional trends effect on data
 -------------------------------------
 
 
-
-Scale of resolvable features
-----------------------------
-
-It is important to keep in mind the scale of the survey, the survey line-spacing, and the resolution of the magnetic data. It will be difficult to resolve features that are smaller than the distance between survey lines.
 
 
 
@@ -82,9 +83,7 @@ Magnetic data interpretation resources
 :cite:`Dentith2014`
 
 
-
-:cite:`SGL2017`, :cite:`Blakely1996`,
-:cite:`Cooper2003`,
+:cite:`Blakely1996`,
 :cite:`Nabighian1972`,
 :cite:`Salem2005`,
 

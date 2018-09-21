@@ -39,10 +39,7 @@ magnetic field orientation.
     :align: right
     :width: 30%
 
-This section discusses data gridding, an important initial data processing
-step required prior to applying filters and enhancements to magnetic data.
-Several gridding methods can be explored here using the data calculated from
-the synthetic geologic model.
+This section discusses data gridding, whereby survey data are interpolated onto a regular 2D grid. This is an important initial data processing step required prior to applying filters and enhancements to magnetic data. Several gridding methods can be explored here using the data calculated from the synthetic geologic model.
 
 
 .. toctree::
@@ -71,7 +68,7 @@ to.
 
 .. image:: ./images/Filters_synth_TotHoriz.PNG
     :align: right
-    :width: 30%
+    :width: 28%
 
 Total field magnetic data, viewed with sun shading or various color
 enhancements, is a great approach to initially exploring a magnetic dataset.
@@ -90,7 +87,7 @@ and vertical derivatives, analytic signal, and tilt angle.
 
 .. image:: ./images/tilt_synthetic_edges_depths_grey.PNG
     :align: right
-    :width: 40%
+    :width: 33%
 
 Interpretation of magnetic data is ideally done by geoscientists with
 knowledge of the geology, lithology, and physical rock properties of typical

@@ -20,7 +20,7 @@ Click on the **'launch binder'** button to try out various image enhancement sch
     :align: center
     
 
-**Sun-shading**. Sun-shading, or hill-shading can be used to emphasize highs and lows in the magnetic data - magnetic highs appear as topographic highs, and magnetic lows as topographic lows. This can help interpreters see more subtle variations in the data. Sun-shading can be oriented in any azimuth, and at any angle from 0 to 90 degrees. It helps to choose an aziumth that is perpendicular to the overall geological strike of the study area, and an angle that is neither too shallow or deep. 
+**Sun-shading**. Sun-shading (:cite:`Horn1981`, :cite:`Cooper2003`), or hill-shading can be used to emphasize highs and lows in the magnetic data - magnetic highs appear as topographic highs, and magnetic lows as topographic lows. This can help interpreters see more subtle variations in the data. Sun-shading can be oriented in any azimuth, and at any angle from 0 to 90 degrees. It helps to choose an aziumth that is perpendicular to the overall geological strike of the study area, and an angle that is neither too shallow or deep. 
 
 The left and right images show the synthetic magnetic data without and with sun-shading applied. 
 
