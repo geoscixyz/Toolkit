@@ -142,6 +142,7 @@ pygments_style = 'sphinx'
 
 edit_on_github_project = 'geoscixyz/Toolkit'
 edit_on_github_branch = 'master'
+edit_on_github_directory = 'docs'
 
 # -- Options for HTML output ----------------------------------------------
 

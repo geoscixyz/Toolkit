@@ -13,11 +13,22 @@ __licence__ = 'BSD (3 clause)'
 
 
 def get_github_url(app, view, path):
-    return 'https://github.com/{project}/{view}/{branch}/{path}'.format(
-        project=app.config.edit_on_github_project,
-        view=view,
-        branch=app.config.edit_on_github_branch,
-        path=path)
+    if app.config.edit_on_github_directory is not None:
+        return 'https://github.com/{project}/{view}/{branch}/{directory}/{path}'.format(
+            project=app.config.edit_on_github_project,
+            view=view,
+            branch=app.config.edit_on_github_branch,
+            directory=app.config.edit_on_github_directory,
+            path=path
+        )
+    else:
+        return 'https://github.com/{project}/{view}/{branch}/{path}'.format(
+            project=app.config.edit_on_github_project,
+            view=view,
+            branch=app.config.edit_on_github_branch,
+            directory=app.config.edit_on_github_directory,
+            path=path
+        )
 
 
 def html_page_context(app, pagename, templatename, context, doctree):
@@ -39,4 +50,5 @@ def html_page_context(app, pagename, templatename, context, doctree):
 def setup(app):
     app.add_config_value('edit_on_github_project', '', True)
     app.add_config_value('edit_on_github_branch', 'master', True)
+    app.add_config_value('edit_on_github_directory', None, True)
     app.connect('html-page-context', html_page_context)
