@@ -3,13 +3,19 @@
 Installation
 ============
 
-All the apps can be run locally after installation of a few packages.
+Please install the following packages to run all of the presented apps locally.
+A local installation will be necessary if you wish to upload and export your own data, and if you are working with Geosoft .grd files.
+
 
 Step 1: Microsoft Visual Studio
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 (Windows users) Update/install  `Microsoft Visual Studio 2017 <https://support.microsoft.com/en-ca/help/2977003/the-latest-supported-visual-c-downloads>`_
     - Some Python packages use C++ to speed up core functions (i.e. `SimPEG <simpeg.xyz>`_)
+
+    .. figure:: ../images/MVS2017.PNG
+        :align: center
+        :width: 600
 
 
 Step 2: Anaconda (Python)
@@ -49,7 +55,7 @@ Step 3: GeoToolkit
 
 Full installation time :math:`\approx 15` min
 
-Congratulation, you should now have access to the `Python ecosystem <http://www.developintelligence.com/blog/python-ecosystem-2017/>`_!
+Congratulations, you should now have access to the `Python ecosystem <http://www.developintelligence.com/blog/python-ecosystem-2017/>`_!
 
 
 Step 4: Run the notebooks
@@ -63,4 +69,7 @@ Enter>>    `jupyter notebook`
         :align: center
         :width: 600
 
- Once in a notebook, you can run a cells with Shift+Enter
+
+You will see the list of notebooks available, just click on the one you wish to work with.
+
+Once in a notebook, you can run cells with Shift+Enter.
