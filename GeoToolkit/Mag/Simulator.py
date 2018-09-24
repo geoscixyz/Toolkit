@@ -18,7 +18,7 @@ import scipy.sparse as sp
 from scipy.spatial import cKDTree
 from scipy.interpolate.interpnd import _ndim_coords_from_arrays
 from matplotlib.colors import LightSource, Normalize
-from library.graphics import graphics
+from GeoToolkit.graphics import graphics
 from matplotlib.ticker import FormatStrFormatter
 import matplotlib as mpl
 from skimage import exposure
