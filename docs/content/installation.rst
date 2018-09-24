@@ -3,7 +3,7 @@
 Installation
 ============
 
-Please install the following packages to run all of the presented apps locally. 
+Please install the following packages to run all of the presented apps locally.
 A local installation will be necessary if you wish to upload and export your own data, and if you are working with Geosoft .grd files.
 
 
@@ -47,7 +47,7 @@ Step 3: GeoToolkit
         :align: center
         :width: 400
 
-- Enter>>    `python setup.py install`
+- Enter>>    `conda env create -f environment.yml`
 
     .. figure:: ../images/InstallEnvironment.png
         :align: center
@@ -69,7 +69,7 @@ Enter>>    `jupyter notebook`
         :align: center
         :width: 600
 
- 
-You will see the list of notebooks available, just click on the one you wish to work with.        
+
+You will see the list of notebooks available, just click on the one you wish to work with.
 
 Once in a notebook, you can run cells with Shift+Enter.
