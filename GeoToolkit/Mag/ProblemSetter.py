@@ -1,6 +1,6 @@
 
 import numpy as np
-from library.Mag import Simulator, DataIO, MathUtils, Mag
+from GeoToolkit.Mag import Simulator, DataIO, MathUtils, Mag
 from SimPEG import PF, Utils, Mesh, Maps
 import ipywidgets as widgets
 from matplotlib.patches import Rectangle

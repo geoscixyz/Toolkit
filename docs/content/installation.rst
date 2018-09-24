@@ -41,7 +41,7 @@ Step 3: GeoToolkit
         :align: center
         :width: 400
 
-- Enter>>    `python setup.py install`
+- Enter>>    `conda env create -f environment.yml`
 
     .. figure:: ../images/InstallEnvironment.png
         :align: center
