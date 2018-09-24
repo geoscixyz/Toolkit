@@ -6,7 +6,7 @@
 Important things to consider before and during interpretation of magnetic data
 ------------------------------------------------------------------------------
 
-(from Dentith and Mudge)
+:cite:`Dentith2014` provides a good summary of geophysical data interpretation fundamentals. Some of these important topics are elaborated on in the below sections.  
 
 Rock Properties
 ---------------
@@ -31,19 +31,14 @@ Depth of magnetic source, and interfering sources
     :align: right
     :width: 60%
 
-Often magnetic (and other geophysical data) are used to interpret geology and to build geologic maps where rock exposure is limited. Magnetic anomalies however, may represent several superimposed magnetic sources. **The interference of sources is a difficult problem, and individual bodies are unlikely to be distinguished from one another unless surficial mapping or drilling information supports the existance and location of distinct bodies.** To thoroughly address varying source depths during map-making, lithologic contacts could be digitized with an indication of their interpreted depths. Alternatively, two or more maps can be generated with geologic information interpreted at shallow and deep levels (:cite:`Dentith2014` provides an excellent example of this as illustrated in the image to the right). Depth information, as discussed and demonstrated in :ref:`Section 2<demos>`, can be assessed using various magnetic filters (vertical derivatives, and upward continuation), or estimated using depth to source methods.
+Often magnetic (and other geophysical data) are used to interpret geology and to build geologic maps where rock exposure is limited. Magnetic anomalies however, may represent several superimposed magnetic sources. **The interference of sources is a difficult problem, and individual bodies are unlikely to be distinguished from one another unless surficial mapping or drilling information supports the existance and location of distinct bodies.** To thoroughly address varying source depths during map-making, lithologic contacts could be digitized with an indication of their interpreted depths. Alternatively, two or more maps can be generated with geologic information interpreted at shallow and deep levels (:cite:`Isles2013` provides an excellent example of this as illustrated in the image to the right). Depth information, as discussed and demonstrated in :ref:`Section 2<demos>`, can be assessed using various magnetic filters (vertical derivatives, and upward continuation), or estimated using depth to source methods.
 
 
-Consider regional geophysical data to gain context
+Regional context and regional signal removal
 --------------------------------------------------
 
 It is typically very useful to acquire and plot regional magnetic data (and regional geology) for comparison with the local project data. This provides some context for the local data. Anomalies within the local dataset may extend beyond the boundaries of the project, and seeing their full extent can provide valuable insight on the geologic setting. Local anomalies may also be part of a suite or chain of anomalies, which might not be recognized without viewing regional data. Regional magnetic and gravity data can commonly be found on the websites for provincial, state, or national geological surveys.
-
-
-Assess regional trends effect on data
--------------------------------------
-
-
+Regional magnetic data can also reveal whether large wavelength magnetic responses might need to be removed from more local magnetic darasets. Large, deep magnetic sources can obscure locally important discrete bodies. A discussion of regional magnetic trend removal is found :ref:`here<magnetics_regional_trend>` on the Geophysics for Practising Geoscientists website.  
 
 
 
