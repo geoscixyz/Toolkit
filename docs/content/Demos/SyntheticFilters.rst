@@ -12,11 +12,11 @@ Short descriptions of select filters are provided in the sections below. Summari
 Click on the **'launch binder'** button here to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSynthetic_Filters.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_4_Synthetic_Mag_Data_Filters.ipynb
     :align: center
 
 .. image:: ./images/synth_filter_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSynthetic_Filters.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_4_Synthetic_Mag_Data_Filters.ipynb
     :align: center
 
 

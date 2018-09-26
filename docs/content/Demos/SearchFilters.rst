@@ -8,11 +8,11 @@ Now let's apply our suite of 2D filters introduced in Notebook 2.1.2. to the Geo
 Click below on the **'launch binder'** button or on the image to go to an interactive magnetic data filtering notebook, and try applying the various filters to the Search II magnetic dataset. The interactive notebook allows maps to be exported as located Tiff files for import into applications such as Google Earth or ArcMap. Or continue below for a preview of a subset of Search II data with magnetic filters applied.
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSearch_Filters.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_2_2_Search_Mag_Data_Filters.ipynb
     :align: center
 
 .. image:: ./images/search_filter_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSearch_Filters.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_2_2_Search_Mag_Data_Filters.ipynb
     :align: center
 
 

@@ -16,9 +16,9 @@ The images below show the TMI overlain by the tilt-depth contours (left image), 
 Click below on the **'launch binder'** button or the image to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources within the Search II magnetic dataset. Upward continuation can be applied to identify the larger, more regional-scale magnetic bodies. Maps can be exported as located Tiff files, and tilt-depth contours can be exported as shapefiles.
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSearch_Tilt_Depth_Estimation.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_2_3_Search_MAg_Data_DepthSource.ipynb
     :align: center
 
 .. image:: ./images/search_tiltdepth_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2FSearch_Tilt_Depth_Estimation.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_2_3_Search_MAg_Data_DepthSource.ipynb
     :align: center
