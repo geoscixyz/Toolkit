@@ -40,11 +40,11 @@ Click below on the **'launch binder'** button or on the image to open an interac
 
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_1_a_Synthetic_Mag_Data_Profile.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2FSynthetic_Viewer.ipynb
     :align: center
 
 .. image:: ./images/synthEWprofile.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_1_a_Synthetic_Mag_Data_Profile.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2FSynthetic_Viewer.ipynb
     :align: center
 
 
@@ -58,9 +58,9 @@ Click on the **'launch binder'** button or on the image to open an interactive J
 
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_1_b_Synthetic_Mag_Data_Mag_Field.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2FSynthetic_Viewer_Worldwide.ipynb
     :align: center
 
 .. image:: ./images/synth_mag_location_global.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_1_b_Synthetic_Mag_Data_Mag_Field.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2FSynthetic_Viewer_Worldwide.ipynb
     :align: center

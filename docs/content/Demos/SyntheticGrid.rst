@@ -14,10 +14,10 @@ Click on the **'launch binder'** button to launch a Jupyer notebook to try out s
 
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_2_Synthetic_Data_Gridding.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2FSynthetic_Gridding.ipynb
     :align: center
 
 .. image:: ./images/mincurv_nearest.png
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_2_Synthetic_Data_Gridding.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2FSynthetic_Gridding.ipynb
     :align: center
 
