@@ -24,9 +24,9 @@ The images below show the TMI (left image) and the tilt angle (right image) with
 Click below on the **'launch binder'** button to go to an interactive notebook where you can apply the tilt-depth method to estimate the depths to magnetic sources within the synthetic geologic model.
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_5_Synthetic_Mag_Data_DepthSource.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_1_5_Synthetic_Mag_Data_DepthSource.ipynb
     :align: center
 
 .. image:: ./images/synth_tiltdepth_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit.git/master?filepath=.%2FNotebooks%2F2_1_5_Synthetic_Mag_Data_DepthSource.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_1_5_Synthetic_Mag_Data_DepthSource.ipynb
     :align: center
