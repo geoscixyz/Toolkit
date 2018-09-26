@@ -70,6 +70,14 @@ Enter>>    `jupyter notebook`
         :width: 600
 
 
-You will see the list of notebooks available, just click on the one you wish to work with.
+You will see the list of notebooks available similar to the image below. Just click on the one you wish to work with.
 
 Once in a notebook, you can run cells with Shift+Enter.
+
+
+    .. figure:: ../images/Notebook_full_list.PNG
+        :align: center
+        :width: 300
+        
+
+
