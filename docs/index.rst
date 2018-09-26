@@ -31,6 +31,13 @@ This site provides a portal to a suite of basic geophysical tools or application
 Some :ref:`background information <Mag_index>` related to the Earth’s magnetic field,
 magnetic response of rocks, and magnetic data collection are provided.
 
+.. figure:: ./images/UserDefine_GE.png
+    :align: right
+    :figwidth: 40 %
+
+    `Google Earth Pro <https://www.google.com/earth/download/gep/agree.html>`_ overlay prepared from the `EMAG2: Earth Magnetic Anomaly Grid (2-arc-minute) <https://data.noaa.gov//metaview/page?xml=NOAA/NESDIS/NGDC/MGG/Geophysical_Models/iso/xml/EMAG2.xml&view=getDataView&header=none>`_ .
+
+
 To get initiated with the **geophysical data analysis tools** in the
 **Geophysical Toolkit**, we have set up both
 :ref:`synthetic<synth_example_intro>` and :ref:`real-
@@ -38,6 +45,7 @@ life<search_example_intro>` examples that can be walked through by interested
 geoscientists looking to understand how the tools function. :ref:`Users can
 also directly upload their own data<usertools>` to apply and explore the same
 applications.
+
 
 Geological knowledge is vital to meaningful interpretation of geophysical
 data. Therefore, geophysicists and geologists must work together to gain the
