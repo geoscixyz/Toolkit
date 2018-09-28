@@ -117,7 +117,7 @@ And with the generous contribution of the open-source community:
 | .. image:: ./images/jupyter.png       |  .. image:: ./images/sphinx.png           |
 |   :scale:  60%                        |       :scale: 30%                         |
 |   :align: center                      |       :align: center                      |
-|   :target: https://numfocus.org       |       :target: http://www.sphinx-doc.org  |
+|   :target: http://jupyter.org         |       :target: http://www.sphinx-doc.org  |
 +---------------------------------------+-------------------------------------------+
 | .. image:: ./images/fatiando.png                                                  |
 |   :scale:  30%                                                                    |
