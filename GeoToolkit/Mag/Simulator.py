@@ -1362,7 +1362,7 @@ def gridFiltersWidget(
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
-        description='Export Grid',
+        description='Export GeoTiff',
         disabled=False,
         button_style='',
         tooltip='Description',
@@ -2078,6 +2078,7 @@ def dataGriddingWidget(
 def dataGridGeoref(
     survey, EPSGcode=np.nan, saveAs="./Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan, applyRTP=False,
+    omit=[]
 ):
 
     def plotWidget(
@@ -2223,13 +2224,16 @@ def dataGridGeoref(
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
-        description='Export Grid',
+        description='Export GeoTiff',
         disabled=False,
         button_style='',
         tooltip='Write file',
         icon='check'
         )
     SaveGrid.observe(saveIt)
+
+    for key in omit:
+        locals()[key].disabled=True
     out = widgets.interactive(plotWidget,
                               ColorMap=ColorMap,
                               EPSGcode=EPSGcode,
@@ -2245,7 +2249,7 @@ def dataGridGeoref(
 
 def setDataExtentWidget(
     survey, East=None, North=None, nCx=100, nCy=100,
-    EPSGcode=None, saveAs="./Output/MyGeoTiff"
+    EPSGcode=None, saveAs="./Output/MyGeoTiff", omit=[]
 ):
     """
         Small application to carve out a subset of a larger data set
@@ -2398,6 +2402,9 @@ def setDataExtentWidget(
         icon='check'
         )
     SaveGrid.observe(saveIt)
+
+    for key in omit:
+        locals()[key].disabled=True
     out = widgets.interactive(
             dataSelector,
             East=East,
