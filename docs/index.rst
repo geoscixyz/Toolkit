@@ -89,13 +89,41 @@ Contributors:
 .. include:: AUTHORS.rst
 
 
-.. image:: ./images/MDRU.png
-   :scale: 100%
-   :align: left
++---------------------------------------+-------------------------------------------+
+| .. image:: ./images/MDRU.png          |  .. image:: ./images/GIF.png              |
+|   :scale: 100%                        |       :scale: 100%                        |
+|   :align: center                      |       :align: center                      |
+|   :target: https://www.mdru.ubc.ca    |       :target: https://gif.eos.ubc.ca     |
++---------------------------------------+-------------------------------------------+
 
-.. image:: ./images/GIF.png
-   :scale: 100%
-   :align: left
+And with the generous contribution of the open-source community:
+
++---------------------------------------+-------------------------------------------+
+| .. image:: ./images/numpy.png         |  .. image:: ./images/matplotlib.png       |
+|   :scale:  25%                        |       :scale: 50%                         |
+|   :align: center                      |       :align: center                      |
+|   :target: http://www.numpy.org       |       :target: http://www.matplotlib.org  |
++---------------------------------------+-------------------------------------------+
+| .. image:: ./images/scipy.png         |  .. image:: ./images/simpeg.png           |
+|   :scale:  50%                        |       :scale: 50%                         |
+|   :align: center                      |       :align: center                      |
+|   :target: http://www.scipy.org       |       :target: http://www.simpeg.xyz      |
++---------------------------------------+-------------------------------------------+
+| .. image:: ./images/scikitlearn.png   |  .. image:: ./images/gdal.png             |
+|   :scale:  20%                        |       :scale: 50%                         |
+|   :align: center                      |       :align: center                      |
+|   :target: http://scikit-learn.org    |       :target: https://gdal.org/          |
++---------------------------------------+-------------------------------------------+
+| .. image:: ./images/jupyter.png       |  .. image:: ./images/sphinx.png           |
+|   :scale:  60%                        |       :scale: 30%                         |
+|   :align: center                      |       :align: center                      |
+|   :target: https://numfocus.org       |       :target: http://www.sphinx-doc.org  |
++---------------------------------------+-------------------------------------------+
+| .. image:: ./images/fatiando.png                                                  |
+|   :scale:  30%                                                                    |
+|   :align: center                                                                  |
+|   :target: https://www.fatiando.org/                                              |
++---------------------------------------+-------------------------------------------+
 
 
 .. Indices and tables
