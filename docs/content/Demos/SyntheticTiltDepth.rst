@@ -9,7 +9,7 @@ Analyzing the depth to a magnetic source is valuable for many reasons. Having an
 
 We use the **tilt-depth method** (:cite:`Salem2007`, :cite:`Blakely2016`) to find the edges and depths of both the small high magnetic susceptibility body and the larger magnetic block in the 3D synthetic geologic modeldo this. The tilt angle, discussed in Section 2.1.3., considers the vertical and horizontal magnetic gradients. Depth can be estimated where the tilt angle is zero, at the edge or margin of a feature or source. Depth to the edge of a source is then approximately half the distance between the +45 degree and -45 degree contours of the calculated tilt angle.
 
-.. figure:: ./images/tilt_45_deg_Salem.JPG
+.. figure:: ./images/tilt_45_deg_Salem.png
     :align: center
     :figwidth: 50 %
 

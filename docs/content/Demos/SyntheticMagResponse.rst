@@ -28,7 +28,7 @@ The extents of the survey area are approximately 3 km x 3 km.
 Magnetic response of a simple geologic model
 --------------------------------------------
 
-The magnetic response (total field anomaly) of the geologic model is calculated on a series of east-west flight lines running roughly perpendicular to the general strike of geologic boundaries and structures featured in the model. Flight line spacing is 200 m. Data was collected at a flight height of 40 m. Topography is assumed to be flat in this example.
+The magnetic response (total field anomaly) of the geologic model is calculated on a series of east-west flight lines running roughly perpendicular to the general strike of geologic boundaries and structures featured in the model. Flight line spacing is 200 m. Observations are at the Earth's surface. Topography is assumed to be flat in this example.
 
 .. figure:: ./images/GeoTIFFSynthetic.png
     :align: center

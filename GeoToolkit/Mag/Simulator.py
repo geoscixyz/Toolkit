@@ -941,7 +941,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 def dataHillsideWidget(
     survey, EPSGcode=None, HSTransp=0.5, SunAzimuth=270,
     saveAs='./Output/DataHillshade', dpi=300, contours=0,
-    scatterData=None, shapeFile=None,
+    scatterData=None, shapeFile=None, omit=[]
   ):
 
     def plotWidget(
@@ -1144,37 +1144,33 @@ def dataHillsideWidget(
         description='EPSG code:',
         disabled=False
     )
-    out = widgets.interactive_output(plotWidget,
-                              {
-                                    'SunAzimuth': SunAzimuth,
-                                    'SunAngle': SunAngle,
-                                    'ColorTransp': ColorTransp,
-                                    'HSTransp': HSTransp,
-                                    'vScale': vScale,
-                                    'Contours': Contours,
-                                    'ColorMap': ColorMap,
-                                    'VminVmax': VminVmax,
-                                    'Equalize': Equalize,
-                                    'saveAs': saveAs,
-                                    'EPSGcode': EPSGcode,
-                                    'SaveGeoTiff': SaveGeoTiff
-                                }
-                              )
+    keys = {'SunAzimuth': SunAzimuth,
+            'SunAngle': SunAngle,
+            'ColorTransp': ColorTransp,
+            'HSTransp': HSTransp,
+            'vScale': vScale,
+            'Contours': Contours,
+            'ColorMap': ColorMap,
+            'VminVmax': VminVmax,
+            'Equalize': Equalize,
+            'saveAs': saveAs,
+            'EPSGcode': EPSGcode,
+            'SaveGeoTiff': SaveGeoTiff}
+
+    widgList = []
+    for key in list(keys.keys()):
+
+        if key not in omit:
+            widgList += [keys[key]]
+
+    out = widgets.interactive_output(plotWidget, keys)
 
     left = widgets.VBox(
-            [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
-             Contours, ColorMap, VminVmax, Equalize, saveAs, EPSGcode, SaveGeoTiff],
+            widgList,
             layout=Layout(
                 width='35%', height='600px', margin='60px 0px 0px 0px'
             )
         )
-
-    image = widgets.VBox(
-              [out],
-              layout=Layout(
-                  width='65%', height='600px', margin='0px 0px 0px 0px'
-              )
-            )
 
     return widgets.HBox([left, out])
 
@@ -1186,7 +1182,7 @@ def gridFiltersWidget(
     inc=np.nan, dec=np.nan, Contours=0,
     SunAzimuth=270, SunAngle=15, vScale=5.,
     ColorMap='RdBu_r', shapeFile=None,
-    saveAs="./Output/MyGeoTiff",
+    saveAs="./Output/MyGeoTiff", omit=[]
 ):
 
     gridProps = [
@@ -1366,7 +1362,7 @@ def gridFiltersWidget(
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
-        description='Export Grid',
+        description='Export GeoTiff',
         disabled=False,
         button_style='',
         tooltip='Description',
@@ -1387,26 +1383,31 @@ def gridFiltersWidget(
         disabled=False
         )
 
-    out = widgets.interactive_output(plotWidget,
-                            {
-                              'SunAzimuth': SunAzimuth,
-                              'SunAngle': SunAngle,
-                              'ColorTransp': ColorTransp,
-                              'HSTransp': HSTransp,
-                              'vScale': vScale,
-                              'Contours': Contours,
-                              'ColorMap': ColorMap,
-                              'Filters': Filters,
-                              'UpDist': UpDist,
-                              'saveAs': saveAs,
-                              'EPSGcode': EPSGcode,
-                              'SaveGrid': SaveGrid,
-                            }
-                        )
+    keys = {
+        'SunAzimuth': SunAzimuth,
+        'SunAngle': SunAngle,
+        'ColorTransp': ColorTransp,
+        'HSTransp': HSTransp,
+        'vScale': vScale,
+        'Contours': Contours,
+        'ColorMap': ColorMap,
+        'Filters': Filters,
+        'UpDist': UpDist,
+        'saveAs': saveAs,
+        'EPSGcode': EPSGcode,
+        'SaveGrid': SaveGrid,
+        }
+
+    widgList = []
+    for key in list(keys.keys()):
+
+        if key not in omit:
+            widgList += [keys[key]]
+
+    out = widgets.interactive_output(plotWidget, keys)
 
     left = widgets.VBox(
-            [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale, Contours,
-             ColorMap, Filters, UpDist, saveAs, EPSGcode, SaveGrid],
+            widgList,
             layout=Layout(
                 width='35%', height='600px', margin='60px 0px 0px 0px'
             )
@@ -1430,7 +1431,7 @@ def gridTilt2Depth(
     EPSGcode=None, dpi=300, scatterData=None,
     SunAzimuth=270, SunAngle=15, vScale=5., shapeFile=None,
     ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
-    markerSize=1,
+    markerSize=1, omit=[],
     ShapeFileName="./Output/EstimatedDepth",
     GridFileName="./Output/MyGeoTiff"
 ):
@@ -1483,7 +1484,7 @@ def gridTilt2Depth(
         scatterData['x'] = np.vstack(polylines)[:, 0]
         scatterData['y'] = np.vstack(polylines)[:, 1]
         scatterData['size'] = ContourSize
-        scatterData['c'] = np.concatenate(attributes)-UpDist
+        scatterData['c'] = np.concatenate(attributes)
         scatterData['cmap'] = ContourColor
         scatterData['clim'] = [
             np.percentile(scatterData['c'], 25),
@@ -1702,46 +1703,40 @@ def gridTilt2Depth(
         description='EPSG code:',
         disabled=False
     )
-    out = widgets.interactive_output(plotWidget,
-                            {
-                              'SunAzimuth': SunAzimuth,
-                              'SunAngle': SunAngle,
-                              'ColorTransp': ColorTransp,
-                              'HSTransp': HSTransp,
-                              'vScale': vScale,
-                              'ColorMap': ColorMap,
-                              'Filters': Filters,
-                              'UpDist': UpDist,
-                              'ContourColor': ContourColor,
-                              'ContourSize': ContourSize,
-                              'GridFileName': GridFileName,
-                              "EPSGcode": EPSGcode,
-                              'SaveGrid': SaveGrid,
-                              'ShapeFileName': ShapeFileName,
-                              'SaveShape': SaveShape
-                            }
-                        )
+    keys = {
+        'SunAzimuth': SunAzimuth,
+        'SunAngle': SunAngle,
+        'ColorTransp': ColorTransp,
+        'HSTransp': HSTransp,
+        'vScale': vScale,
+        'ColorMap': ColorMap,
+        'Filters': Filters,
+        'UpDist': UpDist,
+        'ContourColor': ContourColor,
+        'ContourSize': ContourSize,
+        'GridFileName': GridFileName,
+        "EPSGcode": EPSGcode,
+        'SaveGrid': SaveGrid,
+        'ShapeFileName': ShapeFileName,
+        'SaveShape': SaveShape
+        }
+
+    widgList = []
+    for key in list(keys.keys()):
+
+        if key not in omit:
+            widgList += [keys[key]]
+
+    out = widgets.interactive_output(plotWidget, keys)
 
     left = widgets.VBox(
-            [SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale,
-             ColorMap, Filters, UpDist, GridFileName, EPSGcode,
-             SaveGrid,
-             ContourColor, ContourSize, ShapeFileName, SaveShape],
+            widgList,
             layout=Layout(
-                width='35%', margin='0px 0px 0px 0px'
+                width='35%', height='600px', margin='60px 0px 0px 0px'
             )
         )
 
-    image = widgets.VBox(
-              [out],
-              layout=Layout(
-                  width='65%', height='800px', margin='0px 0px 0px 0px'
-              )
-            )
-
-    return widgets.HBox([left, image])
-
-    return out
+    return widgets.HBox([left, out])
 
 
 def plotShapeFile(shapeFile, ax=None, fill=True, linewidth=1):
@@ -1889,7 +1884,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan,
-    Method='minimumCurvature', Contours=0
+    Method='minimumCurvature', Contours=0, omit=[]
 ):
 
     def plotWidget(
@@ -2063,6 +2058,10 @@ def dataGriddingWidget(
         )
 
     SaveGrid.observe(saveIt)
+
+    for key in omit:
+        locals()[key].disabled=True
+
     out = widgets.interactive(plotWidget,
                               Resolution=Resolution,
                               Method=Method,
@@ -2079,6 +2078,7 @@ def dataGriddingWidget(
 def dataGridGeoref(
     survey, EPSGcode=np.nan, saveAs="./Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan, applyRTP=False,
+    omit=[]
 ):
 
     def plotWidget(
@@ -2224,13 +2224,16 @@ def dataGridGeoref(
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
-        description='Export Grid',
+        description='Export GeoTiff',
         disabled=False,
         button_style='',
         tooltip='Write file',
         icon='check'
         )
     SaveGrid.observe(saveIt)
+
+    for key in omit:
+        locals()[key].disabled=True
     out = widgets.interactive(plotWidget,
                               ColorMap=ColorMap,
                               EPSGcode=EPSGcode,
@@ -2246,7 +2249,7 @@ def dataGridGeoref(
 
 def setDataExtentWidget(
     survey, East=None, North=None, nCx=100, nCy=100,
-    EPSGcode=None, saveAs="./Output/MyGeoTiff"
+    EPSGcode=None, saveAs="./Output/MyGeoTiff", omit=[]
 ):
     """
         Small application to carve out a subset of a larger data set
@@ -2399,6 +2402,9 @@ def setDataExtentWidget(
         icon='check'
         )
     SaveGrid.observe(saveIt)
+
+    for key in omit:
+        locals()[key].disabled=True
     out = widgets.interactive(
             dataSelector,
             East=East,
