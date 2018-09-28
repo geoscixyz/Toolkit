@@ -450,7 +450,6 @@ def loadGeoTiffFile(fileName, plotIt=False):
 
     proj = osr.SpatialReference(wkt=rasterObject.GetProjection())
     data.EPSGcode = proj.GetAttrValue('AUTHORITY', 1)
-
     if plotIt:
         xLoc = np.asarray(range(data.nx))*data.dx+data.x0
         yLoc = np.asarray(range(data.ny))*data.dy+data.y0
