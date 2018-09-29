@@ -73,7 +73,7 @@ other references:
 
 Earth's Magnetic Field
 ----------------------
-From the GPG `magnetics basic principles page`_
+From the GPG section on `Earth's magnetic field <https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#earth-s-magnetic-field-source>`_.
 
 .. image:: ../../images/Geodynamo_Between_Reversals.gif
    :scale: 30%
@@ -100,7 +100,9 @@ The field at any location on (or above or within) the Earth are generally descri
 Earth’s field at any location is approximately that provided by a global reference model called the IGRF or International Geomagnetic Reference Field. The IGRF is a mathematical model that describes the field and its secular changes, that is, how it changes with time. The IGRF is a product of the International Association of Geomagnetism and Aeronomy (IAGA_), and the original version was defined in 1968. It is updated every five years, and later versions may re-define the field at earlier times. This is important to remember if you are comparing old maps to new ones.
 Earth’s field has a strength of approximately 70,000 nanoTeslas (nT) at the magnetic poles and approximately 25,000 nT at the magnetic equator. Field orientation and strength varies around the world.
 
-figure of earths fields
+.. image:: ../../images/earths_field.png
+   :scale: 50%
+   :align: right
 
 Slow changes in the exact location of the magnetic north pole occur over long periods (months-years). These changes are thought to be caused by internal changes in mantle convection. Knowing the acquisition date of a magnetic survey is important in order to understand the observed magnetic anomalies.
 
@@ -111,7 +113,7 @@ Details about Earth's field can be found at government geoscience websites such 
 
 Magnetization
 -------------
-From the GPG `magnetics basic principles page`_
+From the GPG section on `magnetization <https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#magnetization>`_
 
 When the source field is applied to earth materials it causes the to become
 magnetized. Magnetization is the dipole moment
@@ -134,7 +136,7 @@ The final net magnetization of an object, when it is buried at any location on t
 
 Magnetic Response
 -----------------
-From the GPG `magnetics basic principles page`_
+From the GPG section on `magnetic response <https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#responses-data>`_.
 
 The magnetic field that results from the magnetized earth commonly referred to as the “secondary” field or sometimes the “anomalous” field. For geological or engineering problems, these anomalous fields are the data to be interpreted, and this is what we seek to measure. Unfortunately, for a field survey we measure the anomalous field plus Earth’s field. (More correctly it is the anomalous field plus any other magnetic fields that are present, but we ignore that complexity for the present). Thus the observed field is:
 
@@ -152,7 +154,7 @@ The basic ideas behind the induced magnetization process, going from source to d
 
 Magnetic Remanence
 ------------------
-From the GPG `magnetics basic principles page`_
+From the GPG section on `magnetic remanence <https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#remanent-magnetization>`_.
 
 A toy bar magnet is a quintessential example of an object that has a remanent magnetization. If taken to outer space where there is no inducing field, it still possesses a magnetic field like that of a dipole. The acquisition of remanence occurs when a body with magnetic minerals cools through its Curie temperature. Above the Curie temperature thermal agitation prevents the elementary dipoles from aligning with the ambient magnetic field. As the material cools the magnetic particles can stay aligned and eventually lock into place in a domain structure. Each domain has all of its constituent dipoles locked into a single direction. This structure stays in place after the ambient field is removed and the object will have a net remanent magnetism. Some elements of the process are portrayed in the figure below:
 

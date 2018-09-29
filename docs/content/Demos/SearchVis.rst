@@ -63,7 +63,7 @@ Again, either a linear or a histogram equalized colour stretch can be applied:
     :align: center
     :figwidth: 100 %
 
-**The interactive module will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located Tiff files and can be loaded into any software that accepts these types of files, including Google Earth and ArcMap.
+**The interactive notebook will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located geoTiff files and can be loaded into any software that accepts these types of files, including Google Earth and ArcMap. You will need to install the Toolkit locally however, to enable local saving of exported maps. Please follow this link and Toolkit installation instructions :ref:`here<installation>` 
 
 The below image shows a located image of the Search II magnetic data in Google Earth.
 
