@@ -17,6 +17,7 @@ dependencies:
   - krb5
   - mkl
   - pip:
+    - pip install -U pip --force-reinstall
     - git+https://github.com/geoscixyz/Toolkit.git
     - SimPEG
     - sphinx
