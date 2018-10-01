@@ -36,7 +36,7 @@ The magnetic response (total field anomaly) of the geologic model is calculated 
 
 An east-west profile through the magnetic data is shown below. The responses of the smaller and larger magnetic blocks are obvious in this profile, and occur directly over the sources (due to the magnetic field inclination being vertical in this example). The fault within the large eastern magnetic block is observed as a more subtle drop in the magnetic response, slightly offset from the top of the body due to its northeasterly dip.
 
-Click below on the **'launch binder'** button or on the image to open an interactive Jupyter notebook to further explore the magnetic response and profile of the synthetic geologic model. Be patient, the notebook will take a moment to load.
+Click below on the **'launch binder'** button or on the image to open an interactive Jupyter Notebook to further explore the magnetic response and profile of the synthetic geologic model. To launch the notebook in a new tab, right-click on the **'launch binder'** button and choose **'Open link in new tab'**. Be patient, the notebook may take a few moments to load.
 
 
 .. image:: https://mybinder.org/badge.svg
@@ -54,7 +54,7 @@ Magnetic field effect on response
 
 As discussed in Section 1 on the Toolkit website (Magnetic Data - Background), the magnetic response will depend on the inclination, declination, and field strength of the magnetic field at the survey location. The image below shows the magnetic response at the geographic North Pole, where the Earth's magnetic field is near-vertical.
 
-Click on the **'launch binder'** button or on the image to open an interactive Jupyter notebook to investigate how the magnetic response changes with varying global locations.
+Click on the **'launch binder'** button or on the image to open an interactive Jupyter Notebook (or right-click and choose 'Open link in new tab') to investigate how the magnetic response changes with varying global locations.
 
 
 .. image:: https://mybinder.org/badge.svg

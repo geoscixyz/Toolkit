@@ -7,9 +7,9 @@
 
 We use the same synthetic model here as in the previous notebook to demonstrate the effects of various 2D magnetic filters.
 
-Short descriptions of select filters are provided in the sections below. Summaries of various filters and their role in gravity and magnetic data interpretation can be found in :cite:`Roest1992`, :cite:`Macleod1993`, :cite:`Miller1994`, :cite:`Milligan1997`, :cite:`Verduzco2004`, :cite:`Isles2013`, :cite:`Dentith2014`.
+Short descriptions of select filters are provided in the sections below. Summaries of various filters and their role in gravity and magnetic data interpretation can be found in :cite:`Nabighian1972`, :cite:`Roest1992`, :cite:`Macleod1993`, :cite:`Miller1994`, :cite:`Milligan1997`, :cite:`Verduzco2004`, :cite:`Salem2005`, :cite:`Isles2013`, :cite:`Dentith2014`.
 
-Click on the **'launch binder'** button here to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.
+Click on the **'launch binder'** button below (or right-click and choose 'Open link in new tab') to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.
 
 .. image:: https://mybinder.org/badge.svg
     :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_1_4_Synthetic_Mag_Data_Filters.ipynb
