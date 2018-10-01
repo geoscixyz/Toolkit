@@ -18,7 +18,8 @@ before_install:
   - "./miniconda.sh -b -p $HOME/miniconda"
   - export PATH=$HOME/anaconda/bin:$HOME/miniconda/bin:$PATH
   - conda update --yes conda
-  - pip install --upgrade setuptools
+  - pip install --upgrade pip
+  - pip --version
 
 install:
   - conda env create -f environment.yml
