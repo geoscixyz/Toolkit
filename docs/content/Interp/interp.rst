@@ -90,7 +90,7 @@ Magnetic data interpretation resources
 
 :cite:`Isles2013`
 :cite:`Dentith2014`
-
+:cite:`Blakely1996`
 
 
 
