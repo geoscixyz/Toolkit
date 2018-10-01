@@ -70,7 +70,7 @@ to.
     :align: right
     :width: 28%
 
-Total field magnetic data, viewed with sun shading or various color
+Total field magnetic data, viewed with sun-shading or various color
 enhancements, is a great approach to initially exploring a magnetic dataset.
 Subtle variations within the magnetic data can be obscured however, usually by
 larger or deeper magnetic bodies. Deeper or shallower sources, and more subtle

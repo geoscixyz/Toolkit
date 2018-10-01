@@ -61,7 +61,7 @@ Congratulations, you should now have access to the `Python ecosystem <http://www
 Step 4: Run the notebooks
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Open a Command Terminal in the GeoToolkit directory (Shift+rightClick) and enter:
+Open a Command Terminal (or 'Open PowerShell Window') in the GeoToolkit directory (Shift+rightClick) and enter:
 
 Enter>>    `jupyter notebook`
 

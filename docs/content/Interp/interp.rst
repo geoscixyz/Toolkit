@@ -37,6 +37,10 @@ Often magnetic (and other geophysical data) are used to interpret geology and to
 Regional context and regional signal removal
 --------------------------------------------------
 
+.. image:: ./images/milligan.PNG
+    :align: right
+    :width: 40%
+
 It is typically very useful to acquire and plot regional magnetic data (and
 regional geology) for comparison with the local project data. This provides
 some context for the local data. Anomalies within the local dataset may extend
@@ -46,10 +50,9 @@ a suite or chain of anomalies, which might not be recognized without viewing
 regional data. Regional magnetic and gravity data can commonly be found on the
 websites for provincial, state, or national geological surveys. Regional
 magnetic data can also reveal whether large wavelength magnetic responses
-might need to be removed from more local magnetic darasets. Large, deep
+might need to be removed from more local magnetic datasets. Large, deep
 magnetic sources can obscure locally important discrete bodies. A discussion
-of regional magnetic trend removal is found on the `Geophysics for Practising
-Geoscientists website <https://gpg.geosci.xyz/content/magnetics/magnetics_processing.html#removal-of-regional-trends>`_.
+of regional magnetic trend removal, and an example from the Mount Milligan porphyry deposit region (left), is found on the `Geophysics for Practising Geoscientists website <https://gpg.geosci.xyz/content/magnetics/magnetics_processing.html#removal-of-regional-trends>`_. 
 
 
 
@@ -87,11 +90,8 @@ Magnetic data interpretation resources
 
 :cite:`Isles2013`
 :cite:`Dentith2014`
+:cite:`Blakely1996`
 
-
-:cite:`Blakely1996`,
-:cite:`Nabighian1972`,
-:cite:`Salem2005`,
 
 
 .. links

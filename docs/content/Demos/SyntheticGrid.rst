@@ -10,7 +10,7 @@ Magnetic data should be gridded prior to applying transforms and filters. This m
 
 The left image below shows the data gridded using minimum curvature, and the right image shows the data gridded using nearest-neighbor.
 
-Click on the **'launch binder'** button to launch a Jupyer notebook to try out some additional gridding methods.
+Click on the **'launch binder'** button to launch a Jupyer Notebook to try out some additional gridding methods. To launch the notebook in a new tab, right-click on the **'launch binder'** button and choose **'Open link in new tab'**. Be patient, the notebook may take a few moments to load.
 
 
 .. image:: https://mybinder.org/badge.svg
