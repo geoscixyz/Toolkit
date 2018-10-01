@@ -16,13 +16,13 @@ dependencies:
   - shapely
   - krb5
   - mkl
-  - pip:
-    - git+https://github.com/geoscixyz/Toolkit.git
-    - SimPEG
-    - sphinx
-    - sphinx_rtd_theme
-    - sphinxcontrib-bibtex
-    - nbsphinx
-    - nbstripout
-    - numpydoc
-    - download
+  # - pip:
+  #   - git+https://github.com/geoscixyz/Toolkit.git
+  #   - SimPEG
+  #   - sphinx
+  #   - sphinx_rtd_theme
+  #   - sphinxcontrib-bibtex
+  #   - nbsphinx
+  #   - nbstripout
+  #   - numpydoc
+  #   - download

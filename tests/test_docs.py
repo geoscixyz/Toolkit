@@ -9,15 +9,15 @@ class Doc_Test(unittest.TestCase):
         dirname, filename = os.path.split(os.path.abspath(__file__))
         return os.path.sep.join(dirname.split(os.path.sep)[:-1] + ['docs'])
 
-    def nbstripout(self):
-        print('Notebook stripping out!')
+    # def nbstripout(self):
+    #     print('Notebook stripping out!')
 
-        # search for images that have been missed
-        for root, dirList, fileList in os.walk(self.path_to_docs):
-            for filename in fileList:
-                if filename.endswith(".ipynb"):
-                    print('Found a ipynb to strip!')
-                    os.system('nbstripout ' + os.path.join(root, filename))
+    #     # search for images that have been missed
+    #     for root, dirList, fileList in os.walk(self.path_to_docs):
+    #         for filename in fileList:
+    #             if filename.endswith(".ipynb"):
+    #                 print('Found a ipynb to strip!')
+    #                 os.system('nbstripout ' + os.path.join(root, filename))
 
     def test_html(self):
         doctrees_path = os.path.sep.join(
@@ -27,7 +27,7 @@ class Doc_Test(unittest.TestCase):
             self.path_to_docs.split(os.path.sep) + ['_build']+['html']
         )
 
-        self.nbstripout()
+        # self.nbstripout()
 
         check = subprocess.call(["sphinx-build", "-nW", "-b", "html", "-d",
             "{0!s}".format((doctrees_path)) ,
@@ -39,7 +39,6 @@ class Doc_Test(unittest.TestCase):
         assert check == 0
 
 
-
     def test_linkcheck(self):
         doctrees_path = os.path.sep.join(
             self.path_to_docs.split(os.path.sep) + ['_build']+['doctrees']
@@ -48,7 +47,7 @@ class Doc_Test(unittest.TestCase):
             self.path_to_docs.split(os.path.sep) + ['_build']
         )
 
-        self.nbstripout()
+        # self.nbstripout()
 
         check = subprocess.call([
             "sphinx-build", "-nW", "-b", "linkcheck", "-d",
