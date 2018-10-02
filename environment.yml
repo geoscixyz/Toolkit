@@ -1,7 +1,7 @@
 name: Toolkit-environment
 
 channels:
-  # - conda-forge
+  - conda-forge
   - defaults
 dependencies:
   - python=3.6
@@ -9,7 +9,7 @@ dependencies:
   - scipy
   - matplotlib
   - ipywidgets
-  - gdal=2.2.2
+  - gdal
   - scikit-image
   - pyshp
   - fiona
