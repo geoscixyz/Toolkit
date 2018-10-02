@@ -18,8 +18,6 @@ before_install:
   - "./miniconda.sh -b -p $HOME/miniconda"
   - export PATH=$HOME/anaconda/bin:$HOME/miniconda/bin:$PATH
   - conda update --yes conda
-  - pip uninstall -y setuptools
-  - pip install setuptools==40.4.0
 
 install:
   - conda env create -f environment.yml

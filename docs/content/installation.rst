@@ -45,19 +45,21 @@ Save the zipped file on your computer and extract the GeoToolkit folder.
 
 - Open a Command Terminal in the GeoToolkit directory (Shift+rightClick) and enter:
 
+``conda env create -f environment.yml``
+
     .. figure:: ../images/OpenCommand.png
         :align: center
         :width: 400
 
-- Enter>>    `conda env create -f environment.yml`
+
 
     .. figure:: ../images/InstallEnvironment.png
         :align: center
         :width: 600
 
-Full installation time :math:`\approx 15` min
+Full installation time :math:`\approx 15` min. Once completed you will need to activate the environment:
 
-Congratulations, you should now have access to the `Python ecosystem <http://www.developintelligence.com/blog/python-ecosystem-2017/>`_!
+``conda activate Toolkit-environment``
 
 
 Step 4: Run the notebooks
@@ -80,6 +82,10 @@ Once in a notebook, you can run cells with Shift+Enter.
     .. figure:: ../images/Notebook_full_list.PNG
         :align: center
         :width: 300
-        
 
+Alternatively you can run the entire Notebook by selecting the ``Run All`` option from the ``Cell`` menu
+
+    .. figure:: ../images/RunAllCells.png
+        :align: center
+        :width: 300
 
