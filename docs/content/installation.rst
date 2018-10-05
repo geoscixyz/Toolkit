@@ -41,6 +41,8 @@ Step 3: GeoToolkit
 
 - `Download Geotoolkit <https://github.com/geoscixyz/Toolkit/archive/master.zip>`_
 
+Save the zipped file on your computer and extract the GeoToolkit folder.
+
 - Open a Command Terminal in the GeoToolkit directory (Shift+rightClick) and enter:
 
 ``conda env create -f environment.yml``
