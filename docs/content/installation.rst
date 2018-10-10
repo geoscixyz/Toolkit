@@ -4,7 +4,7 @@ Installation
 ============
 
 Please install the following packages to run all of the presented apps locally.
-A local installation will be necessary if you wish to upload and export your own data, and if you are working with Geosoft .grd files.
+A local installation is recommended for faster data processing, and also so that private data can be worked with locally. A local installation is also required if you plan to work with Geosoft .grd files (note: .grd file use only available to Windows users).
 
 
 Step 1: Microsoft Visual Studio
