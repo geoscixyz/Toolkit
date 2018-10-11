@@ -63,9 +63,9 @@ Again, either a linear or a histogram equalized colour stretch can be applied:
     :align: center
     :figwidth: 100 %
 
-**The interactive notebook will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located GeoTiff files and can be loaded into any software that accepts these types of files, including Google Earth and ArcMap. You will need to install the Toolkit locally however, to enable local saving of exported maps. Please follow this link and Toolkit installation instructions :ref:`here<installation>` 
+**The interactive notebook will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located GeoTiff files and can be loaded into any software that accepts these types of files, including Google Earth Pro and ArcMap. Your exported maps will be stored on the cloud temporarily if you are running the notebooks online. You will need to install the Toolkit locally to enable local saving of exported maps. Please follow this link and Toolkit installation instructions :ref:`here<installation>` 
 
-The below image shows a located image of the Search II magnetic data in Google Earth.
+The below image shows a located image of the Search II magnetic data in Google Earth Pro.
 
 .. figure:: ./images/draped_mag_search.PNG
     :align: center
