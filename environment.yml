@@ -19,7 +19,6 @@ dependencies:
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git
     - SimPEG
-    - attr
     - sphinx
     - sphinx_rtd_theme
     - sphinxcontrib-bibtex
