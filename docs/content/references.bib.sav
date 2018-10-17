@@ -261,7 +261,7 @@
 },
 }
 
-@Article{White2015,
+@Article{White2,
   author        = {White, James C. and Beamish, David},
   title         = {Levelling aeromagnetic survey data without the need for tie-lines},
   journal       = {Geophysical Prospecting},
