@@ -245,23 +245,22 @@
 }
 
 @Article{Minty1991,
-  author        = {B.R.S. Minty},
-  title         = {Simple micro-levelling for aeromagnetic data},
-  journal       = {Exploration Geophysics},
-  year          = {1991},
-  volume        = {22},
-  number        = {4},
-  pages         = {591-592},
-  __markedentry = {[mdru:]},
-  doi           = {10.1071/EG991591},
-  eprint        = {https://library.seg.org/doi/pdf/10.1071/EG991591},
-  url           = { 
+  author  = {B.R.S. Minty},
+  title   = {Simple micro-levelling for aeromagnetic data},
+  journal = {Exploration Geophysics},
+  year    = {1991},
+  volume  = {22},
+  number  = {4},
+  pages   = {591-592},
+  doi     = {10.1071/EG991591},
+  eprint  = {https://library.seg.org/doi/pdf/10.1071/EG991591},
+  url     = { 
         https://library.seg.org/doi/abs/10.1071/EG991591
     
 },
 }
 
-@Article{White2,
+@Article{White2015,
   author        = {White, James C. and Beamish, David},
   title         = {Levelling aeromagnetic survey data without the need for tie-lines},
   journal       = {Geophysical Prospecting},
@@ -269,12 +268,26 @@
   volume        = {63},
   number        = {2},
   pages         = {451-460},
-  __markedentry = {[mdru:6]},
+  __markedentry = {[mdru:]},
   abstract      = {ABSTRACT A new methodology that levels airborne magnetic data without orthogonal tie-lines is presented in this study. The technique utilizes the low-wavenumber content of the flight-line data to construct a smooth representation of the regional field at a scale appropriate to the line lengths of the survey. Levelling errors are then calculated between the raw flight-line data and the derived regional field through a least squares approach. Minimizing the magnitude of the error, with a first-degree error function, results in significant improvements to the unlevelled data. The technique is tested and demonstrated using three recent airborne surveys.},
   doi           = {10.1111/1365-2478.12198},
   eprint        = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/1365-2478.12198},
   keywords      = {Magnetics, Data processing, Levelling, Aeromagnetic},
   url           = {https://onlinelibrary.wiley.com/doi/abs/10.1111/1365-2478.12198},
+}
+
+@Article{Ugalde2008,
+  author        = {Ugalde, Hernan and Morris, Bill},
+  title         = {An assessment of topographic effects on airborne and ground magnetic data},
+  journal       = {The Leading Edge},
+  year          = {2008},
+  volume        = {27},
+  number        = {1},
+  pages         = {76},
+  __markedentry = {[mdru:6]},
+  doi           = {10.1190/1.2831683},
+  eprint        = {/gsw/content_public/journal/tle/27/1/10.1190_1.2831683/4/76.pdf},
+  url           = {http://dx.doi.org/10.1190/1.2831683},
 }
 
 @Comment{jabref-meta: databaseType:bibtex;}
