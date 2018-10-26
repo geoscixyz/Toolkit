@@ -41,33 +41,33 @@ Step 3: GeoToolkit
 
 - `Download Geotoolkit <https://github.com/geoscixyz/Toolkit/archive/master.zip>`_
 
-Save the zipped file on your computer and extract the GeoToolkit folder.
+- Save the zipped file on your computer and extract the GeoToolkit folder.
 
-- Open a Command Terminal in the GeoToolkit directory (Shift+rightClick) and enter:
+- ``Double+Click`` on the ``Install_Environment.bat`` file to launch the installation:
 
-``conda env create -f environment.yml``
-
-    .. figure:: ../images/OpenCommand.png
+    .. figure:: ../images/ClickInstall.png
         :align: center
-        :width: 400
+        :width: 200
 
+    .. .. figure:: ../images/InstallEnvironment.png
+    ..     :align: center
+    ..     :width: 600
 
-
-    .. figure:: ../images/InstallEnvironment.png
-        :align: center
-        :width: 600
-
-Full installation time :math:`\approx 15` min. Once completed you will need to activate the environment:
-
-``conda activate Toolkit-environment``
+Full installation time :math:`\approx 15` min.
 
 
 Step 4: Run the notebooks
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Open a Command Terminal (or 'Open PowerShell Window') in the GeoToolkit directory (Shift+rightClick) and enter:
+- Open a Command Terminal (or 'Open PowerShell Window') in the ``Notebooks`` directory (``Shift+RightClick``) and enter:
 
-Enter>>    `jupyter notebook`
+    .. figure:: ../images/OpenCommand.png
+        :align: center
+        :width: 200
+
+Enter>> ``conda activate Toolkit-environment``
+
+Enter>> ``jupyter notebook``
 
     .. figure:: ../images/LaunchNotebook.png
         :align: center
@@ -76,7 +76,7 @@ Enter>>    `jupyter notebook`
 
 You will see the list of notebooks available similar to the image below. Just click on the one you wish to work with.
 
-Once in a notebook, you can run cells with Shift+Enter.
+Once in a notebook, you can run cells with ``Shift+Enter``.
 
 
     .. figure:: ../images/Notebook_full_list.PNG
