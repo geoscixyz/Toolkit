@@ -1,4 +1,4 @@
-name: Toolkit-environment
+name: geotoolkit
 
 channels:
   - conda-forge
@@ -15,6 +15,7 @@ dependencies:
   - fiona
   - shapely
   - krb5
+  - git
   - mkl
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git
