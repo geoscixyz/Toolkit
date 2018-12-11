@@ -706,14 +706,14 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
                        cmap=my_cmap, clim=[vmin, vmax],
                        alpha=alpha,
                        extent=extent, origin='lower')
-        print(vmin, vmax)
+
         if np.all([alpha != 1, alphaHS != 0]):
-            print(vmin, vmax)
+
             axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
                        dx=resolution, dy=resolution),
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
-            print(vmin, vmax, resolution)
+
         if contours > 0:
             clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
 
@@ -1029,6 +1029,13 @@ def dataHillsideWidget(
                     "New file written:" +
                     saveAs + 'EPSG' + str(int(EPSGcode)) + '.tiff'
                     )
+
+            fig, ax = plt.figure(), plt.subplot()
+            plt.gca().set_visible(False)
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label('TMI (nT)')
+            plt.savefig(saveAs + 'Colorbar.png', dpi=dpi, bbox_inches='tight')
+
         else:
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
@@ -1135,7 +1142,7 @@ def dataHillsideWidget(
 
     SaveGeoTiff = widgets.ToggleButton(
                                   value=False,
-                                  description='Export geoTiff',
+                                  description='Export Grids',
                                   disabled=False,
                                   button_style='',
                                   tooltip='Description',
@@ -1145,7 +1152,7 @@ def dataHillsideWidget(
     SaveGeoTiff.observe(saveIt)
     saveAs = widgets.Text(
         value=saveAs,
-        description='GeoTiff name:',
+        description='File Name:',
         disabled=False
         )
     EPSGcode = widgets.FloatText(
@@ -1229,11 +1236,35 @@ def gridFiltersWidget(
             np.abs(data[ind].max() - data[ind].min())
         )
 
+        if SaveGrid:
+            lims = survey.limits
+            DataIO.writeGeotiff(
+                survey.values, saveAs + '_GRID.tiff',
+                survey.EPSGcode, lims[0], lims[1],
+                lims[2], lims[3], 1,
+                dataType='grid')
+
+            if survey.EPSGcode != EPSGcode:
+
+                print(
+                    "Output EPSG code differ from input grid definition."
+                    "The geotiff will be reprojected"
+                    )
+                DataIO.gdalWarp(
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '_GRID.tiff',
+                    saveAs + '_GRID.tiff', int(EPSGcode)
+                )
+                print(
+                    "New file written:" +
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '_GRID.tiff'
+                    )
         plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale, Contours,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', saveAs, EPSGcode, SaveGrid,
         )
+
+
 
     def plotIt(
             data, SunAzimuth, SunAngle,
@@ -1247,6 +1278,8 @@ def gridFiltersWidget(
             axs = plt.Axes(fig, [0., 0., 1., 1.])
             axs.set_axis_off()
             fig.add_axes(axs)
+
+
 
         else:
 
@@ -1294,15 +1327,21 @@ def gridFiltersWidget(
                     "The geotiff will be reprojected"
                     )
                 DataIO.gdalWarp(
-                    saveAs + 'EPSG' + str(EPSGcode) + '.tiff',
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '.tiff',
                     saveAs + '.tiff', int(EPSGcode)
                 )
                 print(
                     "New file written:" +
-                    saveAs + 'EPSG' + str(int(EPSGcode)) + '.tiff'
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '.tiff'
                     )
 
             os.remove(saveAs + '.png')
+
+            fig, ax = plt.figure(), plt.subplot()
+            plt.gca().set_visible(False)
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label(Filters + " " +units()[Filters])
+            plt.savefig(saveAs + 'Colorbar.png', dpi=dpi, bbox_inches='tight')
 
         else:
             # Add points at the survey locations
