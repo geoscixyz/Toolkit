@@ -1,13 +1,13 @@
 
 import numpy as np
 from GeoToolkit.Mag import Simulator, DataIO, MathUtils, Mag
-from SimPEG import PF, Utils, Mesh, Maps
+# from SimPEG import PF, Utils, Mesh, Maps
 import ipywidgets as widgets
 from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
 from scipy.interpolate import griddata, interp1d
 from scipy.interpolate import NearestNDInterpolator, LinearNDInterpolator
-from SimPEG.Utils import mkvc, ndgrid, uniqueRows
+# from SimPEG.Utils import mkvc, ndgrid, uniqueRows
 
 
 def blockModel():
@@ -78,7 +78,7 @@ def setSyntheticProblem(
         # Forward model data
         prob = Mag.Problem(prism=prism, survey=survey)
         prob.susc = susc
-        survey.dobs += prob.fields()[0]
+        survey._dobs = survey.dobs + prob.fields()[0]
 
         if discretize:
             # Discretize onto mesh
@@ -312,7 +312,7 @@ if __name__ == '__main__':
     assetDir = './../../docs/Notebooks/assets/TKC/'
     survey = Mag.readMagneticsObservations('DIGHEM_Mag_floor10nt_25m.obs')
     topo = np.genfromtxt('TKCtopoDwnS.dat', skip_header=1)
-    locs = survey.srcField.rxList[0].locs
+    locs = survey.rxLoc
 
     # Build the problem
     survey, mesh, model = setSyntheticProblem(locs, topo=topo, discretize=True)
