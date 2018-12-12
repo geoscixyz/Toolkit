@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 from . import (Simulator, MathUtils)
 from scipy.spatial import cKDTree
-from SimPEG.Utils import mkvc
+# from SimPEG.Utils import mkvc
 import matplotlib.pyplot as plt
 import gdal
 import osr
@@ -81,7 +81,7 @@ class dataGrid(object):
 
             X, Y = np.meshgrid(self.hx, self.hy)
 
-            self._gridCC = np.c_[mkvc(X), mkvc(Y)]
+            self._gridCC = np.c_[X.flatten(), Y.flatten()]
 
         return self._gridCC
 
@@ -108,7 +108,7 @@ class dataGrid(object):
             else:
 
                 if np.any(np.isnan(self.values)):
-                    self.indNan = np.isnan(mkvc(self.values))
+                    self.indNan = np.isnan(self.values.flatten())
                     grid = self.valuesFilled
                 else:
                     grid = self.values
@@ -160,7 +160,7 @@ class dataGrid(object):
     def valuesFilled(self):
 
         if getattr(self, '_valuesFilled', None) is None:
-            values = mkvc(self.values)
+            values = self.values.flatten()
             indVal = np.where(~self.indNan)[0]
 
             tree = cKDTree(self.gridCC[indVal, :])
@@ -236,7 +236,7 @@ class dataGrid(object):
                 fhxd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                derivX = mkvc(derivX)
+                derivX = derivX.flatten()
 
                 derivX[self.indNan] = np.nan
                 derivX = derivX.reshape(self.values.shape, order='F')
@@ -257,7 +257,7 @@ class dataGrid(object):
                 fhyd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                derivY = mkvc(derivY)
+                derivY = derivY.flatten()
 
                 derivY[self.indNan] = np.nan
                 derivY = derivY.reshape(self.values.shape, order='F')
@@ -277,7 +277,7 @@ class dataGrid(object):
                 fhzd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                firstVD = mkvc(firstVD)
+                firstVD = firstVD.flatten()
 
                 firstVD[self.indNan] = np.nan
                 firstVD = firstVD.reshape(self.values.shape, order='F')
@@ -338,7 +338,7 @@ class dataGrid(object):
                 rtp_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                rtp = mkvc(rtp)
+                rtp = rtp.flatten()
 
                 rtp[self.indNan] = np.nan
                 rtp = rtp.reshape(self.values.shape, order='F')
@@ -374,7 +374,7 @@ class dataGrid(object):
         self._valuesFilledUC = zUpw.copy()
 
         if self.indNan is not None:
-            zUpw = mkvc(zUpw)
+            zUpw = zUpw.flatten()
 
             zUpw[self.indNan] = np.nan
             zUpw = zUpw.reshape(self.values.shape, order='F')

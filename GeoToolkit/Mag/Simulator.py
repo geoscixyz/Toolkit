@@ -2,9 +2,10 @@ from . import Mag
 from . import MathUtils
 from . import DataIO
 from . import ProblemSetter
-import SimPEG.PF as PF
+import re
+# import SimPEG.PF as PF
 import shapefile
-from SimPEG.Utils import mkvc
+# from SimPEG.Utils import mkvc
 from scipy.constants import mu_0
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -28,6 +29,8 @@ from osgeo import ogr, osr
 import os
 import PIL
 
+np.seterr(divide='ignore', invalid='ignore')
+
 def PFSimulator(prism, survey):
 
     def PFInteract(update, susc, comp, irt, Q, RemInc, RemDec,
@@ -43,7 +46,7 @@ def PFSimulator(prism, survey):
                           Profile_azm, Profile_len, Profile_npt,
                           Profile_ctx, Profile_cty)
 
-    locs = survey.srcField.rxList[0].locs
+    locs = survey.rxLoc
     xlim = np.asarray([locs[:, 0].min(), locs[:, 0].max()])
     ylim = np.asarray([locs[:, 1].min(), locs[:, 1].max()])
 
@@ -133,14 +136,14 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
         a = [Profile_ctx - dx, Profile_cty - dy]
         b = [Profile_ctx + dx, Profile_cty + dy]
 
-        xyz = survey.srcField.rxList[0].locs
+        xyz = survey.rxLoc
         dobs = survey.dobs
 
         return plotProfile2D(xyz[:, 0], xyz[:, 1], [dobs, data], a, b, Profile_npt,
                              fig=fig, ax=ax, ylabel='nT')
 
     survey = prob.survey
-    rxLoc = survey.srcField.rxList[0].locs
+    rxLoc = survey.rxLoc
     prob.Q, prob.rinc, prob.rdec = Q, rinc, rdec
     prob.uType, prob.mType = comp, irt
     prob.susc = susc
@@ -154,7 +157,7 @@ def PlotFwrSim(prob, susc, comp, irt, Q, rinc, rdec,
 
     vmin = survey.dobs.min()
     vmax = survey.dobs.max()
-    rxLoc = survey.srcField.rxList[0].locs
+    rxLoc = survey.rxLoc
     x, y = rxLoc[:, 0], rxLoc[:, 1]
 
     f = plt.figure(figsize=(8, 8))
@@ -187,8 +190,8 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
             yLoc = survey.hy
             data = survey.values
         else:
-            xLoc = survey.srcField.rxList[0].locs[:, 0]
-            yLoc = survey.srcField.rxList[0].locs[:, 1]
+            xLoc = survey.rxLoc[:, 0]
+            yLoc = survey.rxLoc[:, 1]
             data = survey.dobs
         # Get the line extent from the 2D survey for now
         ColorMap = "RdBu_r"
@@ -225,8 +228,8 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
         yLoc = survey.hy
         data = survey.values
     else:
-        xLoc = survey.srcField.rxList[0].locs[:, 0]
-        yLoc = survey.srcField.rxList[0].locs[:, 1]
+        xLoc = survey.rxLoc[:, 0]
+        yLoc = survey.rxLoc[:, 1]
         data = survey.dobs
 
     Lx = xLoc.max() - xLoc.min()
@@ -320,7 +323,7 @@ def ViewPrism(survey):
 
         return prism
 
-    rxLoc = survey.srcField.rxList[0].locs
+    rxLoc = survey.rxLoc
     cntr = np.mean(rxLoc[:, :2], axis=0)
 
     xlim = rxLoc[:, 0].max() - rxLoc[:, 0].min()
@@ -352,7 +355,7 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
     Plot the prism in 3D
     """
 
-    rxLoc = survey.srcField.rxList[0].locs
+    rxLoc = survey.rxLoc
 
     if fig is None:
         fig = plt.figure(figsize=(9, 9))
@@ -511,13 +514,17 @@ def fitline(prism, survey):
         prob = Mag.problem()
         prob.prism = prism.result
 
-        xyzLoc = survey.srcField.rxList[0].locs.copy()
+        xyzLoc = survey.rxLoc.copy()
         xyzLoc[:, 2] += depth
 
-        rxLoc = PF.BaseMag.RxObs(xyzLoc)
-        srcField = PF.BaseMag.SrcField([rxLoc], param=[Bigrf, Binc, Bdec])
-        survey2D = PF.BaseMag.LinearSurvey(srcField)
-        survey2D.dobs = survey.dobs
+        # rxLoc = PF.BaseMag.RxObs(xyzLoc)
+        # srcField = PF.BaseMag.SrcField([rxLoc], param=[Bigrf, Binc, Bdec])
+        # survey2D = PF.BaseMag.LinearSurvey(srcField)
+
+        survey2D = Mag.Survey(np.c_[Bigrf, Binc, Bdec])
+        survey2D._rxLoc = xyz
+
+        survey2D._dobs = survey.dobs
         prob.survey = survey2D
 
         prob.Q, prob.rinc, prob.rdec = Q, rinc, rdec
@@ -626,7 +633,7 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
+def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
                      vmin=None, vmax=None, resolution=25,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
@@ -647,13 +654,13 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
             Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
 
         else:
-            npts_x = int((x.max() - x.min())/Resolution)
-            npts_y = int((y.max() - y.min())/Resolution)
+            npts_x = int((x.max() - x.min())/resolution)
+            npts_y = int((y.max() - y.min())/resolution)
             # Create grid of points
             vectorX = np.linspace(x.min(), x.max(), npts_x)
             vectorY = np.linspace(y.min(), y.max(), npts_y)
 
-            Y, X = np.meshgrid(vectorY, vectorX)
+            X, Y = np.meshgrid(vectorX, vectorY)
 
             d_grid = griddata(np.c_[x, y], z, (X, Y), method='cubic')
 
@@ -668,6 +675,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
     else:
 
         X, Y, d_grid = x, y, z
+
 
     im, CS = [], []
     if axs is None:
@@ -699,24 +707,26 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
                        cmap=my_cmap, clim=[vmin, vmax],
                        alpha=alpha,
                        extent=extent, origin='lower')
+
         if np.all([alpha != 1, alphaHS != 0]):
+
             axs.imshow(ls.hillshade(d_grid, vert_exag=ve,
                        dx=resolution, dy=resolution),
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
 
-        if contours > 0:
-            clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+        if contours is not None:
+            # clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
 
-            if np.all(clevels == 0):
-                clevels = np.linspace(vmin, vmax, contours)
+            # if np.all(clevels == 0):
+            #     clevels = np.linspace(vmin, vmax, contours)
 
-            clevels = np.unique(clevels)
-            # Insert zero contour
-            if ~np.any(clevels == 0):
-                clevels = np.sort(np.r_[clevels, 0])
+            # clevels = np.unique(clevels)
+            # # Insert zero contour
+            # if ~np.any(clevels == 0):
+            #     clevels = np.sort(np.r_[clevels, 0])
             CS = axs.contour(
-                X, Y, d_grid, contours, levels=clevels,
+                X, Y, d_grid, len(contours), levels=contours,
                 colors='k', linewidths=0.5
             )
 
@@ -940,7 +950,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 def dataHillsideWidget(
     survey, EPSGcode=None, HSTransp=0.5, SunAzimuth=270,
-    saveAs='./Output/DataHillshade', dpi=300, contours=0,
+    saveAs='./Output/DataHillshade', dpi=300, Contours=None,
     scatterData=None, shapeFile=None, omit=[]
   ):
 
@@ -958,8 +968,8 @@ def dataHillsideWidget(
             data = survey.values
 
         else:
-            xLoc = survey.srcField.rxList[0].locs[:, 0]
-            yLoc = survey.srcField.rxList[0].locs[:, 1]
+            xLoc = survey.rxLoc[:, 0]
+            yLoc = survey.rxLoc[:, 1]
             data = survey.dobs
 
         if SaveGeoTiff:
@@ -972,6 +982,21 @@ def dataHillsideWidget(
         else:
             fig = plt.figure(figsize=(9, 9))
             axs = plt.subplot()
+
+        # Parse contour values
+        if Contours is not "":
+            vals = re.split(',', Contours)
+            cntrs = []
+            for val in vals:
+                if ":" in val:
+                    param = np.asarray(re.split(":", val), dtype='int')
+                    cntrs += [np.arange(param[0], param[2], param[1])]
+
+                else:
+                    cntrs += [np.float(val)]
+            Contours = np.sort(np.hstack(cntrs))
+        else:
+            Contours = None
 
         # Add shading
         X, Y, d_grid, im, CS = plotDataHillside(
@@ -1020,6 +1045,13 @@ def dataHillsideWidget(
                     "New file written:" +
                     saveAs + 'EPSG' + str(int(EPSGcode)) + '.tiff'
                     )
+
+            fig, ax = plt.figure(), plt.subplot()
+            plt.gca().set_visible(False)
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label('TMI (nT)')
+            plt.savefig(saveAs + 'Colorbar.png', dpi=dpi, bbox_inches='tight')
+
         else:
             axs.set_aspect('equal')
             cbar = plt.colorbar(im, fraction=0.02)
@@ -1058,8 +1090,8 @@ def dataHillsideWidget(
         data = survey.values
 
     else:
-        xLoc = survey.srcField.rxList[0].locs[:, 0]
-        yLoc = survey.srcField.rxList[0].locs[:, 1]
+        xLoc = survey.rxLoc[:, 0]
+        yLoc = survey.rxLoc[:, 1]
         data = survey.dobs
 
     # Trigger the save and uncheck button
@@ -1091,10 +1123,16 @@ def dataHillsideWidget(
         description='vScale'
         )
 
-    Contours = widgets.IntSlider(
-        min=0, max=100, step=2, value=contours, continuous_update=False,
-        description='Contours'
-        )
+    # Contours = widgets.IntSlider(
+    #     min=0, max=100, step=2, value=contours, continuous_update=False,
+    #     description='Contours'
+    #     )
+
+    Contours = widgets.Text(
+        value=Contours,
+        description='Contours',
+        disabled=False, continuous_update=False)
+
     ColorMap = widgets.Dropdown(
         options=cmaps(),
         value='RdBu_r',
@@ -1126,7 +1164,7 @@ def dataHillsideWidget(
 
     SaveGeoTiff = widgets.ToggleButton(
                                   value=False,
-                                  description='Export geoTiff',
+                                  description='Export Grids',
                                   disabled=False,
                                   button_style='',
                                   tooltip='Description',
@@ -1136,7 +1174,7 @@ def dataHillsideWidget(
     SaveGeoTiff.observe(saveIt)
     saveAs = widgets.Text(
         value=saveAs,
-        description='GeoTiff name:',
+        description='File Name:',
         disabled=False
         )
     EPSGcode = widgets.FloatText(
@@ -1179,7 +1217,7 @@ def gridFiltersWidget(
     survey, gridFilter='derivativeX',
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
-    inc=np.nan, dec=np.nan, Contours=0,
+    inc=np.nan, dec=np.nan, Contours=None,
     SunAzimuth=270, SunAngle=15, vScale=5.,
     ColorMap='RdBu_r', shapeFile=None,
     saveAs="./Output/MyGeoTiff", omit=[]
@@ -1220,11 +1258,51 @@ def gridFiltersWidget(
             np.abs(data[ind].max() - data[ind].min())
         )
 
+        if SaveGrid:
+            lims = survey.limits
+            DataIO.writeGeotiff(
+                survey.values, saveAs + '_GRID.tiff',
+                survey.EPSGcode, lims[0], lims[1],
+                lims[2], lims[3], 1,
+                dataType='grid')
+
+            if survey.EPSGcode != EPSGcode:
+
+                print(
+                    "Output EPSG code differ from input grid definition."
+                    "The geotiff will be reprojected"
+                    )
+                DataIO.gdalWarp(
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '_GRID.tiff',
+                    saveAs + '_GRID.tiff', int(EPSGcode)
+                )
+                print(
+                    "New file written:" +
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '_GRID.tiff'
+                    )
+
+                # Parse contour values
+        if Contours is not "":
+            vals = re.split(',', Contours)
+            cntrs = []
+            for val in vals:
+                if ":" in val:
+                    param = np.asarray(re.split(":", val), dtype='int')
+                    cntrs += [np.arange(param[0], param[2], param[1])]
+
+                else:
+                    cntrs += [np.float(val)]
+            Contours = np.sort(np.hstack(cntrs))
+        else:
+            Contours = None
+
         plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale, Contours,
             ColorMap, Filters, vmin, vmax, 'HistEqualized', saveAs, EPSGcode, SaveGrid,
         )
+
+
 
     def plotIt(
             data, SunAzimuth, SunAngle,
@@ -1238,6 +1316,8 @@ def gridFiltersWidget(
             axs = plt.Axes(fig, [0., 0., 1., 1.])
             axs.set_axis_off()
             fig.add_axes(axs)
+
+
 
         else:
 
@@ -1285,15 +1365,21 @@ def gridFiltersWidget(
                     "The geotiff will be reprojected"
                     )
                 DataIO.gdalWarp(
-                    saveAs + 'EPSG' + str(EPSGcode) + '.tiff',
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '.tiff',
                     saveAs + '.tiff', int(EPSGcode)
                 )
                 print(
                     "New file written:" +
-                    saveAs + 'EPSG' + str(int(EPSGcode)) + '.tiff'
+                    saveAs + '_EPSG' + str(int(EPSGcode)) + '.tiff'
                     )
 
             os.remove(saveAs + '.png')
+
+            fig, ax = plt.figure(), plt.subplot()
+            plt.gca().set_visible(False)
+            cbar = plt.colorbar(im, fraction=0.02)
+            cbar.set_label(Filters + " " +units()[Filters])
+            plt.savefig(saveAs + 'Colorbar.png', dpi=dpi, bbox_inches='tight')
 
         else:
             # Add points at the survey locations
@@ -1342,11 +1428,10 @@ def gridFiltersWidget(
         description='ColorMap',
         disabled=False,
         )
-    Contours = widgets.IntSlider(
-        min=0, max=100, step=2,
-        description="Contours",
-        value=Contours, continuous_update=False
-        )
+    Contours = widgets.Text(
+        value=Contours,
+        description='Contours',
+        disabled=False, continuous_update=False)
     Filters = widgets.Dropdown(
         options=[
             'TMI',
@@ -1529,7 +1614,7 @@ def gridTilt2Depth(
             survey.hx, survey.hy, data,
             axs=axs, cmap=ColorMap,
             clabel=False, resolution=10,
-            vmin=vmin, vmax=vmax, contours=0,
+            vmin=vmin, vmax=vmax, contours=None,
             alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
             equalizeHist=equalizeHist, scatterData=scatterData,
@@ -1762,10 +1847,10 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
         Xloc, Yloc = np.meshgrid(grid.hx[::5], grid.hy[::5])
         Zloc = np.ones_like(Xloc)*z
 
-        locs = np.c_[mkvc(Xloc), mkvc(Yloc), mkvc(Zloc)]
+        locs = np.c_[Xloc.flatten(order='F'), Yloc.flatten(order='F'), Zloc.flatten(order='F')]
         survey, _, _ = ProblemSetter.setSyntheticProblem(locs, EarthField=dataVals[-3:])
 
-        xyz = survey.srcField.rxList[0].locs
+        xyz = survey.rxLoc
         plt.figure(figsize=(10, 8))
         ax1 = plt.subplot(1, 2, 1)
         fig, im, cbar = plotData2D(
@@ -1884,7 +1969,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan,
-    Method='minimumCurvature', Contours=0, omit=[]
+    Method='minimumCurvature', Contours=None, omit=[]
 ):
 
     def plotWidget(

@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 from scipy.spatial import cKDTree
-from SimPEG.Utils import mkvc, speye
+# from SimPEG.Utils import mkvc, speye
 from scipy.sparse.linalg import bicgstab
 import matplotlib.pyplot as plt
 
@@ -53,13 +53,14 @@ def dipazm_2_xyz(dip, azm_N):
     # Modify azimuth from North to Cartesian-X
     azm_X = (450. - azm_N) % 360.
 
-    D = np.deg2rad(np.asarray(dip))
-    I = np.deg2rad(azm_X)
-
     M = np.zeros(3)
-    M[0] = np.cos(D) * np.cos(I)
-    M[1] = np.cos(D) * np.sin(I)
-    M[2] = np.sin(D)
+
+    inc = -np.deg2rad(np.asarray(dip))
+    dec = np.deg2rad(azm_X)
+
+    M[0] = np.cos(inc) * np.cos(dec)
+    M[1] = np.cos(inc) * np.sin(dec)
+    M[2] = np.sin(inc)
 
     return M
 
@@ -177,10 +178,10 @@ def minCurvatureInterp(
 
         if ndim == 3:
             gridCx, gridCy, gridCz = np.meshgrid(vectorX, vectorY, vectorZ)
-            gridCC = np.c_[mkvc(gridCx), mkvc(gridCy), mkvc(gridCz)]
+            gridCC = np.c_[gridCx.flatten(order='F'), gridCy.flatten(order='F'), gridCz.flatten(order='F')]
         elif ndim == 2:
             gridCx, gridCy = np.meshgrid(vectorX, vectorY)
-            gridCC = np.c_[mkvc(gridCx), mkvc(gridCy)]
+            gridCC = np.c_[gridCx.flatten(order='F'), gridCy.flatten(order='F')]
         else:
             gridCC = vectorX
     else:
