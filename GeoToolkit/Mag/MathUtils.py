@@ -178,10 +178,10 @@ def minCurvatureInterp(
 
         if ndim == 3:
             gridCx, gridCy, gridCz = np.meshgrid(vectorX, vectorY, vectorZ)
-            gridCC = np.c_[mkvc(gridCx), mkvc(gridCy), mkvc(gridCz)]
+            gridCC = np.c_[gridCx.flatten(order='F'), gridCy.flatten(order='F'), gridCz.flatten(order='F')]
         elif ndim == 2:
             gridCx, gridCy = np.meshgrid(vectorX, vectorY)
-            gridCC = np.c_[mkvc(gridCx), mkvc(gridCy)]
+            gridCC = np.c_[gridCx.flatten(order='F'), gridCy.flatten(order='F')]
         else:
             gridCC = vectorX
     else:

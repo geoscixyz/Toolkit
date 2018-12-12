@@ -2,6 +2,7 @@ from . import Mag
 from . import MathUtils
 from . import DataIO
 from . import ProblemSetter
+import re
 # import SimPEG.PF as PF
 import shapefile
 # from SimPEG.Utils import mkvc
@@ -632,7 +633,7 @@ class MidPointNorm(Normalize):
                 return val*abs(vmax-midpoint) + midpoint
 
 
-def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
+def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
                      vmin=None, vmax=None, resolution=25,
                      clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
@@ -714,18 +715,18 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=0,
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
 
-        if contours > 0:
-            clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+        if contours is not None:
+            # clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
 
-            if np.all(clevels == 0):
-                clevels = np.linspace(vmin, vmax, contours)
+            # if np.all(clevels == 0):
+            #     clevels = np.linspace(vmin, vmax, contours)
 
-            clevels = np.unique(clevels)
-            # Insert zero contour
-            if ~np.any(clevels == 0):
-                clevels = np.sort(np.r_[clevels, 0])
+            # clevels = np.unique(clevels)
+            # # Insert zero contour
+            # if ~np.any(clevels == 0):
+            #     clevels = np.sort(np.r_[clevels, 0])
             CS = axs.contour(
-                X, Y, d_grid, contours, levels=clevels,
+                X, Y, d_grid, len(contours), levels=contours,
                 colors='k', linewidths=0.5
             )
 
@@ -949,7 +950,7 @@ def plotProfile2D(x, y, data, a, b, npts,
 
 def dataHillsideWidget(
     survey, EPSGcode=None, HSTransp=0.5, SunAzimuth=270,
-    saveAs='./Output/DataHillshade', dpi=300, contours=0,
+    saveAs='./Output/DataHillshade', dpi=300, Contours=None,
     scatterData=None, shapeFile=None, omit=[]
   ):
 
@@ -981,6 +982,21 @@ def dataHillsideWidget(
         else:
             fig = plt.figure(figsize=(9, 9))
             axs = plt.subplot()
+
+        # Parse contour values
+        if Contours is not "":
+            vals = re.split(',', Contours)
+            cntrs = []
+            for val in vals:
+                if ":" in val:
+                    param = np.asarray(re.split(":", val), dtype='int')
+                    cntrs += [np.arange(param[0], param[2], param[1])]
+
+                else:
+                    cntrs += [np.float(val)]
+            Contours = np.sort(np.hstack(cntrs))
+        else:
+            Contours = None
 
         # Add shading
         X, Y, d_grid, im, CS = plotDataHillside(
@@ -1107,10 +1123,16 @@ def dataHillsideWidget(
         description='vScale'
         )
 
-    Contours = widgets.IntSlider(
-        min=0, max=100, step=2, value=contours, continuous_update=False,
-        description='Contours'
-        )
+    # Contours = widgets.IntSlider(
+    #     min=0, max=100, step=2, value=contours, continuous_update=False,
+    #     description='Contours'
+    #     )
+
+    Contours = widgets.Text(
+        value=Contours,
+        description='Contours',
+        disabled=False, continuous_update=False)
+
     ColorMap = widgets.Dropdown(
         options=cmaps(),
         value='RdBu_r',
@@ -1195,7 +1217,7 @@ def gridFiltersWidget(
     survey, gridFilter='derivativeX',
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
-    inc=np.nan, dec=np.nan, Contours=0,
+    inc=np.nan, dec=np.nan, Contours=None,
     SunAzimuth=270, SunAngle=15, vScale=5.,
     ColorMap='RdBu_r', shapeFile=None,
     saveAs="./Output/MyGeoTiff", omit=[]
@@ -1258,6 +1280,22 @@ def gridFiltersWidget(
                     "New file written:" +
                     saveAs + '_EPSG' + str(int(EPSGcode)) + '_GRID.tiff'
                     )
+
+                # Parse contour values
+        if Contours is not "":
+            vals = re.split(',', Contours)
+            cntrs = []
+            for val in vals:
+                if ":" in val:
+                    param = np.asarray(re.split(":", val), dtype='int')
+                    cntrs += [np.arange(param[0], param[2], param[1])]
+
+                else:
+                    cntrs += [np.float(val)]
+            Contours = np.sort(np.hstack(cntrs))
+        else:
+            Contours = None
+
         plotIt(
             data, SunAzimuth, SunAngle,
             ColorTransp, HSTransp, vScale, Contours,
@@ -1390,11 +1428,10 @@ def gridFiltersWidget(
         description='ColorMap',
         disabled=False,
         )
-    Contours = widgets.IntSlider(
-        min=0, max=100, step=2,
-        description="Contours",
-        value=Contours, continuous_update=False
-        )
+    Contours = widgets.Text(
+        value=Contours,
+        description='Contours',
+        disabled=False, continuous_update=False)
     Filters = widgets.Dropdown(
         options=[
             'TMI',
@@ -1577,7 +1614,7 @@ def gridTilt2Depth(
             survey.hx, survey.hy, data,
             axs=axs, cmap=ColorMap,
             clabel=False, resolution=10,
-            vmin=vmin, vmax=vmax, contours=0,
+            vmin=vmin, vmax=vmax, contours=None,
             alpha=ColorTransp, alphaHS=HSTransp,
             ve=vScale, azdeg=SunAzimuth, altdeg=SunAngle,
             equalizeHist=equalizeHist, scatterData=scatterData,
@@ -1932,7 +1969,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan,
-    Method='minimumCurvature', Contours=0, omit=[]
+    Method='minimumCurvature', Contours=None, omit=[]
 ):
 
     def plotWidget(
