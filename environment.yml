@@ -12,6 +12,7 @@ dependencies:
   - gdal
   - scikit-image
   - pyshp
+  - fiona
   - shapely
   - krb5
   - git
