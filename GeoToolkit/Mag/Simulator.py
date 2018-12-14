@@ -1674,7 +1674,8 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
 def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff", marker=True,
     shapeFile=None, inc=np.nan, dec=np.nan, dataColumn=-1, overlap=0,
-    Method='minimumCurvature', Contours=None, omit=[]
+    Method='minimumCurvature', Contours=None, omit=[], units="TMI",
+    dpi=200
 ):
 
     def plotWidget(
@@ -1713,17 +1714,17 @@ def dataGriddingWidget(
             # Copy original result but mask missing values with NaNs
             d_grid[(dists > MaxDistance).reshape(d_grid.shape, order='F')] = np.nan
 
-        gridOut = DataIO.dataGrid()
+        gridObject = DataIO.dataGrid()
 
-        gridOut._values = d_grid
-        gridOut.nx, gridOut.ny = gridOut.values.shape[1], gridOut.values.shape[0]
-        gridOut.x0, gridOut.y0 = X.min(), Y.min()
-        gridOut.dx = (X.max() - X.min()) / gridOut.values.shape[1]
-        gridOut.dy = (Y.max() - Y.min()) / gridOut.values.shape[0]
-        gridOut.limits = np.r_[gridOut.x0, gridOut.x0+gridOut.nx*gridOut.dx, gridOut.y0, gridOut.y0+gridOut.ny*gridOut.dy]
+        gridObject._values = d_grid
+        gridObject.nx, gridObject.ny = gridObject.values.shape[1], gridObject.values.shape[0]
+        gridObject.x0, gridObject.y0 = X.min(), Y.min()
+        gridObject.dx = (X.max() - X.min()) / gridObject.values.shape[1]
+        gridObject.dy = (Y.max() - Y.min()) / gridObject.values.shape[0]
+        gridObject.limits = np.r_[gridObject.x0, gridObject.x0+gridObject.nx*gridObject.dx, gridObject.y0, gridObject.y0+gridObject.ny*gridObject.dy]
 
         if not np.isnan(EPSGcode):
-            gridOut.EPSGcode = int(EPSGcode)
+            gridObject.EPSGcode = int(EPSGcode)
 
         if SaveGrid:
             if np.isnan(EPSGcode):
@@ -1731,43 +1732,29 @@ def dataGriddingWidget(
                 return
             DataIO.writeGeotiff(
                 d_grid, saveAs + '.tiff',
-                gridOut.EPSGcode, X.min(), X.max(),
+                gridObject.EPSGcode, X.min(), X.max(),
                 Y.min(), Y.max(), 1,
                 dataType='grid')
 
+        if marker:
+            scatterData = {}
+            scatterData['x'] = xLoc
+            scatterData['y'] = yLoc
+            scatterData['size'] = 10
+            scatterData['c'] = 'k'
+            scatterData['cmap'] = 'k'
+            scatterData['clim'] = [None, None]
         else:
-            fig = plt.figure(figsize=(9, 9))
-            axs = plt.subplot()
-            # Add shading
-            X, Y, d_grid, im, CS = plotDataHillside(
-                X, Y, d_grid, alpha=1., contours=Contours,
-                axs=axs, cmap=ColorMap, clabel=False,
-                shapeFile=shapeFile)
+            scatterData = None
 
-            # Add points at the survey locations
-            if marker:
-                plt.scatter(xLoc, yLoc, s=2, c='k')
-            axs.set_aspect('auto')
-            cbar = plt.colorbar(im, fraction=0.02)
-            cbar.set_label('TMI (nT)')
-            plt.yticks(rotation='vertical')
-            roundFact = 10**(np.floor(np.log10(np.abs(Y.max() - Y.min()))) - 2)
-            ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) / roundFact) * roundFact
-            axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
-            axs.set_yticks(ylabel[1:4])
-            axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-            roundFact = 10**(np.floor(np.log10(np.abs(X.max() - X.min()))) - 2)
-            xlabel = np.round(np.linspace(X.min(), X.max(), 5) / roundFact) * roundFact
-            axs.set_xticklabels(xlabel[1:4], size=12, va='center')
-            axs.set_xticks(xlabel[1:4])
-            axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-            axs.set_xlabel("Easting (m)", size=14)
-            axs.set_ylabel("Northing (m)", size=14)
-            axs.grid('on', color='k', linestyle='--')
-            plt.show()
-
+        plotSave(
+            gridObject, d_grid, scatterData, None,
+            90, 15, 100, 0, 0, None,
+            ColorMap, units, None, None, 'HistEqualized',
+            saveAs, EPSGcode, SaveGrid, dpi=dpi
+        )
         # Create grid object
-        return gridOut
+        return gridObject
 
     # Calculate the original map extents
     xLoc = survey[:, 0]
