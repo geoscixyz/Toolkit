@@ -267,7 +267,6 @@
   __markedentry = {[mdru:]},
   abstract      = {ABSTRACT A new methodology that levels airborne magnetic data without orthogonal tie-lines is presented in this study. The technique utilizes the low-wavenumber content of the flight-line data to construct a smooth representation of the regional field at a scale appropriate to the line lengths of the survey. Levelling errors are then calculated between the raw flight-line data and the derived regional field through a least squares approach. Minimizing the magnitude of the error, with a first-degree error function, results in significant improvements to the unlevelled data. The technique is tested and demonstrated using three recent airborne surveys.},
   doi           = {10.1111/1365-2478.12198},
-  eprint        = {https://onlinelibrary.wiley.com/doi/pdf/10.1111/1365-2478.12198},
   keywords      = {Magnetics, Data processing, Levelling, Aeromagnetic},
   url           = {https://onlinelibrary.wiley.com/doi/abs/10.1111/1365-2478.12198},
 }
@@ -282,7 +281,6 @@
   pages         = {76},
   __markedentry = {[mdru:6]},
   doi           = {10.1190/1.2831683},
-  eprint        = {/gsw/content_public/journal/tle/27/1/10.1190_1.2831683/4/76.pdf},
   url           = {http://dx.doi.org/10.1190/1.2831683},
 }
 
