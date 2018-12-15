@@ -1147,6 +1147,8 @@ def gridFiltersWidget(
             data = getattr(gridObject, '{}'.format(Filters))
 
         ind = ~np.isnan(data)
+
+
         vmin, vmax = np.percentile(data[ind], 5), np.percentile(data[ind], 95)
 
         vScale *= (
@@ -1749,7 +1751,7 @@ def dataGriddingWidget(
 
         plotSave(
             gridObject, d_grid, scatterData, None,
-            90, 15, 100, 0, 0, None,
+            90, 15, 1, 0, 0, None,
             ColorMap, units, None, None, 'HistEqualized',
             saveAs, EPSGcode, SaveGrid, dpi=dpi
         )
@@ -1871,7 +1873,7 @@ def dataGriddingWidget(
 
 
 def dataGridGeoref(
-    survey, EPSGcode=np.nan, saveAs="./Output/MyGeoTiff",
+    gridObject, EPSGcode=np.nan, saveAs="./Output/MyGeoTiff",
     shapeFile=None, inc=np.nan, dec=np.nan, applyRTP=False,
     omit=[]
 ):
@@ -1879,60 +1881,27 @@ def dataGridGeoref(
     def plotWidget(
             ColorMap,
             EPSGcode, inc, dec,
-            GetIncDec, applyRTP
+            GetIncDec, applyRTP, units="TMI"
          ):
 
         if not np.isnan(EPSGcode):
-            survey.EPSGcode = int(EPSGcode)
+            gridObject.EPSGcode = int(EPSGcode)
 
-        survey.inc, survey.dec = inc, dec
+        gridObject.inc, gridObject.dec = inc, dec
 
-        survey.setRTP(applyRTP)
+        gridObject.setRTP(applyRTP)
 
-        # if SaveGrid:
-        #     if np.isnan(EPSGcode):
-        #         print("Need to assign an EPSGcode before exporting")
-        #         return
-        #     DataIO.writeGeotiff(
-        #         survey.values, saveAs + '.tiff',
-        #         survey.EPSGcode, X.min(), X.max(),
-        #         Y.min(), Y.max(), 1,
-        #         dataType='grid')
-
-        # else:
-        fig = plt.figure(figsize=(9, 9))
-        axs = plt.subplot()
-        # Add shading
-        X, Y, d_grid, im, CS = plotDataHillside(
-            survey.hx, survey.hy, survey.values, alpha=1.,
-            axs=axs, cmap=ColorMap, clabel=False, shapeFile=shapeFile)
-
-        # Add points at the survey locations
-        # plt.scatter(xLoc, yLoc, s=2, c='k')
-        axs.set_aspect('auto')
-        cbar = plt.colorbar(im, fraction=0.02)
-        cbar.set_label('TMI (nT)')
-        plt.yticks(rotation='vertical')
-
-        roundFact = 10**(np.floor(np.log10(np.abs(Y.max() - Y.min()))) - 2)
-        ylabel = np.round(np.linspace(Y.min(), Y.max(), 5) / roundFact) * roundFact
-        axs.set_yticklabels(ylabel[1:4], size=12, rotation=90, va='center')
-        axs.set_yticks(ylabel[1:4])
-        axs.yaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-        roundFact = 10**(np.floor(np.log10(np.abs(X.max() - X.min()))) - 2)
-        xlabel = np.round(np.linspace(X.min(), X.max(), 5) / roundFact) * roundFact
-        axs.set_xticklabels(xlabel[1:4], size=12, va='center')
-        axs.set_xticks(xlabel[1:4])
-        axs.xaxis.set_major_formatter(FormatStrFormatter('%.0f'))
-        axs.set_xlabel("Easting (m)", size=14)
-        axs.set_ylabel("Northing (m)", size=14)
-        axs.grid('on', color='k', linestyle='--')
-        plt.show()
+        plotSave(
+            gridObject, gridObject.values, None, None,
+            90, 15, 1, 0, 1, None,
+            "RdBu_r", units, None, None, 'HistEqualized', "", EPSGcode,
+            False, dpi=200
+        )
 
         # Create grid object
-        return survey
+        return gridObject
 
-    assert isinstance(survey, DataIO.dataGrid), "Only implemented for objects of class DataIO.dataGrid"
+    assert isinstance(gridObject, DataIO.dataGrid), "Only implemented for objects of class DataIO.dataGrid"
 
     def fetchURL(_):
         if GetIncDec.value:
@@ -1941,7 +1910,7 @@ def dataGridGeoref(
                 print("Enter EPSGcode first")
                 return
 
-            x, y, z = np.mean(survey.hx), np.mean(survey.hy), 0.
+            x, y, z = np.mean(gridObject.hx), np.mean(gridObject.hy), 0.
             # input SpatialReference
             inSpatialRef = osr.SpatialReference()
             inSpatialRef.ImportFromEPSG(int(EPSGcode.value))
@@ -1974,8 +1943,8 @@ def dataGridGeoref(
         disabled=False,
         )
 
-    if survey.EPSGcode is not None:
-        EPSGcode = survey.EPSGcode
+    if gridObject.EPSGcode is not None:
+        EPSGcode = gridObject.EPSGcode
 
     EPSGcode = widgets.FloatText(
         value=EPSGcode,
