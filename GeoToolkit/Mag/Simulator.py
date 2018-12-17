@@ -1008,7 +1008,7 @@ def dataHillsideWidget(
 
                 else:
                     cntrs += [np.float(val)]
-            Contours = np.sort(np.hstack(cntrs))
+            Contours = np.unique(np.sort(np.hstack(cntrs)))
         else:
             Contours = None
 
@@ -1271,7 +1271,7 @@ def gridFiltersWidget(
                 else:
                     cntrs += [np.float(val)]
 
-            Contours = np.sort(np.hstack(cntrs))
+            Contours = np.unique(np.sort(np.hstack(cntrs)))
         else:
             Contours = None
 
