@@ -88,7 +88,8 @@ def rotate(xyz, center, theta, phi):
 def minCurvatureInterp(
     xyz, data, xyzOut=None,
     vectorX=None, vectorY=None, vectorZ=None, gridSize=10,
-    tol=1e-5, iterMax=None, method='spline'
+    tol=1e-5, iterMax=None, method='spline', maxDistance=None,
+    nPoints=5, overlap=0
 ):
     """
     Interpolate properties with a minimum curvature interpolation
@@ -106,44 +107,44 @@ def minCurvatureInterp(
 
     """
 
-    def av_extrap(n):
-        """Define 1D averaging operator from cell-centers to nodes."""
-        Av = (
-            sp.sparse.spdiags(
-                (0.5 * np.ones((n, 1)) * [1, 1]).T,
-                [-1, 0],
-                n + 1, n,
-                format="csr"
-            )
-        )
-        Av[0, 1], Av[-1, -2] = 0.5, 0.5
-        return Av
+    # def av_extrap(n):
+    #     """Define 1D averaging operator from cell-centers to nodes."""
+    #     Av = (
+    #         sp.sparse.spdiags(
+    #             (0.5 * np.ones((n, 1)) * [1, 1]).T,
+    #             [-1, 0],
+    #             n + 1, n,
+    #             format="csr"
+    #         )
+    #     )
+    #     Av[0, 1], Av[-1, -2] = 0.5, 0.5
+    #     return Av
 
-    def aveCC2F(grid):
-        "Construct the averaging operator on cell cell centers to faces."
-        if grid.ndim == 1:
-            aveCC2F = av_extrap(grid.shape[0])
-        elif grid.ndim == 2:
-            aveCC2F = sp.vstack((
-                sp.kron(speye(grid.shape[1]), av_extrap(grid.shape[0])),
-                sp.kron(av_extrap(grid.shape[1]), speye(grid.shape[0]))
-            ), format="csr")
-        elif grid.ndim == 3:
-            aveCC2F = sp.vstack((
-                kron3(
-                    speye(grid.shape[2]), speye(grid.shape[1]), av_extrap(grid.shape[0])
-                ),
-                kron3(
-                    speye(grid.shape[2]), av_extrap(grid.shape[1]), speye(grid.shape[0])
-                ),
-                kron3(
-                    av_extrap(grid.shape[2]), speye(grid.shape[1]), speye(grid.shape[0])
-                )
-            ), format="csr")
-        return aveCC2F
+    # def aveCC2F(grid):
+    #     "Construct the averaging operator on cell cell centers to faces."
+    #     if grid.ndim == 1:
+    #         aveCC2F = av_extrap(grid.shape[0])
+    #     elif grid.ndim == 2:
+    #         aveCC2F = sp.vstack((
+    #             sp.kron(speye(grid.shape[1]), av_extrap(grid.shape[0])),
+    #             sp.kron(av_extrap(grid.shape[1]), speye(grid.shape[0]))
+    #         ), format="csr")
+    #     elif grid.ndim == 3:
+    #         aveCC2F = sp.vstack((
+    #             kron3(
+    #                 speye(grid.shape[2]), speye(grid.shape[1]), av_extrap(grid.shape[0])
+    #             ),
+    #             kron3(
+    #                 speye(grid.shape[2]), av_extrap(grid.shape[1]), speye(grid.shape[0])
+    #             ),
+    #             kron3(
+    #                 av_extrap(grid.shape[2]), speye(grid.shape[1]), speye(grid.shape[0])
+    #             )
+    #         ), format="csr")
+    #     return aveCC2F
 
-    assert xyz.shape[0] == data.shape[0], ("Number of interpolated xyz " +
-                                            "must match number of data")
+    # assert xyz.shape[0] == data.shape[0], ("Number of interpolated xyz " +
+    #                                         "must match number of data")
 
     if vectorY is not None:
         assert xyz.shape[1] >= 2, (
@@ -216,26 +217,89 @@ def minCurvatureInterp(
 
     elif method == 'spline':
 
-        ndat = xyz.shape[0]
-        # nC = int(nCx*nCy)
+        tree = cKDTree(xyz[:, :2])
 
-        A = np.zeros((ndat, ndat))
+        # First tile the problem to avoid large memory issues
+        tiles = tileSurveyPoints(xyz, 1000, overlap=[overlap, overlap])
 
-        X, Y = np.meshgrid(xyz[:, 0], xyz[:, 1])
-        # for i in range(ndat):
+        # Get the XY limits of each tile
+        X1, Y1 = tiles[0][:, 0], tiles[0][:, 1]
+        X2, Y2 = tiles[1][:, 0], tiles[1][:, 1]
 
-        r = (X.T - X)**2. + (Y.T - Y)**2. + 1e-8
-        A = r.T * (np.log((r.T)**0.5) - 1.)
+        # If max distance given, cut out points
+        if maxDistance is not None:
 
-        # # Solve system for the weights
-        w = sp.sparse.linalg.bicgstab(A, data, tol=1e-4)
+            tree = cKDTree(xyz[:, :2])
+            # xi = _ndim_coords_from_arrays((gridCC[:,0], gridCC[:,1]), ndim=2)
+            dists, _ = tree.query(gridCC)
+
+            # Copy original result but mask missing values with NaNs
+            inRadius = dists < maxDistance
+
+        else:
+            inRadius = np.ones(gridCC.shape[0], dtype='bool')
 
         m = np.zeros(gridCC.shape[0])
-        # We can parallelize this part later
-        for ii in range(xyz.shape[0]):
+        maskOut = np.zeros(gridCC.shape[0], dtype='bool')
+        weights = np.zeros(gridCC.shape[0])
+        # Loop over the tiles and compute interpolation
+        for tt in range(X1.shape[0]):
 
-            r = (gridCC[:, 0] - xyz[ii, 0])**2. + (gridCC[:, 1] - xyz[ii, 1])**2.
-            m += w[0][ii] * (r).T * (np.log((r.T)**0.5) - 1.)
+            # Grab the interpolated points within a tile
+            lims = np.r_[X1[tt], X2[tt], Y1[tt], Y2[tt]]
+
+            inTile = np.all(
+                [
+                    gridCC[:, 0] >= lims[0], gridCC[:, 0] <= lims[1],
+                    gridCC[:, 1] >= lims[2], gridCC[:, 1] <= lims[3]
+                ], axis=0
+            )
+
+            inAll = (inTile * inRadius) == 1
+            maskOut[inAll] = True
+
+            # Tapper the grid
+            r = (
+                (gridCC[inAll, 0] - np.mean(gridCC[inAll, 0]))**2. +
+                (gridCC[inAll, 1] - np.mean(gridCC[inAll, 1]))**2.
+            )**0.5
+
+            tapper = (1.01 - r/r.max())
+
+            rQuery, indexes = tree.query(gridCC[inAll, :], k=nPoints)
+
+            # Get closest querry points
+            indx = np.unique(indexes)
+
+            if tt == 0:
+                baseLine = len(indx)
+
+            ndat = xyz.shape[0]
+
+            A = np.zeros((ndat, ndat))
+
+            X, Y = np.meshgrid(xyz[indx, 0], xyz[indx, 1])
+            # for i in range(ndat):
+
+            r = (X.T - X)**2. + (Y.T - Y)**2. + 1e-8
+            A = r.T * (np.log((r.T)**0.5) - 1.)
+
+            # # Solve system for the green parameters
+            # Scale the tolerance on the number data points
+            g = sp.sparse.linalg.bicgstab(A, data[indx], tol=tol*baseLine/len(indx))
+
+            # We can parallelize this part later
+            mInterp = np.zeros(inAll.sum())
+            for ii in range(indx.shape[0]):
+
+                r = (gridCC[inAll, 0] - xyz[indx[ii], 0])**2. + (gridCC[inAll, 1] - xyz[indx[ii], 1])**2. + 1e-8
+                mInterp += g[0][ii] * (r).T * (np.log((r.T)**0.5) - 1.)
+
+            m[inAll] += (mInterp * tapper)
+            weights[inAll] += tapper
+
+        m[maskOut] /= weights[maskOut]
+        m[maskOut == 0] = np.nan
 
         if xyzOut is None:
             m = m.reshape(gridCx.shape, order='F')
@@ -338,3 +402,82 @@ def estimateDepth(grid):
 
     return xy, dist
 
+
+def tileSurveyPoints(xyLocs, maxNpoints, overlap=[0, 0]):
+    """
+        Function to tile an survey points into smaller square subsets of points
+
+        :param numpy.ndarray xyLocs: n x 2 array of locations [x,y]
+        :param integer maxNpoints: maximum number of points in each tile
+
+        RETURNS:
+        :param numpy.ndarray: Return a list of arrays  for the SW and NE
+                            limits of each tiles
+
+    """
+
+    # Initialize variables
+    nNx = 2
+    nNy = 1
+    nObs = 1e+8
+    countx = 0
+    county = 0
+    xlim = [xyLocs[:, 0].min(), xyLocs[:, 0].max()]
+    ylim = [xyLocs[:, 1].min(), xyLocs[:, 1].max()]
+
+    # Refine the brake recursively
+    while nObs > maxNpoints:
+
+        nObs = 0
+
+        if countx > county:
+            nNx += 1
+        else:
+            nNy += 1
+
+        countx = 0
+        county = 0
+        xtiles = np.linspace(xlim[0], xlim[1], nNx)
+        ytiles = np.linspace(ylim[0], ylim[1], nNy)
+
+        # Remove tiles without points in
+        filt = np.ones((nNx-1)*(nNy-1), dtype='bool')
+
+        for ii in range(xtiles.shape[0]-1):
+            for jj in range(ytiles.shape[0]-1):
+                # Mask along x axis
+                maskx = np.all([xyLocs[:, 0] >= xtiles[ii],
+                               xyLocs[:, 0] <= xtiles[int(ii+1)]], axis=0)
+
+                # Mask along y axis
+                masky = np.all([xyLocs[:, 1] >= ytiles[jj],
+                               xyLocs[:, 1] <= ytiles[int(jj+1)]], axis=0)
+
+                # Remember which axis has the most points (for next split)
+                countx = np.max([np.sum(maskx), countx])
+                county = np.max([np.sum(masky), county])
+
+                # Full mask
+                mask = np.all([maskx, masky], axis=0)
+                nObs = np.max([nObs, np.sum(mask)])
+
+                # Check if at least one point is picked
+                if np.sum(mask) == 0:
+                    filt[jj + ii*(nNy-1)] = False
+
+    x1, x2 = xtiles[:-1], xtiles[1:]
+    y1, y2 = ytiles[:-1], ytiles[1:]
+
+    X1, Y1 = np.meshgrid(x1, y1)
+    xy1 = np.c_[
+        X1.flatten(order="F")[filt] - overlap[0],
+        Y1.flatten(order="F")[filt] - overlap[1]
+    ]
+
+    X2, Y2 = np.meshgrid(x2, y2)
+    xy2 = np.c_[
+        X2.flatten(order="F")[filt] + overlap[0],
+        Y2.flatten(order="F")[filt] + overlap[1]
+    ]
+
+    return [xy1, xy2]
