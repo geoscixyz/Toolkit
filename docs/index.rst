@@ -102,17 +102,17 @@ And with the generous contribution of the open-source community:
 | .. image:: ./images/numpy.png         |  .. image:: ./images/matplotlib.png       |
 |   :scale:  25%                        |       :scale: 50%                         |
 |   :align: center                      |       :align: center                      |
-|   :target: http://www.numpy.org       |       :target: http://www.matplotlib.org  |
+|   :target: http://www.numpy.org       |       :target: https://www.matplotlib.org |
 +---------------------------------------+-------------------------------------------+
 | .. image:: ./images/scipy.png         |  .. image:: ./images/simpeg.png           |
 |   :scale:  50%                        |       :scale: 50%                         |
 |   :align: center                      |       :align: center                      |
-|   :target: http://www.scipy.org       |       :target: http://www.simpeg.xyz      |
+|   :target: https://www.scipy.org      |       :target: http://www.simpeg.xyz      |
 +---------------------------------------+-------------------------------------------+
 | .. image:: ./images/scikitlearn.png   |  .. image:: ./images/gdal.png             |
 |   :scale:  20%                        |       :scale: 50%                         |
 |   :align: center                      |       :align: center                      |
-|   :target: http://scikit-learn.org    |       :target: https://gdal.org/          |
+|   :target: https://scikit-learn.org   |       :target: https://gdal.org/          |
 +---------------------------------------+-------------------------------------------+
 | .. image:: ./images/jupyter.png       |  .. image:: ./images/sphinx.png           |
 |   :scale:  60%                        |       :scale: 30%                         |
