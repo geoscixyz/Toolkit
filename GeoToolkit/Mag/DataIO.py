@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 from . import (Simulator, MathUtils)
 from scipy.spatial import cKDTree
-# from SimPEG.Utils import mkvc
+from matplotlib.contour import QuadContourSet
 import matplotlib.pyplot as plt
 import gdal
 import osr
@@ -574,6 +574,18 @@ def exportShapefile(
         'properties': {label: attType},
 
     }
+
+    if isinstance(polylines, QuadContourSet):
+
+        temp, attributes = [], []
+        for segs, level in zip(polylines.allsegs, polylines.levels):
+
+            for poly in segs:
+
+                temp += [poly]
+                attributes += [level]
+
+        polylines = temp
 
     with fiona.open(
         saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs
