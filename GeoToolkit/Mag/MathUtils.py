@@ -275,9 +275,7 @@ def minCurvatureInterp(
                 baseLine = len(indx)
 
             ndat = xyz.shape[0]
-
-            A = np.zeros((ndat, ndat))
-
+            
             X, Y = np.meshgrid(xyz[indx, 0], xyz[indx, 1])
             # for i in range(ndat):
 
