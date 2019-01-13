@@ -35,7 +35,7 @@ Upward continuation **simulates the magnetic response at increased heights above
 
 An upward continuation filter is applied to the Search Phase II data below. In the interactive notebook, try an upward continuation distance of 100 m, then 200 m. Detail in the magnetic data is lost, however certain magnetic features persist, giving interpreters a sense of the deep geology underlying the chosen study area.
 
-.. figure:: ./images/Filters_synth_TMI_upcontin50.png
+.. figure:: ./images/Filters_search_up0_up100.png
     :align: center
     :figwidth: 100 %
 
