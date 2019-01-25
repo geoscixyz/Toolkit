@@ -22,7 +22,7 @@ Click below on the **'launch binder'** button or on the image to access an inter
     :align: center
 
 .. image:: ./images/search_vis_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_2_1_Search_Mag_Data_Visualization.ipynbb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_2_1_Search_Mag_Data_Visualization.ipynb
     :align: center
 
 
@@ -63,7 +63,7 @@ Again, either a linear or a histogram equalized colour stretch can be applied:
     :align: center
     :figwidth: 100 %
 
-**The interactive notebook will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located GeoTiff files and can be loaded into any software that accepts these types of files, including Google Earth Pro and ArcMap. Your exported maps will be stored on the cloud temporarily if you are running the notebooks online. You will need to install the Toolkit locally to enable local saving of exported maps. Please follow this link and Toolkit installation instructions :ref:`here<installation>` 
+**The interactive notebook will also allow you to export maps with your chosen colour maps and visual enhancements**. These maps are exported as located GeoTiff files and can be loaded into any software that accepts these types of files, including Google Earth Pro and ArcMap. Your exported maps will be stored on the cloud temporarily if you are running the notebooks online. You will need to install the Toolkit locally to enable local saving of exported maps. Please follow this link and Toolkit installation instructions :ref:`here<installation>`
 
 The below image shows a located image of the Search II magnetic data in Google Earth Pro.
 
