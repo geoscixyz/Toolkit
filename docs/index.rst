@@ -80,7 +80,7 @@ All the content can be found on our github_ repository.
 .. _here: https://docs.google.com/forms/d/1Bv43lKncKaTQY3_J_B1DrPQr0ft0Qt1x6IjqM7iDbnc/viewform?usp=send_form>`.
 
 
-.. _github: https://github.com/ubcgif/gpg
+.. _github: https://github.com/geoscixyz/Toolkit
 
 
 Contributors:

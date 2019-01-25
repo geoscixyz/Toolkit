@@ -2391,6 +2391,9 @@ def plotSave(
     else:
         # Add points at the gridObject locations
         # plt.scatter(xLoc, yLoc, s=2, c='k')
+
+
+
         axs.set_aspect('equal')
         cbar = plt.colorbar(im, fraction=0.02)
         cbar.set_label(Filters + " " +units()[Filters])
@@ -2399,6 +2402,15 @@ def plotSave(
         axs.set_ylabel("Northing (m)", size=14)
         axs.grid('on', color='k', linestyle='--')
 
+        if scatterData:
+            pos = axs.get_position()
+            cbarax = fig.add_axes([pos.x0+0.875, pos.y0+0.225,  pos.width*.025, pos.height*0.4])
+            norm = mpl.colors.Normalize(vmin=scatterData['clim'][0], vmax=scatterData['clim'][1])
+            cb = mpl.colorbar.ColorbarBase(
+              cbarax, cmap=scatterData['cmap'],
+              norm=norm,
+              orientation="vertical")
+            cb.set_label("Depth (m)", size=12)
         plt.show()
 
     return X, Y, data, im, CS

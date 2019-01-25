@@ -588,7 +588,7 @@ def exportShapefile(
         polylines = temp
 
     with fiona.open(
-        saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs
+        saveAs + '.shp', 'w', driver='ESRI Shapefile', schema=schema, crs=crs
     ) as c:
 
         # If there are multiple geometries, put the "for" loop here
@@ -604,6 +604,23 @@ def exportShapefile(
                 res['geometry'] = mapping(pline)
                 c.write(res)
 
+    # function to generate .prj file information using spatialreference.org
+    def getWKT_PRJ(epsg_code):
+        import urllib
+        # access projection information
+        wkt = urllib.request.urlopen("http://spatialreference.org/ref/epsg/{0}/prettywkt/".format(epsg_code))
+        # remove spaces between charachters
+        remove_spaces = wkt.read().replace(b" ", b"")
+        # place all the text on one line
+        output = remove_spaces.replace(b"\n", b"")
+        return output
+
+    # create the .prj file
+    prj = open(saveAs + ".prj", "w")
+    # call the function and supply the epsg code
+    epsg = getWKT_PRJ(str(int(EPSGcode)))
+    prj.write(epsg.decode("utf-8"))
+    prj.close()
 
 def fetchData(
     path="./assets/Search/", checkDir=False, file="",
