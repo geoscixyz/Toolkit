@@ -2,7 +2,7 @@ import numpy as np
 import scipy as sp
 from . import (Simulator, MathUtils)
 from scipy.spatial import cKDTree
-from SimPEG.Utils import mkvc
+from matplotlib.contour import QuadContourSet
 import matplotlib.pyplot as plt
 import gdal
 import osr
@@ -81,7 +81,7 @@ class dataGrid(object):
 
             X, Y = np.meshgrid(self.hx, self.hy)
 
-            self._gridCC = np.c_[mkvc(X), mkvc(Y)]
+            self._gridCC = np.c_[X.flatten(order='F'), Y.flatten(order='F')]
 
         return self._gridCC
 
@@ -108,7 +108,7 @@ class dataGrid(object):
             else:
 
                 if np.any(np.isnan(self.values)):
-                    self.indNan = np.isnan(mkvc(self.values))
+                    self.indNan = np.isnan(self.values.flatten(order='F'))
                     grid = self.valuesFilled
                 else:
                     grid = self.values
@@ -160,18 +160,33 @@ class dataGrid(object):
     def valuesFilled(self):
 
         if getattr(self, '_valuesFilled', None) is None:
-            values = mkvc(self.values)
-            indVal = np.where(~self.indNan)[0]
+            values = self.values.flatten(order='F')
 
+            # Do a minimum curvature extrapolation
+            isNan = np.isnan(values)
+
+            # Get the real values on the outer edge
+            indVal = np.where(~isNan)[0]
             tree = cKDTree(self.gridCC[indVal, :])
-            dists, indexes = tree.query(self.gridCC[self.indNan, :])
+            dists, indexes = tree.query(self.gridCC[isNan, :])
 
             uInd = np.unique(indVal[indexes])
 
             xyz = self.gridCC[uInd, :]
 
-            _, values[self.indNan] = MathUtils.minCurvatureInterp(
-                            xyz, values[uInd], xyzOut=self.gridCC[self.indNan, :])
+            _, values[isNan] = MathUtils.minCurvatureInterp(
+                            xyz, values[uInd],
+                            xyzOut=self.gridCC[isNan, :])
+
+            # If there are still NDV, just do a neareest neighbour
+
+            while np.isnan(values).sum() > 0:
+                isNan = np.isnan(values)
+                # Get the real values on the outer edge
+                indVal = np.where(~isNan)[0]
+                tree = cKDTree(self.gridCC[indVal, :])
+                dists, indexes = tree.query(self.gridCC[isNan, :])
+                values[isNan] = values[indVal[indexes]]
 
             self._valuesFilled = values.reshape(self.values.shape, order='F')
 
@@ -236,7 +251,7 @@ class dataGrid(object):
                 fhxd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                derivX = mkvc(derivX)
+                derivX = derivX.flatten(order='F')
 
                 derivX[self.indNan] = np.nan
                 derivX = derivX.reshape(self.values.shape, order='F')
@@ -257,7 +272,7 @@ class dataGrid(object):
                 fhyd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                derivY = mkvc(derivY)
+                derivY = derivY.flatten(order='F')
 
                 derivY[self.indNan] = np.nan
                 derivY = derivY.reshape(self.values.shape, order='F')
@@ -277,7 +292,7 @@ class dataGrid(object):
                 fhzd_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                firstVD = mkvc(firstVD)
+                firstVD = firstVD.flatten(order='F')
 
                 firstVD[self.indNan] = np.nan
                 firstVD = firstVD.reshape(self.values.shape, order='F')
@@ -338,7 +353,7 @@ class dataGrid(object):
                 rtp_pad[self.npady:-self.npady, self.npadx:-self.npadx])
 
             if self.indNan is not None:
-                rtp = mkvc(rtp)
+                rtp = rtp.flatten(order='F')
 
                 rtp[self.indNan] = np.nan
                 rtp = rtp.reshape(self.values.shape, order='F')
@@ -374,7 +389,7 @@ class dataGrid(object):
         self._valuesFilledUC = zUpw.copy()
 
         if self.indNan is not None:
-            zUpw = mkvc(zUpw)
+            zUpw = zUpw.flatten(order='F')
 
             zUpw[self.indNan] = np.nan
             zUpw = zUpw.reshape(self.values.shape, order='F')
@@ -560,8 +575,20 @@ def exportShapefile(
 
     }
 
+    if isinstance(polylines, QuadContourSet):
+
+        temp, attributes = [], []
+        for segs, level in zip(polylines.allsegs, polylines.levels):
+
+            for poly in segs:
+
+                temp += [poly]
+                attributes += [level]
+
+        polylines = temp
+
     with fiona.open(
-        saveAs + '.shp', 'w', 'ESRI Shapefile', schema, crs=crs
+        saveAs + '.shp', 'w', driver='ESRI Shapefile', schema=schema, crs=crs
     ) as c:
 
         # If there are multiple geometries, put the "for" loop here
@@ -577,6 +604,23 @@ def exportShapefile(
                 res['geometry'] = mapping(pline)
                 c.write(res)
 
+    # function to generate .prj file information using spatialreference.org
+    def getWKT_PRJ(epsg_code):
+        import urllib
+        # access projection information
+        wkt = urllib.request.urlopen("http://spatialreference.org/ref/epsg/{0}/prettywkt/".format(epsg_code))
+        # remove spaces between charachters
+        remove_spaces = wkt.read().replace(b" ", b"")
+        # place all the text on one line
+        output = remove_spaces.replace(b"\n", b"")
+        return output
+
+    # create the .prj file
+    prj = open(saveAs + ".prj", "w")
+    # call the function and supply the epsg code
+    epsg = getWKT_PRJ(str(int(EPSGcode)))
+    prj.write(epsg.decode("utf-8"))
+    prj.close()
 
 def fetchData(
     path="./assets/Search/", checkDir=False, file="",

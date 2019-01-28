@@ -21,7 +21,7 @@ before_install:
 
 install:
   - conda env create -f environment.yml
-  - source activate Toolkit-environment
+  - source activate geotoolkit
   - export MPLBACKEND="agg"
   - pip install -r requirements_dev.txt
   - python setup.py install

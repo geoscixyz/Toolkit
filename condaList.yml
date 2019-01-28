@@ -1,0 +1,13 @@
+python=3.6
+numpy
+scipy
+matplotlib
+ipywidgets
+gdal
+scikit-image
+pyshp
+shapely
+krb5
+git
+mkl
+download
