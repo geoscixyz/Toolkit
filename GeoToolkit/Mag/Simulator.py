@@ -2014,7 +2014,9 @@ def dataGridGeoref(
          ):
 
         gridObject._values = values
-        gridObject._values[values==ndv] = np.nan
+
+        if ~np.isnan(ndv):
+            gridObject._values[values==ndv] = np.nan
 
         if not np.isnan(EPSGcode):
             gridObject.EPSGcode = int(EPSGcode)
@@ -2104,7 +2106,7 @@ def dataGridGeoref(
 
     else:
 
-        ndv = ""
+        ndv = np.nan
 
     ndv = widgets.FloatText(
         value=ndv,
