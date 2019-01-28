@@ -1510,6 +1510,7 @@ def gridTilt2Depth(
             np.percentile(scatterData['c'], 25),
             np.percentile(scatterData['c'], 75)
         ]
+        scatterData['colorbar'] = True
 
         vScale *= (
             np.abs(gridObject.values[ind].max() - gridObject.values[ind].min()) *
@@ -1872,8 +1873,9 @@ def dataGriddingWidget(
             scatterData['y'] = yLoc
             scatterData['size'] = 10
             scatterData['c'] = 'k'
-            scatterData['cmap'] = 'k'
+            scatterData['cmap'] = 'Greys'
             scatterData['clim'] = [None, None]
+            scatterData['colorbar'] = False
         else:
             scatterData = None
 
@@ -2337,7 +2339,6 @@ def setDataExtentWidget(
     return out
 
 
-
 def plotSave(
         gridObject, data, scatterData, shapeFile,
         SunAzimuth, SunAngle, ColorTransp, HSTransp, vScale, Contours,
@@ -2428,7 +2429,7 @@ def plotSave(
         axs.set_ylabel("Northing (m)", size=14)
         axs.grid('on', color='k', linestyle='--')
 
-        if scatterData:
+        if (scatterData is not None) and scatterData['colorbar']:
             pos = axs.get_position()
             cbarax = fig.add_axes([pos.x0+0.875, pos.y0+0.225,  pos.width*.025, pos.height*0.4])
             norm = mpl.colors.Normalize(vmin=scatterData['clim'][0], vmax=scatterData['clim'][1])
