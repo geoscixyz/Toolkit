@@ -452,7 +452,7 @@ def loadGeoTiffFile(fileName, plotIt=False):
     rasterObject = gdal.Open(fileName)
     band = rasterObject.GetRasterBand(1)
     temp = np.flipud(band.ReadAsArray())
-    temp[temp == -99999] = np.nan
+    # temp[temp == -99999] = np.nan
     data._values = temp
     data.nx = data.values.shape[1]
     data.ny = data.values.shape[0]

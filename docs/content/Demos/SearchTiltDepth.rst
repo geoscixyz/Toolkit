@@ -3,7 +3,7 @@
 2.2.3. Search Case Study - Edge Detection and Depth to Source
 =============================================================
 
-Here we apply the tilt-depth method discussed in Section 2.1.4. to estimate depth to source in the Search Phase II magnetic data. Depth can be accurately derived from the tilt angle where contacts between magnetically contrasted geological units are vertical. Because of the typically complex nature of true geological contacts, calculated depths calculated from real magnetic data sets are usually approximations. The results should always be considered in light of expected geology, and ideally should be interpreted alongside geology, topographic data, and other geophysical data and models if these data are available.
+Here we apply the tilt-depth method discussed in :ref:`Section 2.1.5<synth_tilt_depth>`. to estimate depth to source in the Search Phase II magnetic data. Depth can be accurately derived from the tilt angle where contacts between magnetically contrasted geological units are vertical. Because of the typically complex nature of true geological contacts, calculated depths calculated from real magnetic data sets are usually approximations. The results should always be considered in light of expected geology, and ideally should be interpreted alongside geology, topographic data, and other geophysical data and models if these data are available.
 
 The images below show the TMI overlain by the tilt-depth contours (left image), and the TMI with tilt-depth contours calculated after 100 m upward continuation is applied (right image).
 
