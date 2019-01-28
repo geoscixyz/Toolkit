@@ -2002,15 +2002,19 @@ def dataGriddingWidget(
 
 def dataGridGeoref(
     gridObject, EPSGcode=np.nan, saveAs="./Output/MyGeoTiff",
-    shapeFile=None, inc=np.nan, dec=np.nan, applyRTP=False,
+    shapeFile=None, inc=np.nan, dec=np.nan, ndv=np.nan, applyRTP=False,
     omit=[]
 ):
 
+    values = gridObject.values.copy()
     def plotWidget(
             ColorMap,
-            EPSGcode, inc, dec,
+            EPSGcode, inc, dec, ndv,
             GetIncDec, applyRTP, units="TMI"
          ):
+
+        gridObject._values = values
+        gridObject._values[values==ndv] = np.nan
 
         if not np.isnan(EPSGcode):
             gridObject.EPSGcode = int(EPSGcode)
@@ -2020,7 +2024,7 @@ def dataGridGeoref(
         gridObject.setRTP(applyRTP)
 
         plotSave(
-            gridObject, gridObject.values, None, None,
+            gridObject, values, None, None,
             90, 15, 1, 0, 1, None,
             "RdBu_r", units, None, None, 'HistEqualized', "", EPSGcode,
             False, dpi=200
@@ -2089,6 +2093,25 @@ def dataGridGeoref(
         description='Declination angle positve clockwise from North:',
         disabled=False
         )
+
+    if np.any(gridObject.values > 1e+10):
+
+        ndv = np.unique(gridObject.values[gridObject.values > 1e+10])
+
+    elif np.any(np.isnan(gridObject.values)):
+
+        ndv = np.nan
+
+    else:
+
+        ndv = ""
+
+    ndv = widgets.FloatText(
+        value=ndv,
+        description='No-data-Value',
+        disabled=False
+        )
+
     GetIncDec = widgets.ToggleButton(
         value=False,
         description='Fetch Inc/Dec',
@@ -2130,6 +2153,7 @@ def dataGridGeoref(
                               ColorMap=ColorMap,
                               EPSGcode=EPSGcode,
                               inc=inc, dec=dec,
+                              ndv=ndv,
                               GetIncDec=GetIncDec,
                               applyRTP=applyRTP,
                               saveAs=saveAs,
