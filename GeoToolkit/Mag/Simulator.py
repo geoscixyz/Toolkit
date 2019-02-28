@@ -1239,7 +1239,7 @@ def gridFiltersWidget(
         if SaveGrid:
             lims = gridObject.limits
             DataIO.writeGeotiff(
-                gridObject.upwardContinuation(z=UpDist),
+                data,
                 saveAs + '_GRID.tiff',
                 gridObject.EPSGcode, lims[0], lims[1],
                 lims[2], lims[3], 1,
