@@ -1453,7 +1453,8 @@ def gridTilt2Depth(
     ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
     markerSize=1, omit=[],
     ShapeFileName="./Output/EstimatedDepth",
-    GridFileName="./Output/MyGeoTiff"
+    GridFileName="./Output/MyGeoTiff",
+    CSVFileName="./Output/EstimatedDepth.csv",
 ):
 
     gridProps = [
@@ -1470,6 +1471,7 @@ def gridTilt2Depth(
             ContourColor, ContourSize,
             GridFileName, EPSGcode, SaveGrid,
             ShapeFileName, SaveShape,
+            CSVFileName, SaveCSV
 
          ):
 
@@ -1499,6 +1501,10 @@ def gridTilt2Depth(
                 polylines, attributes,
                 EPSGcode=EPSGcode, saveAs=ShapeFileName,
                 label='AvgDepth')
+
+        if SaveCSV:
+            # Export to CSV file
+            np.savetxt(CSVFileName, np.c_[np.vstack(polylines)[:, 0:2], np.concatenate(attributes)], fmt="%.2f", delimiter=",")
 
         scatterData = {}
         scatterData['x'] = np.vstack(polylines)[:, 0]
@@ -1533,6 +1539,12 @@ def gridTilt2Depth(
         if SaveGrid.value:
             SaveGrid.value = False
             print('Image saved as: ' + GridFileName.value)
+
+    def saveCSV(_):
+
+        if SaveCSV.value:
+            SaveCSV.value = False
+            print('CSV saved as: ' + CSVFileName.value)
 
     def saveShape(_):
 
@@ -1584,7 +1596,7 @@ def gridTilt2Depth(
         description='Export GeoTiff',
         disabled=False,
         button_style='',
-        tooltip='Description',
+        tooltip='Export GeoTiff image',
         icon='check'
         )
 
@@ -1594,11 +1606,22 @@ def gridTilt2Depth(
         description='Export Shapefile',
         disabled=False,
         button_style='',
-        tooltip='Description',
+        tooltip='Export Contours',
         icon='check'
         )
 
     SaveShape.observe(saveShape)
+    SaveCSV = widgets.ToggleButton(
+        value=False,
+        description='Export CSV',
+        disabled=False,
+        button_style='',
+        tooltip='Export estimated depth points',
+        icon='check'
+        )
+
+    SaveCSV.observe(saveCSV)
+
     GridFileName = widgets.Text(
         value=GridFileName,
         description='Save as:',
@@ -1607,6 +1630,12 @@ def gridTilt2Depth(
     ShapeFileName = widgets.Text(
         value=ShapeFileName,
         description='Shapefile name:',
+        disabled=False
+        )
+
+    CSVFileName = widgets.Text(
+        value=CSVFileName,
+        description='CSV file name:',
         disabled=False
         )
     ContourColor = widgets.Dropdown(
@@ -1639,7 +1668,9 @@ def gridTilt2Depth(
         "EPSGcode": EPSGcode,
         'SaveGrid': SaveGrid,
         'ShapeFileName': ShapeFileName,
-        'SaveShape': SaveShape
+        'SaveShape': SaveShape,
+        'CSVFileName': CSVFileName,
+        'SaveCSV': SaveCSV
         }
 
     widgList = []
@@ -2195,6 +2226,8 @@ def setDataExtentWidget(
                 Width,
                 Height,
                 facecolor='none', edgecolor='k',
+                linewidth=3,
+                linestyle='--',
                 zorder=3
                 )
             )
