@@ -1880,9 +1880,12 @@ def dataGriddingWidget(
 
         gridObject._values = d_grid
         gridObject.nx, gridObject.ny = gridObject.values.shape[1], gridObject.values.shape[0]
-        gridObject.x0, gridObject.y0 = X.min(), Y.min()
-        gridObject.dx = (X.max() - X.min()) / gridObject.values.shape[1]
-        gridObject.dy = (Y.max() - Y.min()) / gridObject.values.shape[0]
+
+        gridObject.dx = (X.max() - X.min()) / (gridObject.values.shape[1] - 1)
+        gridObject.dy = (Y.max() - Y.min()) / (gridObject.values.shape[0] - 1)
+
+        gridObject.x0, gridObject.y0 = X.min()-gridObject.dx/2., Y.min()-gridObject.dy/2.
+
         gridObject.limits = np.r_[gridObject.x0, gridObject.x0+gridObject.nx*gridObject.dx, gridObject.y0, gridObject.y0+gridObject.ny*gridObject.dy]
 
         if not np.isnan(EPSGcode):
@@ -1894,8 +1897,9 @@ def dataGriddingWidget(
                 return
             DataIO.writeGeotiff(
                 d_grid, saveAs + '.tiff',
-                gridObject.EPSGcode, X.min(), X.max(),
-                Y.min(), Y.max(), 1,
+                gridObject.EPSGcode,
+                gridObject.limits[0], gridObject.limits[1],
+                gridObject.limits[2], gridObject.limits[3], 1,
                 dataType='grid')
 
         if marker:
@@ -2241,16 +2245,22 @@ def setDataExtentWidget(
 
         # Create new dataGrid object
         dataSub = DataIO.dataGrid()
-        dataSub.limits = lims
+
         # coordinate_system = grid.coordinate_system
         temp = survey.values[:, indx]
         temp = temp[indy, :]
 
+
         dataSub._values = temp
         dataSub.nx, dataSub.ny = nx, ny
         dataSub.dx, dataSub.dy = survey.dx, survey.dy
-        dataSub.x0, dataSub.y0 = East-Width/2, North-Height/2
+        dataSub.x0, dataSub.y0 = xLoc[indx].min()-survey.dx/2, yLoc[indy].min()-survey.dy/2
         dataSub.EPSGcode = survey.EPSGcode
+
+        dataSub.limits = np.r_[
+            dataSub.x0, dataSub.x0+dataSub.nx*dataSub.dx,
+            dataSub.y0, dataSub.y0+dataSub.ny*dataSub.dy
+        ]
 
         if SaveGrid:
 
@@ -2263,8 +2273,9 @@ def setDataExtentWidget(
 
             DataIO.writeGeotiff(
                 dataSub.values, saveAs + '.tiff',
-                dataSub.EPSGcode, lims[0], lims[1],
-                lims[2], lims[3], 1,
+                dataSub.EPSGcode,
+                dataSub.limits[0], dataSub.limits[1],
+                dataSub.limits[2], dataSub.limits[3], 1,
                 dataType='grid')
 
             if dataSub.EPSGcode != EPSGcode:
@@ -2293,8 +2304,8 @@ def setDataExtentWidget(
 
     if isinstance(survey, DataIO.dataGrid):
 
-        xLoc = np.asarray(range(survey.nx))*survey.dx+survey.x0
-        yLoc = np.asarray(range(survey.ny))*survey.dy+survey.y0
+        xLoc = survey.hx
+        yLoc = survey.hy
         xlim = survey.limits[:2]
         ylim = survey.limits[2:]
         dx = survey.dx
@@ -2325,11 +2336,11 @@ def setDataExtentWidget(
         min=ylim[0], max=ylim[1], step=dy, value=North, continuous_update=False
         )
     Width = widgets.FloatSlider(
-        min=2*dx, max=np.abs(xlim[1] - xlim[0]), step=dx, value=nCx*dx,
+        min=2*dx, max=np.abs(xlim[1] - xlim[0])+2*dx, step=dx, value=nCx*dx,
         continuous_update=False
         )
     Height = widgets.FloatSlider(
-        min=2*dy, max=np.abs(ylim[1] - ylim[0]), step=dy, value=nCy*dy,
+        min=2*dy, max=np.abs(ylim[1] - ylim[0])+2*dy, step=dy, value=nCy*dy,
         continuous_update=False
         )
     saveAs = widgets.Text(
@@ -2422,7 +2433,9 @@ def plotSave(
 
         DataIO.writeGeotiff(
             np.flipud(img), saveAs + '.tiff',
-            gridObject.EPSGcode, np.min(X), np.max(X), np.min(Y), np.max(Y), 3
+            gridObject.EPSGcode,
+            gridObject.limits[0], gridObject.limits[1],
+            gridObject.limits[2], gridObject.limits[3], 3
         )
 
         if gridObject.EPSGcode != EPSGcode:
