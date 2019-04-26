@@ -54,7 +54,7 @@ class dataGrid(object):
     def hx(self):
 
         if getattr(self, '_hx', None) is None:
-            self._hx = np.asarray(range(self.nx)) * self.dx + self.x0
+            self._hx = np.asarray(range(self.nx)) * self.dx + self.x0 + self.dx/2
 
         return self._hx
 
@@ -62,7 +62,7 @@ class dataGrid(object):
     def hy(self):
 
         if getattr(self, '_hy', None) is None:
-            self._hy = np.asarray(range(self.ny)) * self.dy + self.y0
+            self._hy = np.asarray(range(self.ny)) * self.dy + self.y0 + self.dy/2
 
         return self._hy
 
@@ -423,7 +423,7 @@ def loadGRDFile(fileName, plotIt=False):
         data._values = temp
         data.nx, data.ny = grid.nx, grid.ny
         data.dx, data.dy = grid.dx, grid.dy
-        data.x0, data.y0 = grid.x0, grid.y0
+        data.x0, data.y0 = grid.x0-grid.dx/2, grid.y0-grid.dy/2
 
     if plotIt:
         xLoc = np.asarray(range(data.nx))*data.dx+data.x0
@@ -463,6 +463,7 @@ def loadGeoTiffFile(fileName, plotIt=False):
     data.y0 = y0 - data.ny*data.dy
     data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, y0]
 
+
     proj = osr.SpatialReference(wkt=rasterObject.GetProjection())
     data.EPSGcode = proj.GetAttrValue('AUTHORITY', 1)
     if plotIt:
@@ -496,8 +497,8 @@ def writeGeotiff(
 
     xPixels = array.shape[1]  # number of pixels in x
     yPixels = array.shape[0]  # number of pixels in y
-    pixelXSize = (xMax-xMin)/(xPixels-1)  # size of the pixel in X direction
-    pixelYSize = -(yMax-yMin)/(yPixels-1)  # size of the pixel in Y direction
+    pixelXSize = (xMax-xMin)/(xPixels)  # size of the pixel in X direction
+    pixelYSize = -(yMax-yMin)/(yPixels)  # size of the pixel in Y direction
 
     driver = gdal.GetDriverByName('GTiff')
 
@@ -734,6 +735,7 @@ def fetchData(
         tooltip='Load data to memory',
         icon='check'
     )
+
     # loadFile.observe(loadIt)
     files = widgets.Dropdown(
         options=file,
