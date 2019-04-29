@@ -451,18 +451,27 @@ def loadGeoTiffFile(fileName, plotIt=False):
 
     rasterObject = gdal.Open(fileName)
     band = rasterObject.GetRasterBand(1)
-    temp = np.flipud(band.ReadAsArray())
-    # temp[temp == -99999] = np.nan
-    data._values = temp
-    data.nx = data.values.shape[1]
-    data.ny = data.values.shape[0]
+    temp = band.ReadAsArray()
+
+    data.nx = temp.shape[1]
+    data.ny = temp.shape[0]
+
     data.x0 = rasterObject.GetGeoTransform()[0]
-    y0 = rasterObject.GetGeoTransform()[3]
+
     data.dx = rasterObject.GetGeoTransform()[1]
     data.dy = np.abs(rasterObject.GetGeoTransform()[5])
-    data.y0 = y0 - data.ny*data.dy
-    data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, y0]
 
+    # temp[temp == -99999] = np.nan
+    if np.sign(rasterObject.GetGeoTransform()[5]) == -1:
+        ymax = rasterObject.GetGeoTransform()[3]
+        data.y0 = ymax - data.ny*data.dy
+        data._values = np.flipud(temp)
+    else:
+        data.y0 = rasterObject.GetGeoTransform()[3]
+        ymax = data.y0 + data.ny*data.dy
+        data._values = temp
+
+    data.limits = np.r_[data.x0, data.x0+data.nx*data.dx, data.y0, ymax]
 
     proj = osr.SpatialReference(wkt=rasterObject.GetProjection())
     data.EPSGcode = proj.GetAttrValue('AUTHORITY', 1)
