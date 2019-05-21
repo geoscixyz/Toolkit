@@ -2479,11 +2479,11 @@ def plotSave(
             pos = axs.get_position()
             cbarax = fig.add_axes([pos.x0+0.875, pos.y0+0.225,  pos.width*.025, pos.height*0.4])
             norm = mpl.colors.Normalize(vmin=scatterData['clim'][0], vmax=scatterData['clim'][1])
+            cmap = mpl.cm.get_cmap(name=scatterData['cmap'])
             cb = mpl.colorbar.ColorbarBase(
-              cbarax, cmap=scatterData['cmap'],
+              cbarax, cmap=cmap,
               norm=norm,
               orientation="vertical")
             cb.set_label("Depth (m)", size=12)
-        plt.show()
 
     return X, Y, data, im, CS
