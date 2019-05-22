@@ -5,19 +5,11 @@ channels:
   - defaults
 dependencies:
   - python=3.6
-  - numpy=1.15.4
-  - scipy
-  - matplotlib
-  - ipywidgets
-  - gdal
-  - scikit-image
-  - pyshp
-  - fiona
-  - shapely
-  - krb5
   - git
-  - mkl
+  - pip
   - pip:
+    - numpy=1.15.4
+    - scipy
     - git+https://github.com/geoscixyz/Toolkit.git
     - sphinx
     - sphinx_rtd_theme
@@ -26,3 +18,13 @@ dependencies:
     - nbstripout
     - numpydoc
     - download
+  - matplotlib
+  - ipywidgets
+  - gdal
+  - scikit-image
+  - pyshp
+  - fiona
+  - shapely
+  - krb5
+  - mkl
+
