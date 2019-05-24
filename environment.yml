@@ -8,7 +8,7 @@ dependencies:
   - git
   - pip
   - pip:
-    - numpy=1.15.4
+    - numpy==1.15.4
     - scipy
     - git+https://github.com/geoscixyz/Toolkit.git
     - sphinx
