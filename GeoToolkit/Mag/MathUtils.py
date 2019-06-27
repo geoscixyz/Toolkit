@@ -225,7 +225,7 @@ def minCurvatureInterp(
         # Get the XY limits of each tile
         X1, Y1 = tiles[0][:, 0], tiles[0][:, 1]
         X2, Y2 = tiles[1][:, 0], tiles[1][:, 1]
-
+        print(tiles)
         # If max distance given, cut out points
         if maxDistance is not None:
 
@@ -275,7 +275,7 @@ def minCurvatureInterp(
                 baseLine = len(indx)
 
             ndat = xyz.shape[0]
-            
+
             X, Y = np.meshgrid(xyz[indx, 0], xyz[indx, 1])
             # for i in range(ndat):
 
@@ -379,7 +379,12 @@ def estimateDepth(grid):
     # Compute shortest distance between pair of points
     xy = []
     dist = []
+
     for contour in C_0.allsegs[0]:
+
+
+        if contour.shape[0] == 1:
+            continue
 
         # Query two closest points to each nodes of zero contour
         d, indx = tree.query(contour, k=2)
