@@ -1496,27 +1496,41 @@ def gridTilt2Depth(
         polylines, attributes = MathUtils.estimateDepth(gridObject)
 
         if SaveShape:
-            # Export to shapefile
-            DataIO.exportShapefile(
-                polylines, attributes,
-                EPSGcode=EPSGcode, saveAs=ShapeFileName,
-                label='AvgDepth')
+
+            if len(polylines) > 0:
+                # Export to shapefile
+                DataIO.exportShapefile(
+                    polylines, attributes,
+                    EPSGcode=EPSGcode, saveAs=ShapeFileName,
+                    label='AvgDepth')
+                print('Shapefile saved as: ' + ShapeFileName.value)
+
+
+            else:
+                print("No [-45, 45] contour found")
 
         if SaveCSV:
-            # Export to CSV file
-            np.savetxt(CSVFileName, np.c_[np.vstack(polylines)[:, 0:2], np.concatenate(attributes)], fmt="%.2f", delimiter=",")
+            if len(polylines) > 0:
+                # Export to CSV file
+                np.savetxt(CSVFileName, np.c_[np.vstack(polylines)[:, 0:2], np.concatenate(attributes)], fmt="%.2f", delimiter=",")
+                print('CSV saved as: ' + CSVFileName.value)
+            else:
+                print("No [-45, 45] contour found")
 
-        scatterData = {}
-        scatterData['x'] = np.vstack(polylines)[:, 0]
-        scatterData['y'] = np.vstack(polylines)[:, 1]
-        scatterData['size'] = ContourSize
-        scatterData['c'] = np.concatenate(attributes)
-        scatterData['cmap'] = ContourColor
-        scatterData['clim'] = [
-            np.percentile(scatterData['c'], 25),
-            np.percentile(scatterData['c'], 75)
-        ]
-        scatterData['colorbar'] = True
+        if len(polylines) > 0:
+            scatterData = {}
+            scatterData['x'] = np.vstack(polylines)[:, 0]
+            scatterData['y'] = np.vstack(polylines)[:, 1]
+            scatterData['size'] = ContourSize
+            scatterData['c'] = np.concatenate(attributes)
+            scatterData['cmap'] = ContourColor
+            scatterData['clim'] = [
+                np.percentile(scatterData['c'], 25),
+                np.percentile(scatterData['c'], 75)
+            ]
+            scatterData['colorbar'] = True
+        else:
+            scatterData = None
 
         vScale *= (
             np.abs(gridObject.values[ind].max() - gridObject.values[ind].min()) *
@@ -1544,13 +1558,13 @@ def gridTilt2Depth(
 
         if SaveCSV.value:
             SaveCSV.value = False
-            print('CSV saved as: ' + CSVFileName.value)
+
 
     def saveShape(_):
 
         if SaveShape.value:
             SaveShape.value = False
-            print('Shapefile saved as: ' + ShapeFileName.value)
+
 
     SunAzimuth = widgets.FloatSlider(
         min=0, max=360, step=5, value=SunAzimuth,
