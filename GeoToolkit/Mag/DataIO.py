@@ -176,7 +176,7 @@ class dataGrid(object):
 
             _, values[isNan] = MathUtils.minCurvatureInterp(
                             xyz, values[uInd],
-                            xyzOut=self.gridCC[isNan, :])
+                            xyzOut=self.gridCC[isNan, :], overlap=np.max([self.dx, self.dy]))
 
             # If there are still NDV, just do a neareest neighbour
 
