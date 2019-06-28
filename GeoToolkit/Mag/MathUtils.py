@@ -225,7 +225,7 @@ def minCurvatureInterp(
         # Get the XY limits of each tile
         X1, Y1 = tiles[0][:, 0], tiles[0][:, 1]
         X2, Y2 = tiles[1][:, 0], tiles[1][:, 1]
-        print(tiles)
+        
         # If max distance given, cut out points
         if maxDistance is not None:
 
