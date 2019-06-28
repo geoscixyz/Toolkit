@@ -1503,7 +1503,7 @@ def gridTilt2Depth(
                     polylines, attributes,
                     EPSGcode=EPSGcode, saveAs=ShapeFileName,
                     label='AvgDepth')
-                print('Shapefile saved as: ' + ShapeFileName.value)
+                print('Shapefile saved as: ' + ShapeFileName)
 
 
             else:
@@ -1513,7 +1513,7 @@ def gridTilt2Depth(
             if len(polylines) > 0:
                 # Export to CSV file
                 np.savetxt(CSVFileName, np.c_[np.vstack(polylines)[:, 0:2], np.concatenate(attributes)], fmt="%.2f", delimiter=",")
-                print('CSV saved as: ' + CSVFileName.value)
+                print('CSV saved as: ' + CSVFileName)
             else:
                 print("No [-45, 45] contour found")
 
