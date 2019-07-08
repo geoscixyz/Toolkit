@@ -645,6 +645,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
     if z.ndim == 1:
 
         if minCurvature:
+
             gridCC, d_grid = MathUtils.minCurvatureInterp(
                 np.c_[x, y], z,
                 vectorX=None, vectorY=None, vectorZ=None,
@@ -682,6 +683,8 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
     if axs is None:
         axs = plt.subplot()
 
+    extent = x.min(), x.max(), y.min(), y.max()
+
     if fill:
 
         if vmin is None:
@@ -703,7 +706,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
         else:
             my_cmap = cmap
 
-        extent = x.min(), x.max(), y.min(), y.max()
+
         im = axs.imshow(d_grid, vmin=vmin, vmax=vmax,
                        cmap=my_cmap, clim=[vmin, vmax],
                        alpha=alpha,
@@ -716,20 +719,20 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
                        cmap='gray_r', alpha=alphaHS,
                        extent=extent, origin='lower')
 
-        if contours is not None:
-            # clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
+    if contours is not None:
+        # clevels = np.round(np.linspace(vmin, vmax, contours) * 1e-1) * 1e+1
 
-            # if np.all(clevels == 0):
-            #     clevels = np.linspace(vmin, vmax, contours)
+        # if np.all(clevels == 0):
+        #     clevels = np.linspace(vmin, vmax, contours)
 
-            # clevels = np.unique(clevels)
-            # # Insert zero contour
-            # if ~np.any(clevels == 0):
-            #     clevels = np.sort(np.r_[clevels, 0])
-            CS = axs.contour(
-                X, Y, d_grid, len(contours), levels=contours,
-                colors='k', linewidths=0.5
-            )
+        # clevels = np.unique(clevels)
+        # # Insert zero contour
+        # if ~np.any(clevels == 0):
+        #     clevels = np.sort(np.r_[clevels, 0])
+        CS = axs.contour(
+            X, Y, d_grid, len(contours), levels=contours,
+            colors='k', linewidths=0.5
+        )
 
             # plt.clabel(CS, inline=1, fontsize=5, fmt='%i')
 
