@@ -604,12 +604,13 @@ def exportShapefile(
         # If there are multiple geometries, put the "for" loop here
         for poly, att in zip(polylines, attributes):
 
-            if np.all([np.any(att), len(poly) > 1]):
+            if np.all([len(poly) > 0, len(poly) > 1]):
                 pline = LineString(list(tuple(map(tuple, poly))))
 
                 res = {}
                 res['properties'] = {}
                 res['properties'][label] = np.mean(att)
+
                 # geometry of of the original polygon shapefile
                 res['geometry'] = mapping(pline)
                 c.write(res)
