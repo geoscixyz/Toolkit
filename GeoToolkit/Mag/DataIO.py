@@ -22,7 +22,7 @@ gridProps = [
     'valuesFilledUC', 'valuesFilled',
     'derivativeX', 'derivativeY', 'firstVertical',
     'totalHorizontal', 'tiltAngle', 'analyticSignal',
-    'gridFFT', 'gridPadded',
+    'tiltDerivativeX','gridFFT', 'gridPadded',
 ]
 
 
@@ -178,7 +178,7 @@ class dataGrid(object):
                             xyz, values[uInd],
                             xyzOut=self.gridCC[isNan, :], overlap=np.max([self.dx, self.dy]))
 
-            # If there are still NDV, just do a neareest neighbour
+            # If there are still NDV, just do a nearest neighbour
 
             while np.isnan(values).sum() > 0:
                 isNan = np.isnan(values)
@@ -335,6 +335,17 @@ class dataGrid(object):
 
         return self._analyticSignal
 
+     @property
+    def tiltDerivativeX(self):
+
+         if getattr(self, '_tiltDerivativeX', None) is None:
+
+             self._tiltDerivativeX = np.arctan2(
+                self.totalHorizontal, self.firstVertical
+            )
+
+         return self._tiltDerivativeX
+    
     def setRTP(self, isRTP):
 
         if isRTP:
