@@ -94,7 +94,7 @@ def units():
         'derivativeX': '[nT/m]', 'derivativeY': '[nT/m]',
         'firstVertical': '[nT/m]', 'totalHorizontal': '[nT/m]',
         'tiltAngle': '[Degree]', 'analyticSignal': '[nT/m]',
-        'RTP': '[nT]', 'TMI': '[nT]'
+        'tiltDerivativeX': '[nT/m]','RTP': '[nT]', 'TMI': '[nT]'
         }
 
 
@@ -957,7 +957,7 @@ def dataHillsideWidget(
     saveAs='./Output/DataHillshade',
     ShapeFileName="./Output/Contours",
     dpi=300, Contours=None,
-    scatterData=None, shapeFile=None, omit=[], units='TMI'
+    scatterData=None, shapeFile=None, omit=[], units='tiltAngle'
   ):
 
     def plotWidget(
@@ -1203,7 +1203,7 @@ def gridFiltersWidget(
         'valuesFilledUC', 'valuesFilled',
         'derivativeX', 'derivativeY', 'firstVertical',
         'totalHorizontal', 'tiltAngle', 'analyticSignal',
-        'gridFFT', 'gridPadded',
+        'tiltDerivativeX','gridFFT', 'gridPadded',
       ]
 
     def plotWidget(
@@ -1353,7 +1353,8 @@ def gridFiltersWidget(
         options=[
             'TMI',
             'derivativeX', 'derivativeY', 'firstVertical',
-            'totalHorizontal', 'tiltAngle', 'analyticSignal'],
+            'totalHorizontal', 'tiltAngle', 'analyticSignal',
+            'tiltDerivativeX'],
         value=gridFilter,
         description='Grid Filters',
         disabled=False,
@@ -1464,7 +1465,7 @@ def gridTilt2Depth(
         'valuesFilledUC', 'valuesFilled',
         'derivativeX', 'derivativeY', 'firstVertical',
         'totalHorizontal', 'tiltAngle', 'analyticSignal',
-        'RTP', 'gridFFT', 'gridPadded',
+        'tiltDerivativeX','RTP', 'gridFFT', 'gridPadded',
       ]
 
     def plotWidget(
