@@ -335,7 +335,7 @@ class dataGrid(object):
 
         return self._analyticSignal
 
-     @property
+    @property
     def TDXderivative(self):
 
           if getattr(self, '_TDXderivative', None) is None:
