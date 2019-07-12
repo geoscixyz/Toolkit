@@ -957,7 +957,7 @@ def dataHillsideWidget(
     saveAs='./Output/DataHillshade',
     ShapeFileName="./Output/Contours",
     dpi=300, Contours=None,
-    scatterData=None, shapeFile=None, omit=[], units='tiltAngle'
+    scatterData=None, shapeFile=None, omit=[], units='TMI'
   ):
 
     def plotWidget(
