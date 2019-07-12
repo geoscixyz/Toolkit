@@ -340,9 +340,9 @@ class dataGrid(object):
 
           if getattr(self, '_TDXderivative', None) is None:
 
-              self._TDXderivative = np.arctan(
+              self._TDXderivative = np.arctan2(
                 self.totalHorizontal, self.firstVertical
-            )
+            )*180/np.pi
 
           return self._TDXderivative
 
