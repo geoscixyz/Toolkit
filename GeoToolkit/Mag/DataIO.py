@@ -355,9 +355,10 @@ class dataGrid(object):
             if np.isnan(self.dec):
                 print("Attibute 'dec' needs to be set")
 
-            h0_xyz = MathUtils.dipazm_2_xyz(self.inc, self.dec)
+            h0_xyz = MathUtils.dipazm_2_xyz(-self.inc, self.dec)
             Frtp = self.gridFFT / (
-                (h0_xyz[2] + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2.
+                (h0_xyz[2] * (self.Kx**2. + self.Ky**2. + 1e-12)**0.5 + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2. /
+                (self.Kx**2. + self.Ky**2. + 1e-12)
             )
             rtp_pad = np.fft.ifft2(Frtp)
             rtp = np.real(
