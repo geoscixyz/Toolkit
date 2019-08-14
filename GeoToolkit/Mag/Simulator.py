@@ -79,8 +79,8 @@ def cmaps():
     """
 
     return [
-        'viridis', 'plasma', 'magma', 'RdBu_r',
-        'Greys_r', 'jet', 'rainbow', 'pink',
+        'viridis', 'plasma', 'magma', 'Spectral_r',
+        'Greys_r', 'jet', 'rainbow', 'pink', 'RdBu_r',
         'bone', 'hsv', 'nipy_spectral'
         ]
 
@@ -194,7 +194,7 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
             yLoc = survey.rxLoc[:, 1]
             data = survey.dobs
         # Get the line extent from the 2D survey for now
-        ColorMap = "RdBu_r"
+        ColorMap = "Spectral_r"
         Azimuth = np.deg2rad((450 - Azimuth) % 360)
         Length /= 2.*0.98
         a = [East - np.cos(Azimuth)*Length, North - np.sin(Azimuth)*Length]
@@ -247,7 +247,7 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
         Sampling=widgets.BoundedFloatText(min=10, max=1000, step=5, value=100, continuous_update=False)
         # ColorMap=widgets.Dropdown(
         #           options=cmaps(),
-        #           value='RdBu_r',
+        #           value='Spectral_r',
         #           description='ColorMap',
         #           disabled=False,
         #         )
@@ -258,7 +258,7 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
 
 def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
                     fig=None, ax=None, vmin=None, vmax=None, shapeFile=None,
-                    cmap='RdBu_r', equalizeHist='HistEqualized'):
+                    cmap='Spectral_r', equalizeHist='HistEqualized'):
     """
     Plot the data and line profile inside the spcified limits
     """
@@ -440,7 +440,7 @@ def plotObj3D(prisms, survey, View_dip, View_azm, View_lim, fig=None, axs=None, 
         color = survey.dobs
     else:
         color = 'k'
-    axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], c=color, s=20, cmap='RdBu_r', zorder=100)
+    axs.scatter(rxLoc[:, 0], rxLoc[:, 1], zs=rxLoc[:, 2], c=color, s=20, cmap='Spectral_r', zorder=100)
 
     # Convert from geographic
     azmDeg = (450 - View_azm) % 360 + 180
@@ -635,7 +635,7 @@ class MidPointNorm(Normalize):
 
 def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
                      vmin=None, vmax=None, resolution=25,
-                     clabel=True, cmap='RdBu_r', ve=1., alpha=0.5, alphaHS=0.5,
+                     clabel=True, cmap='Spectral_r', ve=1., alpha=0.5, alphaHS=0.5,
                      distMax=1000, midpoint=None, azdeg=315, altdeg=45,
                      equalizeHist='HistEqualized', minCurvature=True,
                      scatterData=None, shapeFile=None):
@@ -756,7 +756,7 @@ def plotDataHillside(x, y, z, axs=None, fill=True, contours=None,
 
 def plotData2D(x, y, d, title=None,
                vmin=None, vmax=None, contours=0, fig=None, ax=None,
-               colorbar=True, marker=True, cmap="RdBu_r",
+               colorbar=True, marker=True, cmap="Spectral_r",
                equalizeHist='HistEqualized', shapeFile=None):
     """ Function plot_obs(rxLoc,d)
     Generate a 2d interpolated plot from scatter points of data
@@ -1087,7 +1087,7 @@ def dataHillsideWidget(
 
     ColorMap = widgets.Dropdown(
         options=cmaps(),
-        value='RdBu_r',
+        value='Spectral_r',
         description='ColorMap',
         disabled=False,
     )
@@ -1193,7 +1193,7 @@ def gridFiltersWidget(
     EPSGcode=None, dpi=300, scatterData=None,
     inc=np.nan, dec=np.nan, Contours=None,
     SunAzimuth=270, SunAngle=15, vScale=5.,
-    ColorMap='RdBu_r', shapeFile=None,
+    ColorMap='Spectral_r', shapeFile=None,
     saveAs="./Output/MyGeoTiff_" + 'derivativeX',
     ShapeFileName="./Output/Contours_" + 'derivativeX',
     omit=[]
@@ -1454,7 +1454,7 @@ def gridTilt2Depth(
     ColorTransp=0.9, HSTransp=0.5,
     EPSGcode=None, dpi=300, scatterData=None,
     SunAzimuth=270, SunAngle=15, vScale=5., shapeFile=None,
-    ColorMap='RdBu_r', ColorDepth='viridis_r', depthRange=[0, 500],
+    ColorMap='Spectral_r', ColorDepth='viridis_r', depthRange=[0, 500],
     markerSize=1, omit=[],
     ShapeFileName="./Output/EstimatedDepth",
     GridFileName="./Output/MyGeoTiff",
@@ -1740,7 +1740,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
         ax1 = plt.subplot(1, 2, 1)
         fig, im, cbar = plotData2D(
           xyz[:, 0], xyz[:, 1], survey.dobs,
-          ax=ax1, cmap='RdBu_r', marker=False, colorbar=False,
+          ax=ax1, cmap='Spectral_r', marker=False, colorbar=False,
           shapeFile=shapeFile
         )
 
@@ -2002,7 +2002,7 @@ def dataGriddingWidget(
         )
     ColorMap = widgets.Dropdown(
         options=cmaps(),
-        value='RdBu_r',
+        value='Spectral_r',
         description='ColorMap',
         disabled=False,
         )
@@ -2083,7 +2083,7 @@ def dataGridGeoref(
         plotSave(
             gridObject, values, None, None,
             90, 15, 1, 0, 1, None,
-            "RdBu_r", units, None, None, 'HistEqualized', "", EPSGcode,
+            "Spectral_r", units, None, None, 'HistEqualized', "", EPSGcode,
             False, dpi=200
         )
 
@@ -2127,7 +2127,7 @@ def dataGridGeoref(
 
     ColorMap = widgets.Dropdown(
         options=cmaps(),
-        value='RdBu_r',
+        value='Spectral_r',
         description='ColorMap',
         disabled=False,
         )
