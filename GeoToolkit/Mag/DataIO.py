@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 from . import (Simulator, MathUtils)
 from scipy.spatial import cKDTree
+from scipy import ndimage
 from matplotlib.contour import QuadContourSet
 import matplotlib.pyplot as plt
 import gdal
@@ -22,7 +23,7 @@ gridProps = [
     'valuesFilledUC', 'valuesFilled',
     'derivativeX', 'derivativeY', 'firstVertical',
     'totalHorizontal', 'tiltAngle', 'analyticSignal',
-    'TDXderivative','gridFFT', 'gridPadded',
+    'TDXderivative', 'gridFFT', 'gridPadded', 'RTP'
 ]
 
 
@@ -43,10 +44,20 @@ class dataGrid(object):
     indVal = None
     indNan = None
     EPSGcode = None
+    fourier_gaussian = 0
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        return
+
+    def set_gaussian_filter(self, sigma):
+
+        for prop in gridProps:
+            setattr(self, '_{}'.format(prop), None)
+
+        self.fourier_gaussian = sigma / self.dx
 
         return
 
@@ -154,7 +165,14 @@ class dataGrid(object):
 
             return self._RTP
         else:
-            return self._values
+
+            if self.fourier_gaussian > 0:
+
+                return ndimage.gaussian_filter(self._values, sigma=self.fourier_gaussian)
+
+            else:
+
+                return self._values
 
     @property
     def valuesFilled(self):
@@ -205,11 +223,13 @@ class dataGrid(object):
         if getattr(self, '_Kx', None) is None:
 
             nx = self.gridPadded.shape[1]
-            kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
+            # kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
+            kx = sp.fftpack.fftfreq(nx)*nx
             kx = kx * 2 * np.pi / (self.gridPadded.shape[1] * self.dx)
 
             ny = self.gridPadded.shape[0]
-            ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
+            # ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
+            ky = sp.fftpack.fftfreq(ny)*ny
             ky = ky * 2 * np.pi / (self.gridPadded.shape[0] * self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
@@ -223,17 +243,20 @@ class dataGrid(object):
         if getattr(self, '_Ky', None) is None:
 
             nx = self.gridPadded.shape[1]
-            kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
+            # kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
+            kx = sp.fftpack.fftfreq(nx)*nx
             kx = kx * 2 * np.pi / (self.gridPadded.shape[1] * self.dx)
 
             ny = self.gridPadded.shape[0]
-            ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
+            # ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
+            ky = sp.fftpack.fftfreq(ny)*ny
             ky = ky * 2 * np.pi / (self.gridPadded.shape[0] * self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
 
         return self._Ky
+
     @property
     def gridFFT(self):
 
@@ -373,10 +396,10 @@ class dataGrid(object):
                 rtp[self.indNan] = np.nan
                 rtp = rtp.reshape(self.values.shape, order='F')
 
-            self._RTP = rtp
-
             for prop in gridProps:
                 setattr(self, '_{}'.format(prop), None)
+
+            self._RTP = rtp
 
         else:
             self._RTP = None
@@ -392,8 +415,7 @@ class dataGrid(object):
         self.heightUC = z
         upFact = -(
             np.sqrt(self.Kx**2. + self.Ky**2.) *
-            z /
-            np.sqrt(self.dx**2. + self.dy**2.)
+            z
         )
 
         FzUpw = self.gridFFT*np.exp(upFact)
