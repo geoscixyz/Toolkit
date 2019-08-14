@@ -204,11 +204,13 @@ class dataGrid(object):
 
         if getattr(self, '_Kx', None) is None:
 
-            dx = (self.dx)/(self.gridPadded.shape[1]-1)
-            dy = (self.dy)/(self.gridPadded.shape[0]-1)
+            nx = self.gridPadded.shape[1]
+            kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
+            kx = kx * 2 * np.pi / (self.gridPadded.shape[1] * self.dx)
 
-            kx = np.fft.fftfreq(self.gridPadded.shape[1], dx)
-            ky = np.fft.fftfreq(self.gridPadded.shape[0], dy)
+            ny = self.gridPadded.shape[0]
+            ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
+            ky = ky * 2 * np.pi / (self.gridPadded.shape[0] * self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
@@ -220,17 +222,18 @@ class dataGrid(object):
 
         if getattr(self, '_Ky', None) is None:
 
-            dx = (self.dx)/(self.gridPadded.shape[1]-1)
-            dy = (self.dy)/(self.gridPadded.shape[0]-1)
+            nx = self.gridPadded.shape[1]
+            kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
+            kx = kx * 2 * np.pi / (self.gridPadded.shape[1] * self.dx)
 
-            kx = np.fft.fftfreq(self.gridPadded.shape[1], dx)
-            ky = np.fft.fftfreq(self.gridPadded.shape[0], dy)
+            ny = self.gridPadded.shape[0]
+            ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
+            ky = ky * 2 * np.pi / (self.gridPadded.shape[0] * self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
 
         return self._Ky
-
     @property
     def gridFFT(self):
 
