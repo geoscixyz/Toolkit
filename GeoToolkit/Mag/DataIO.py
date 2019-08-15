@@ -30,6 +30,7 @@ gridProps = [
 class dataGrid(object):
     """
         Grid data object
+
     """
 
     x0, y0 = 0., 0.
@@ -63,31 +64,36 @@ class dataGrid(object):
 
     @property
     def hx(self):
-
+        """
+            Cell center location along x-axis
+        """
         if getattr(self, '_hx', None) is None:
-            self._hx = np.asarray(range(self.nx)) * self.dx + self.x0 + self.dx/2
+            self._hx = (
+                np.asarray(range(self.nx)) *
+                self.dx + self.x0 + self.dx/2
+            )
 
         return self._hx
 
     @property
     def hy(self):
+        """
+            Cell center location along y-axis
+        """
 
         if getattr(self, '_hy', None) is None:
-            self._hy = np.asarray(range(self.ny)) * self.dy + self.y0 + self.dy/2
+            self._hy = (
+                np.asarray(range(self.ny)) *
+                self.dy + self.y0 + self.dy/2
+            )
 
         return self._hy
 
     @property
-    def npadx(self):
-
-        if getattr(self, '_npadx', None) is None:
-            self._npadx = int(np.floor(self.values.shape[1]))
-
-        return self._npadx
-
-    @property
     def gridCC(self):
-
+        """
+            Cell center location [nC x 2]
+        """
         if getattr(self, '_gridCC', None) is None:
 
             X, Y = np.meshgrid(self.hx, self.hy)
@@ -97,8 +103,20 @@ class dataGrid(object):
         return self._gridCC
 
     @property
-    def npady(self):
+    def npadx(self):
+        """
+            Number of padding cells  along x-axis for FFT
+        """
+        if getattr(self, '_npadx', None) is None:
+            self._npadx = int(np.floor(self.values.shape[1]))
 
+        return self._npadx
+
+    @property
+    def npady(self):
+        """
+            Number of padding cells  along y-axis for FFT
+        """
         if getattr(self, '_npady', None) is None:
             self._npady = int(np.floor(self.values.shape[0]))
 
@@ -106,15 +124,11 @@ class dataGrid(object):
 
     @property
     def gridPadded(self):
-
+        """
+            Grid values padded with mirror image cosin tapper
+        """
         if getattr(self, '_gridPadded', None) is None:
             if getattr(self, '_valuesFilledUC', None) is not None:
-                # if ~np.array_equal(
-                #             self.valuesFilled[~np.isnan(self.valuesFilled)],
-                #             self.values[~np.isnan(self.indNan)]
-                #         ):
-
-                #             self._valuesFilled = None
                 grid = self.valuesFilledUC
             else:
 
@@ -168,7 +182,9 @@ class dataGrid(object):
 
             if self.fourier_gaussian > 0:
 
-                return ndimage.gaussian_filter(self._values, sigma=self.fourier_gaussian)
+                return ndimage.gaussian_filter(
+                    self._values, sigma=self.fourier_gaussian
+                    )
 
             else:
 
@@ -176,7 +192,9 @@ class dataGrid(object):
 
     @property
     def valuesFilled(self):
-
+        """
+            Data values with no-data-values interpolated by minimum curvature
+        """
         if getattr(self, '_valuesFilled', None) is None:
             values = self.values.flatten(order='F')
 
@@ -194,7 +212,8 @@ class dataGrid(object):
 
             _, values[isNan] = MathUtils.minCurvatureInterp(
                             xyz, values[uInd],
-                            xyzOut=self.gridCC[isNan, :], overlap=np.max([self.dx, self.dy]))
+                            xyzOut=self.gridCC[isNan, :],
+                            overlap=np.max([self.dx, self.dy]))
 
             # If there are still NDV, just do a nearest neighbour
 
@@ -212,6 +231,10 @@ class dataGrid(object):
 
     @property
     def valuesFilledUC(self):
+        """
+            Data values with no-data-values interpolated by minimum curvature
+            and upward continued.
+        """
         if getattr(self, '_valuesFilledUC', None) is None:
             self._valuesFilledUC = self.upwardContinuation()
 
@@ -219,18 +242,16 @@ class dataGrid(object):
 
     @property
     def Kx(self):
-
+        """
+            Wavenumber along the x-axis.
+        """
         if getattr(self, '_Kx', None) is None:
 
             nx = self.gridPadded.shape[1]
-            # kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
-            kx = sp.fftpack.fftfreq(nx)*nx
-            kx = kx * 2 * np.pi / (self.gridPadded.shape[1] * self.dx)
+            kx = 2. * np.pi * sp.fftpack.fftfreq(nx, self.dx)
 
             ny = self.gridPadded.shape[0]
-            # ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
-            ky = sp.fftpack.fftfreq(ny)*ny
-            ky = ky * 2 * np.pi / (self.gridPadded.shape[0] * self.dy)
+            ky = 2. * np.pi * sp.fftpack.fftfreq(ny, self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
@@ -239,18 +260,16 @@ class dataGrid(object):
 
     @property
     def Ky(self):
-
+        """
+            Wavenumber along the y-axis.
+        """
         if getattr(self, '_Ky', None) is None:
 
             nx = self.gridPadded.shape[1]
-            # kx = np.asarray(np.arange(0, int(nx / 2)).tolist() + [0] + np.arange(-int(nx / 2) + 1, 0).tolist())
-            kx = sp.fftpack.fftfreq(nx)*nx
-            kx = kx * 2 * np.pi / (self.gridPadded.shape[1] * self.dx)
+            kx = 2. * np.pi * sp.fftpack.fftfreq(nx, self.dx)
 
             ny = self.gridPadded.shape[0]
-            # ky = np.asarray(np.arange(0, int(ny / 2)).tolist() + [0] + np.arange(-int(ny / 2) + 1, 0).tolist())
-            ky = sp.fftpack.fftfreq(ny)*ny
-            ky = ky * 2 * np.pi / (self.gridPadded.shape[0] * self.dy)
+            ky = 2. * np.pi * sp.fftpack.fftfreq(ny, self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
@@ -259,7 +278,9 @@ class dataGrid(object):
 
     @property
     def gridFFT(self):
-
+        """
+            Padded grid values in the Fourier domain
+        """
         if getattr(self, '_gridFFT', None) is None:
 
             self._gridFFT = np.fft.fft2(self.gridPadded)
@@ -268,7 +289,9 @@ class dataGrid(object):
 
     @property
     def derivativeX(self):
-
+        """
+            Derivative of grid along the x-axis
+        """
         if getattr(self, '_derivativeX', None) is None:
 
             FHxD = (self.Kx*1j)*self.gridFFT
@@ -288,7 +311,9 @@ class dataGrid(object):
 
     @property
     def derivativeY(self):
-
+        """
+            Derivative of grid along the y-axis
+        """
         if getattr(self, '_derivativeY', None) is None:
 
             FHyD = (self.Ky*1j)*self.gridFFT
@@ -309,7 +334,9 @@ class dataGrid(object):
 
     @property
     def firstVertical(self):
-
+        """
+            First vertical derivative of grid
+        """
         if getattr(self, '_firstVertical', None) is None:
 
             FHzD = self.gridFFT*np.sqrt(self.Kx**2. + self.Ky**2.)
@@ -328,7 +355,9 @@ class dataGrid(object):
 
     @property
     def totalHorizontal(self):
-
+        """
+            Total horizontal derivative of grid
+        """
         if getattr(self, '_totalHorizontal', None) is None:
 
             self._totalHorizontal = np.sqrt(
@@ -339,7 +368,9 @@ class dataGrid(object):
 
     @property
     def tiltAngle(self):
-
+        """
+            Tilt angle of grid
+        """
         if getattr(self, '_tiltAngle', None) is None:
 
             self._tiltAngle = np.arctan2(
@@ -350,7 +381,9 @@ class dataGrid(object):
 
     @property
     def analyticSignal(self):
-
+        """
+            Analytic signal of grid
+        """
         if getattr(self, '_analyticSignal', None) is None:
 
             self._analyticSignal = np.sqrt(
@@ -363,17 +396,21 @@ class dataGrid(object):
 
     @property
     def TDXderivative(self):
+        """
+            First vertical derivative of grid
+        """
+        if getattr(self, '_TDXderivative', None) is None:
 
-          if getattr(self, '_TDXderivative', None) is None:
-
-              self._TDXderivative = np.arctan2(
+            self._TDXderivative = np.arctan2(
                 self.totalHorizontal, self.firstVertical
             )
 
-          return self._TDXderivative
+    return self._TDXderivative
 
     def setRTP(self, isRTP):
-
+        """
+            Reduce to pole the grid
+        """
         if isRTP:
 
             if np.isnan(self.inc):
@@ -381,11 +418,21 @@ class dataGrid(object):
             if np.isnan(self.dec):
                 print("Attibute 'dec' needs to be set")
 
-            h0_xyz = MathUtils.dipazm_2_xyz(-self.inc, self.dec)
-            Frtp = self.gridFFT / (
-                (h0_xyz[2] * (self.Kx**2. + self.Ky**2. + 1e-12)**0.5 + 1j*(self.Kx*h0_xyz[0] + self.Ky*h0_xyz[1]))**2. /
-                (self.Kx**2. + self.Ky**2. + 1e-12)
+            h_xyz = MathUtils.dipazm_2_xyz(-self.inc, self.dec)
+
+            a = 2*h_xyz[0]*h_xyz[2]
+            b = 2*h_xyz[1]*h_xyz[2]
+
+            R = (self.Kx**2. + self.Ky**2.) / (
+                (h_xyz[2]**2 - h_xyz[0]**2) * self.Kx**2. +
+                (h_xyz[2]**2 - h_xyz[1]**2) * self.Ky**2. -
+                (2*h_xyz[0]*h_xyz[1]) * self.Kx * self.Ky +
+                1j * (self.Kx**2. + self.Ky**2.)**0.5 *
+                (a*self.Kx + b*self.Ky) + 1e-8
             )
+
+            R[0, 0] = 0
+            Frtp = R * self.gridFFT
             rtp_pad = np.fft.ifft2(Frtp)
             rtp = np.real(
                 rtp_pad[self.npady:-self.npady, self.npadx:-self.npadx])
@@ -405,7 +452,6 @@ class dataGrid(object):
             self._RTP = None
             for prop in gridProps:
                 setattr(self, '_{}'.format(prop), None)
-
 
     def upwardContinuation(self, z=0):
         """
