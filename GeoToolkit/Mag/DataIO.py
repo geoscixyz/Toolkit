@@ -405,7 +405,7 @@ class dataGrid(object):
                 self.totalHorizontal, self.firstVertical
             )
 
-    return self._TDXderivative
+        return self._TDXderivative
 
     def setRTP(self, isRTP):
         """
