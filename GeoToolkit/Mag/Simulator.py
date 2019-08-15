@@ -1203,7 +1203,7 @@ def gridFiltersWidget(
         'valuesFilledUC', 'valuesFilled',
         'derivativeX', 'derivativeY', 'firstVertical',
         'totalHorizontal', 'tiltAngle', 'analyticSignal',
-        'TDXderivative','gridFFT', 'gridPadded',
+        'TDXderivative', 'gridFFT', 'gridPadded',
       ]
 
     def plotWidget(
@@ -1362,7 +1362,7 @@ def gridFiltersWidget(
 
     Filters.observe(labelUpdate)
     UpDist = widgets.FloatSlider(
-        min=0, max=200, step=10, value=0,
+        min=0, max=5000, step=10, value=0,
         continuous_update=False, description='UpC Height'
         )
     SaveGrid = widgets.ToggleButton(
@@ -2081,7 +2081,7 @@ def dataGridGeoref(
         gridObject.setRTP(applyRTP)
 
         plotSave(
-            gridObject, values, None, None,
+            gridObject, gridObject.values, None, None,
             90, 15, 1, 0, 1, None,
             "Spectral_r", units, None, None, 'HistEqualized', "", EPSGcode,
             False, dpi=200
