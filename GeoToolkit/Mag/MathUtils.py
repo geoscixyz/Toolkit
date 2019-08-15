@@ -4,7 +4,8 @@ from scipy.spatial import cKDTree
 # from SimPEG.Utils import mkvc, speye
 from scipy.sparse.linalg import bicgstab
 import matplotlib.pyplot as plt
-
+from scipy.spatial import Delaunay
+from scipy.interpolate import LinearNDInterpolator
 
 def rotationMatrix(inc, dec, normal=True):
     """
@@ -225,7 +226,7 @@ def minCurvatureInterp(
         # Get the XY limits of each tile
         X1, Y1 = tiles[0][:, 0], tiles[0][:, 1]
         X2, Y2 = tiles[1][:, 0], tiles[1][:, 1]
-        
+
         # If max distance given, cut out points
         if maxDistance is not None:
 
@@ -344,7 +345,7 @@ def decimalDegrees2DMS(value, type):
     return notation
 
 
-def estimateDepth(grid):
+def estimateDepth(grid, method="tiltAngleDerivative"):
     """
         Function to estimate depth of anomalies
         from tilt angle. Distance between the 0 and
@@ -357,53 +358,75 @@ def estimateDepth(grid):
         :xyDepth:
     """
 
+    assert method.lower() in ["tiltAngle".lower(), "tiltAngleDerivative".lower()], "'method' should be 'tiltAngle' or 'tiltAngleDerivative'"
+
+    upward_height = 0
+    print(grid.heightUC)
+    if getattr(grid, 'heightUC', None) is not None:
+        upward_height += grid.heightUC
+
     tilt = grid.tiltAngle
-
     X, Y = np.meshgrid(grid.hx, grid.hy)
-
-
     C_0 = plt.contour(X, Y, tilt, levels=[0], colors='k')
-    C_45 = plt.contour(X, Y, tilt, levels=[np.pi/4.], colors='r')
     plt.close()
-
-    # Get zero contour nodes
-    # xy0 = np.vstack(C_0.allsegs[0])
-
-    # Get 45 contour nodes
-    xy45 = np.vstack(C_45.allsegs[0])
-
-    # Create ckDtree for shortest distance
-    tree = cKDTree(xy45)
-
-
-    # Compute shortest distance between pair of points
     xy = []
-    dist = []
+    depth = []
+    if method == 'tiltAngle':
 
-    for contour in C_0.allsegs[0]:
+        C_45 = plt.contour(X, Y, tilt, levels=[np.pi/4.], colors='r')
+        plt.close()
 
+        # Get zero contour nodes
+        # xy0 = np.vstack(C_0.allsegs[0])
 
-        if contour.shape[0] == 1:
-            continue
+        # Get 45 contour nodes
+        xy45 = np.vstack(C_45.allsegs[0])
 
-        # Query two closest points to each nodes of zero contour
-        d, indx = tree.query(contour, k=2)
+        # Create ckDtree for shortest distance
+        tree = cKDTree(xy45)
 
-        length = (
-            (xy45[indx[:, 1], 0] - xy45[indx[:, 0], 0])**2. +
-            (xy45[indx[:, 1], 1] - xy45[indx[:, 0], 1])**2.)
+        # Compute shortest distance between pair of points
+        for contour in C_0.allsegs[0]:
 
-        indL = length > 0
+            if contour.shape[0] == 1:
+                continue
 
-        dist += [np.abs(
-            (xy45[indx[indL, 1], 1] - xy45[indx[indL, 0], 1])*contour[indL, 0] -
-            (xy45[indx[indL, 1], 0] - xy45[indx[indL, 0], 0])*contour[indL, 1] +
-            xy45[indx[indL, 1], 0] * xy45[indx[indL, 0], 1] -
-            xy45[indx[indL, 1], 1] * xy45[indx[indL, 0], 0]) / length[indL]**0.5]
+            # Query two closest points to each nodes of zero contour
+            d, indx = tree.query(contour, k=2)
 
-        xy += [contour[indL, :]]
+            length = (
+                (xy45[indx[:, 1], 0] - xy45[indx[:, 0], 0])**2. +
+                (xy45[indx[:, 1], 1] - xy45[indx[:, 0], 1])**2.)
 
-    return xy, dist
+            indL = length > 0
+
+            depth += [upward_height + np.abs(
+                (xy45[indx[indL, 1], 1] - xy45[indx[indL, 0], 1])*contour[indL, 0] -
+                (xy45[indx[indL, 1], 0] - xy45[indx[indL, 0], 0])*contour[indL, 1] +
+                xy45[indx[indL, 1], 0] * xy45[indx[indL, 0], 1] -
+                xy45[indx[indL, 1], 1] * xy45[indx[indL, 0], 0]) / length[indL]**0.5]
+
+            xy += [contour[indL, :]]
+    else:
+
+        # Compute the total derivative of the tilt angle
+        # Compute tilt angle derivative
+        grad_tilt = np.gradient(grid.tiltAngle, grid.dx, grid.dy)
+
+        THD_tilt = (grad_tilt[0]**2. + grad_tilt[1]**2. + 1e-8)**0.5
+
+        # Interpolate value on 0 contour
+        tri2D = Delaunay(grid.gridCC[:, :2])
+        F = LinearNDInterpolator(tri2D, THD_tilt.flatten(order='F'))
+
+        for contour in C_0.allsegs[0]:
+
+            estimate_z = 1./F(contour[:, 0], contour[:, 1])
+            depth += [upward_height + estimate_z[~np.isnan(estimate_z)]]
+            xy += [contour[~np.isnan(estimate_z), :]]
+
+        # if getattr(self, 'heightUC', None) is None
+    return xy, depth
 
 
 def tileSurveyPoints(xyLocs, maxNpoints, overlap=[0, 0]):
