@@ -4,3 +4,4 @@ sphinxcontrib-bibtex
 nbsphinx
 nbstripout
 numpydoc
+tqdm
