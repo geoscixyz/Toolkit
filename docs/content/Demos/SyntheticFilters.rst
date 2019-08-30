@@ -25,7 +25,7 @@ Upward continuation
 
 Upward continuation can be considered a ‘wavelength’ filter. **Upward continuation simulates the magnetic response that would be observed if data were collected at a greater height above the Earth’s surface than it was actually collected**. The result is that longer-wavelength, deeper features are emphasized over shorter-wavelength, near-surface features. It is effective for interpretation of deeper geology, or for reducing noise that may be found in data collected very close to the ground.
 
-In our synthetic example, the small magnetic anomaly and the narrow fault feature quickly become indistinct with increased survey height (upward continuued to 50 m), however the larger deeper magnetic body persists in the data. The left image below shows the TMI, and the right image shows the upward continued magnetic data.
+In our synthetic example, the small magnetic anomaly and the narrow fault feature quickly become indistinct with increased survey height (upward continued to 50 m), however the larger deeper magnetic body persists in the data. The left image below shows the TMI, and the right image shows the upward continued magnetic data.
 
 .. figure:: ./images/Filters_synth_TMI_upcontin50.png
     :align: center
