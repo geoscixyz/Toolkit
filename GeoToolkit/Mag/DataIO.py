@@ -461,7 +461,7 @@ class dataGrid(object):
         self.heightUC = z
         upFact = -(
             np.sqrt(self.Kx**2. + self.Ky**2.) *
-            z
+            z/2
         )
 
         FzUpw = self.gridFFT*np.exp(upFact)
