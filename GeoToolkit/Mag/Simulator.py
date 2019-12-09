@@ -885,7 +885,7 @@ def plotData2D(x, y, d, title=None,
 def plotProfile2D(x, y, data, a, b, npts,
                   fig=None, ax=None, plotStr=['b', 'r'],
                   coordinate_system='local',
-                  ylabel='Data'):
+                  ylabel='Data', linewidth=0.5):
     """
     Plot the data and line profile inside the spcified limits
     """
@@ -941,9 +941,9 @@ def plotProfile2D(x, y, data, a, b, npts,
         ind = np.isnan(dline)==False
 
         if plotStr[ii]:
-            ax.plot(distance[ind], dline[ind], plotStr[ii])
+            ax.plot(distance[ind], dline[ind], plotStr[ii], linewidth=linewidth)
         else:
-            ax.plot(distance[ind], dline[ind])
+            ax.plot(distance[ind], dline[ind], linewidth=linewidth)
 
     # ax.set_xlim(distance.min(), distance.max())
     ax.set_ylabel(ylabel)
@@ -1227,6 +1227,7 @@ def gridFiltersWidget(
 
         if Filters == 'TMI':
             data = gridObject.upwardContinuation(z=UpDist)
+
         else:
             data = getattr(gridObject, '{}'.format(Filters))
 
@@ -1278,7 +1279,6 @@ def gridFiltersWidget(
             Contours = np.unique(np.sort(np.hstack(cntrs)))
         else:
             Contours = None
-
 
         X, Y, data, im, CS = plotSave(
             gridObject, data, scatterData, shapeFile,
@@ -1446,7 +1446,7 @@ def gridFiltersWidget(
 
     return widgets.HBox([left, out])
 
-    return out
+    # return out
 
 
 def gridTilt2Depth(
@@ -1855,7 +1855,7 @@ def dataGriddingWidget(
     survey, EPSGcode=np.nan, saveAs="Output/MyGeoTiff", marker=True,
     shapeFile=None, inc=np.nan, dec=np.nan, dataColumn=-1, overlap=0,
     Method='minimumCurvature', Contours=None, omit=[], units="TMI",
-    dpi=200
+    dpi=200, resolution=25, maxDistance=200, nPoints=5,
 ):
 
     def plotWidget(
@@ -1869,6 +1869,7 @@ def dataGriddingWidget(
             gridCC, d_grid = MathUtils.minCurvatureInterp(
                 np.c_[xLoc, yLoc], data, maxDistance=MaxDistance,
                 gridSize=Resolution, method='spline', overlap=overlap,
+                nPoints=nPoints,
                 )
             X = gridCC[:, 0].reshape(d_grid.shape, order='F')
             Y = gridCC[:, 1].reshape(d_grid.shape, order='F')
@@ -1980,13 +1981,13 @@ def dataGriddingWidget(
             print('Image saved as: ' + saveAs.value)
 
     Resolution = widgets.FloatText(
-        value=25,
+        value=resolution,
         description='Grid (m):',
         disabled=False
         )
 
     MaxDistance = widgets.FloatText(
-        value=200,
+        value=maxDistance,
         description='Dist Max (m):',
         disabled=False,
         )

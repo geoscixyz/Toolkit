@@ -6,6 +6,8 @@ from scipy.sparse.linalg import bicgstab
 import matplotlib.pyplot as plt
 from scipy.spatial import Delaunay
 from scipy.interpolate import LinearNDInterpolator
+from tqdm import tqdm
+
 
 def rotationMatrix(inc, dec, normal=True):
     """
@@ -507,3 +509,82 @@ def tileSurveyPoints(xyLocs, maxNpoints, overlap=[0, 0]):
     ]
 
     return [xy1, xy2]
+
+
+def downsample_xy(locations, radius):
+    """
+    downsample_xy(locations)
+
+    Function to downsample a cloud of points in 2D based on
+    distance between neighbours
+
+    Parameter
+    ---------
+
+    locations: numpy.ndarray
+        Point locations [nx2]
+
+    radius: float
+        Minimum radial distance between points
+
+
+    Return
+    ------
+
+    index: bool
+        Array of bool of shape n for points to stay
+
+    """
+
+    tree = cKDTree(locations[:, :2])
+
+    nstn = locations.shape[0]
+    # Initialize the filter
+    index = np.ones(nstn, dtype='bool')
+
+    count = -1
+    print("Begin filtering for radius= " + str(radius))
+
+    for ii in tqdm(range(nstn)):
+
+        if index[ii]:
+
+            ind = tree.query_ball_point(locations[ii, :2], radius)
+
+            index[ind] = False
+            index[ii] = True
+
+        # count = progress(ii, count, nstn)
+
+    return index
+
+
+def progress(iter, prog, final):
+    """
+    progress(iter,prog,final)
+
+    Function measuring the progress of a process and print to screen the %.
+    Useful to estimate the remaining runtime of a large problem.
+
+    Parameters
+    ----------
+
+    iter: int
+        Current interation
+
+    prog: float
+        Fractional progress
+
+    final: int
+        Final interation count
+
+
+    """
+    arg = np.floor(float(iter)/float(final)*10.)
+
+    if arg > prog:
+
+        print("Done " + str(arg*10) + " %")
+        prog = arg
+
+    return prog
