@@ -18,6 +18,7 @@ dependencies:
     - nbstripout
     - numpydoc
     - download
+    - tqdm
   - matplotlib
   - ipywidgets
   - gdal
@@ -27,4 +28,5 @@ dependencies:
   - shapely
   - krb5
   - mkl
+
 
