@@ -1606,7 +1606,7 @@ def gridTilt2Depth(
         disabled=False,
         )
     UpDist = widgets.FloatSlider(
-        min=0, max=200, step=10, value=0,
+        min=0, max=2000, step=10, value=0,
         continuous_update=False, description='UpC Height'
         )
     SaveGrid = widgets.ToggleButton(
