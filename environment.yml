@@ -21,12 +21,6 @@ dependencies:
     - tqdm
   - matplotlib
   - ipywidgets
-  - gdal
+  - geopandas
   - scikit-image
-  - pyshp
-  - fiona
-  - shapely
-  - krb5
-  - mkl
-
 
