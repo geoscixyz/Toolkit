@@ -249,7 +249,7 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
         #           options=cmaps(),
         #           value='Spectral_r',
         #           description='ColorMap',
-        #           disabled=False,
+        #           style={'description_width': 'initial'},
         #         )
     )
 
@@ -1083,13 +1083,13 @@ def dataHillsideWidget(
     Contours = widgets.Text(
         value=Contours,
         description='Contours',
-        disabled=False, continuous_update=False)
+        style={'description_width': 'initial'}, continuous_update=False)
 
     ColorMap = widgets.Dropdown(
         options=cmaps(),
         value='Spectral_r',
         description='ColorMap',
-        disabled=False,
+        style={'description_width': 'initial'},
     )
 
     vmin = data[~np.isnan(data)].min()
@@ -1100,7 +1100,7 @@ def dataHillsideWidget(
                                     max=vmax,
                                     step=1.0,
                                     description='Color Range',
-                                    disabled=False,
+                                    style={'description_width': 'initial'},
                                     continuous_update=False,
                                     orientation='horizontal',
                                     readout=True,
@@ -1111,18 +1111,18 @@ def dataHillsideWidget(
                                   options=['Linear', 'HistEqualized'],
                                   value='HistEqualized',
                                   description='Color Normalization',
-                                  disabled=False,
+                                  style={'description_width': 'initial'},
                                 )
 
     saveAs = widgets.Text(
         value=saveAs,
         description='File Name:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
         description='Export GeoTiff',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Description',
         icon='check'
@@ -1132,13 +1132,13 @@ def dataHillsideWidget(
     EPSGcode = widgets.FloatText(
         value=gridObject.EPSGcode,
         description='EPSG code:',
-        disabled=False
+        style={'description_width': 'initial'}
     )
 
     SaveShape = widgets.ToggleButton(
         value=False,
         description='Export Shapefile',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Description',
         icon='check'
@@ -1149,7 +1149,7 @@ def dataHillsideWidget(
     ShapeFileName = widgets.Text(
         value=ShapeFileName,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     keys = {
@@ -1343,12 +1343,12 @@ def gridFiltersWidget(
         options=cmaps(),
         value=ColorMap,
         description='ColorMap',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
     Contours = widgets.Text(
         value=Contours,
         description='Contours',
-        disabled=False, continuous_update=False)
+        style={'description_width': 'initial'}, continuous_update=False)
     Filters = widgets.Dropdown(
         options=[
             'TMI',
@@ -1357,7 +1357,7 @@ def gridFiltersWidget(
         'TDXderivative'],
         value=gridFilter,
         description='Grid Filters',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
 
     Filters.observe(labelUpdate)
@@ -1368,7 +1368,7 @@ def gridFiltersWidget(
     SaveGrid = widgets.ToggleButton(
         value=False,
         description='Export GeoTiff',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Description',
         icon='check'
@@ -1379,19 +1379,19 @@ def gridFiltersWidget(
     EPSGcode = widgets.FloatText(
         value=gridObject.EPSGcode,
         description='EPSG code:',
-        disabled=False
+        style={'description_width': 'initial'}
     )
 
     saveAs = widgets.Text(
         value=saveAs,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     SaveShape = widgets.ToggleButton(
         value=False,
         description='Export Shapefile',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Description',
         icon='check'
@@ -1402,7 +1402,7 @@ def gridFiltersWidget(
     ShapeFileName = widgets.Text(
         value=ShapeFileName,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     keys = {
@@ -1595,7 +1595,7 @@ def gridTilt2Depth(
         options=cmaps(),
         value=ColorMap,
         description='ColorMap',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
     Filters = widgets.Dropdown(
         options=[
@@ -1603,7 +1603,7 @@ def gridTilt2Depth(
             'tiltAngle'],
         value=gridFilter,
         description='Grid Filters',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
     UpDist = widgets.FloatSlider(
         min=0, max=2000, step=10, value=0,
@@ -1612,7 +1612,7 @@ def gridTilt2Depth(
     SaveGrid = widgets.ToggleButton(
         value=False,
         description='Export GeoTiff',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Export GeoTiff image',
         icon='check'
@@ -1622,7 +1622,7 @@ def gridTilt2Depth(
     SaveShape = widgets.ToggleButton(
         value=False,
         description='Export Shapefile',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Export Contours',
         icon='check'
@@ -1632,7 +1632,7 @@ def gridTilt2Depth(
     SaveCSV = widgets.ToggleButton(
         value=False,
         description='Export CSV',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Export estimated depth points',
         icon='check'
@@ -1643,24 +1643,24 @@ def gridTilt2Depth(
     GridFileName = widgets.Text(
         value=GridFileName,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
     ShapeFileName = widgets.Text(
         value=ShapeFileName,
         description='Shapefile name:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     CSVFileName = widgets.Text(
         value=CSVFileName,
         description='CSV file name:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
     ContourColor = widgets.Dropdown(
         options=cmaps(),
         value='viridis',
         description='Depth Color',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
     ContourSize = widgets.FloatSlider(
         min=0.1, max=10, step=0.1, value=1,
@@ -1669,7 +1669,7 @@ def gridTilt2Depth(
     EPSGcode = widgets.FloatText(
         value=gridObject.EPSGcode,
         description='EPSG code:',
-        disabled=False
+        style={'description_width': 'initial'}
     )
     keys = {
         'SunAzimuth': SunAzimuth,
@@ -1844,7 +1844,7 @@ def worldViewerWidget(worldFile, data, grid, z=0, shapeFile=None):
                                 options=list(data.keys()),
                                 value=list(data.keys())[0],
                                 description='Location:',
-                                disabled=False,
+                                style={'description_width': 'initial'},
                                 )
                               )
 
@@ -1983,13 +1983,13 @@ def dataGriddingWidget(
     Resolution = widgets.FloatText(
         value=resolution,
         description='Grid (m):',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     MaxDistance = widgets.FloatText(
         value=maxDistance,
         description='Dist Max (m):',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
 
     Method = widgets.Dropdown(
@@ -1999,24 +1999,24 @@ def dataGriddingWidget(
           ],
         value=Method,
         description='Method',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
     ColorMap = widgets.Dropdown(
         options=cmaps(),
         value='Spectral_r',
         description='ColorMap',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
     EPSGcode = widgets.FloatText(
         value=EPSGcode,
         description='EPSG code:',
-        disabled=False
+        style={'description_width': 'initial'}
     )
 
     GetIncDec = widgets.ToggleButton(
         value=False,
         description='Fetch Inc/Dec',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Connect to NOAA API',
         icon='check'
@@ -2026,12 +2026,12 @@ def dataGriddingWidget(
     saveAs = widgets.Text(
         value=saveAs,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
         description='Export Grid',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Write file',
         icon='check'
@@ -2130,7 +2130,7 @@ def dataGridGeoref(
         options=cmaps(),
         value='Spectral_r',
         description='ColorMap',
-        disabled=False,
+        style={'description_width': 'initial'},
         )
 
     if gridObject.EPSGcode is not None:
@@ -2139,17 +2139,19 @@ def dataGridGeoref(
     EPSGcode = widgets.FloatText(
         value=EPSGcode,
         description='EPSG code:',
-        disabled=False
+        style={'description_width': 'initial'}
     )
     inc = widgets.FloatText(
         value=inc,
-        description='Inclination angle positive downward from horizontal:',
-        disabled=False
+        description='Inclination angle',
+        tooltip='Positive downward from horizontal:',
+        style={'description_width': 'initial'}
         )
     dec = widgets.FloatText(
         value=dec,
-        description='Declination angle positve clockwise from North:',
-        disabled=False
+        description='Declination angle',
+        tooltip='Positve clockwise from North:',
+        style={'description_width': 'initial'}
         )
 
     if np.any(gridObject.values > 1e+10):
@@ -2167,13 +2169,13 @@ def dataGridGeoref(
     ndv = widgets.FloatText(
         value=ndv,
         description='No-data-Value',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     GetIncDec = widgets.ToggleButton(
         value=False,
         description='Fetch Inc/Dec',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Connect to NOAA API',
         icon='check'
@@ -2184,7 +2186,7 @@ def dataGridGeoref(
     applyRTP = widgets.ToggleButton(
         value=applyRTP,
         description='Reduce to pole',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Transform to RTP data',
         icon='check'
@@ -2193,12 +2195,12 @@ def dataGridGeoref(
     saveAs = widgets.Text(
         value=saveAs,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
     SaveGrid = widgets.ToggleButton(
         value=False,
         description='Export GeoTiff',
-        disabled=False,
+        style={'description_width': 'initial'},
         button_style='',
         tooltip='Write file',
         icon='check'
@@ -2365,7 +2367,7 @@ def setDataExtentWidget(
     saveAs = widgets.Text(
         value=saveAs,
         description='Save as:',
-        disabled=False
+        style={'description_width': 'initial'}
         )
 
     if survey.EPSGcode is not None:
@@ -2374,12 +2376,11 @@ def setDataExtentWidget(
     EPSGcode = widgets.FloatText(
         value=EPSGcode,
         description='EPSG code:',
-        disabled=False
+        style={'description_width': 'initial'}
     )
     SaveGrid = widgets.ToggleButton(
         value=False,
         description='Export Grid',
-        disabled=False,
         button_style='',
         tooltip='Write file',
         icon='check'
