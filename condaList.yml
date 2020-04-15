@@ -3,11 +3,8 @@ numpy
 scipy
 matplotlib
 ipywidgets
-gdal
 scikit-image
-pyshp
-shapely
-krb5
+geopandas
 git
 mkl
 download
