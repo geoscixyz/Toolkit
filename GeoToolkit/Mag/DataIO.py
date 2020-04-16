@@ -7,17 +7,14 @@ from matplotlib.contour import QuadContourSet
 import matplotlib.pyplot as plt
 import gdal
 import osr
-import ogr
 import os
 import re
 from shapely.geometry import mapping, LineString
-import fiona
 from fiona.crs import from_epsg
 from download import download
 import ipywidgets as widgets
-import shapefile
+import fiona
 import zipfile
-
 
 gridProps = [
     'valuesFilledUC', 'valuesFilled',
@@ -25,7 +22,6 @@ gridProps = [
     'totalHorizontal', 'tiltAngle', 'analyticSignal',
     'TDXderivative', 'gridFFT', 'gridPadded', 'RTP'
 ]
-
 
 class dataGrid(object):
     """
@@ -624,24 +620,16 @@ def writeGeotiff(
 
 def readShapefile(fileName):
 
-    world = shapefile.Reader(fileName)
+    shape = fiona.open(fileName)
     # Extract lines from shape file
     X, Y = [], []
-    for shape in world.shapeRecords():
+    for item in shape.items():
+        xy = item[1]['geometry']['coordinates']
 
-        for ii, part in enumerate(shape.shape.parts):
-
-            if ii != len(shape.shape.parts)-1:
-                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]]]
-                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:shape.shape.parts[ii+1]]]
-
-            else:
-                x = [i[0] for i in shape.shape.points[shape.shape.parts[ii]:]]
-                y = [i[1] for i in shape.shape.points[shape.shape.parts[ii]:]]
-
-            if len(x) > 10:
-                X.append(np.vstack(x))
-                Y.append(np.vstack(y))
+        if len(xy) > 10:
+            xy = np.vstack(xy)
+            X.append(xy[:, 0])
+            Y.append(xy[:, 1])
 
     return X, Y
 

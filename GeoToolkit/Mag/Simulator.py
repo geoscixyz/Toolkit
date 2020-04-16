@@ -3,19 +3,12 @@ from . import MathUtils
 from . import DataIO
 from . import ProblemSetter
 import re
-# import SimPEG.PF as PF
-import shapefile
-# from SimPEG.Utils import mkvc
-from scipy.constants import mu_0
 from matplotlib import pyplot as plt
-import matplotlib.gridspec as gridspec
 import numpy as np
 import ipywidgets as widgets
 from ipywidgets import Layout
-from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from scipy.interpolate import griddata, interp1d, RegularGridInterpolator
-import scipy.sparse as sp
+from scipy.interpolate import griddata, RegularGridInterpolator
 from scipy.spatial import cKDTree
 from scipy.interpolate.interpnd import _ndim_coords_from_arrays
 from matplotlib.colors import LightSource, Normalize
@@ -25,7 +18,7 @@ import matplotlib as mpl
 from skimage import exposure
 from matplotlib.patches import Rectangle
 import webbrowser
-from osgeo import ogr, osr
+from osgeo import osr
 import os
 import PIL
 
