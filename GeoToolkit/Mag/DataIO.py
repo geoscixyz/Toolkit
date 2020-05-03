@@ -23,6 +23,13 @@ gridProps = [
     'TDXderivative', 'gridFFT', 'gridPadded', 'RTP'
 ]
 
+try:
+    from scipy.fft import fftfreq
+
+except ModuleNotFoundError:
+    from scipy.fftpack import fftfreq
+
+
 class dataGrid(object):
     """
         Grid data object
@@ -244,10 +251,10 @@ class dataGrid(object):
         if getattr(self, '_Kx', None) is None:
 
             nx = self.gridPadded.shape[1]
-            kx = 2. * np.pi * sp.fftpack.fftfreq(nx, self.dx)
+            kx = 2. * np.pi * fftfreq(nx, self.dx)
 
             ny = self.gridPadded.shape[0]
-            ky = 2. * np.pi * sp.fftpack.fftfreq(ny, self.dy)
+            ky = 2. * np.pi * fftfreq(ny, self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
@@ -262,10 +269,10 @@ class dataGrid(object):
         if getattr(self, '_Ky', None) is None:
 
             nx = self.gridPadded.shape[1]
-            kx = 2. * np.pi * sp.fftpack.fftfreq(nx, self.dx)
+            kx = 2. * np.pi * fftfreq(nx, self.dx)
 
             ny = self.gridPadded.shape[0]
-            ky = 2. * np.pi * sp.fftpack.fftfreq(ny, self.dy)
+            ky = 2. * np.pi * fftfreq(ny, self.dy)
 
             Ky, Kx = np.meshgrid(ky, kx)
             self._Ky, self._Kx = Ky.T, Kx.T
