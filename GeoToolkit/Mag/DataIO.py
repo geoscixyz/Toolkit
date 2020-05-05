@@ -521,7 +521,6 @@ def loadGRDFile(fileName, plotIt=False):
             colorbar=True
         )
         axs.grid(True)
-        cbar.set_label('TMI (nT)')
         plt.show()
         fig.savefig('./images/SearchQuestII.png', bbox_inches='tight')
 
@@ -571,7 +570,6 @@ def loadGeoTiffFile(fileName, plotIt=False):
             colorbar=True
         )
         axs.grid(True)
-        cbar.set_label('TMI (nT)')
         plt.show()
         fig.savefig('./images/GeoTIFFSynthetic.png', bbox_inches='tight')
 
