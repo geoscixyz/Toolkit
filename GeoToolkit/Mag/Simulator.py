@@ -275,7 +275,6 @@ def plotMagSurvey2D(x, y, data, a, b, npts, pred=None, marker=True,
 
     ax.plot(xLine, yLine, 'k.', ms=5)
     cbar = plt.colorbar(im, orientation='horizontal')
-    cbar.set_label('TMI (nT)')
     ax.text(xLine[0], yLine[0], 'A', fontsize=16, color='k', ha='right')
     ax.text(xLine[-1], yLine[-1], "A'", fontsize=16,
             color='k', ha='left')
@@ -2151,6 +2150,10 @@ def dataGridGeoref(
 
         ndv = np.unique(gridObject.values[gridObject.values > 1e+10])
 
+    elif np.any(gridObject.values == -99999):
+
+        ndv = -99999
+
     elif np.any(np.isnan(gridObject.values)):
 
         ndv = np.nan
@@ -2313,7 +2316,6 @@ def setDataExtentWidget(
         fig, im, cbar = plotData2D(
             xLoc[indx], yLoc[indy], dataSub.values, marker=False, fig=fig, ax=axs
         )
-        cbar.set_label('TMI (nT)')
         return dataSub
 
     if isinstance(survey, DataIO.dataGrid):
@@ -2471,7 +2473,6 @@ def plotSave(
         fig, ax = plt.figure(), plt.subplot()
         plt.gca().set_visible(False)
         cbar = plt.colorbar(im, fraction=0.02)
-        cbar.set_label(Filters + " " +units()[Filters])
         plt.savefig(saveAs + 'Colorbar.png', dpi=dpi, bbox_inches='tight')
 
     else:
@@ -2482,7 +2483,6 @@ def plotSave(
 
         axs.set_aspect('equal')
         cbar = plt.colorbar(im, fraction=0.02)
-        cbar.set_label(Filters + " " +units()[Filters])
 
         axs.set_xlabel("Easting (m)", size=14)
         axs.set_ylabel("Northing (m)", size=14)
