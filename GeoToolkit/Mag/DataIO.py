@@ -5,8 +5,7 @@ from scipy.spatial import cKDTree
 from scipy import ndimage
 from matplotlib.contour import QuadContourSet
 import matplotlib.pyplot as plt
-import gdal
-import osr
+from osgeo import gdal, osr
 import os
 import re
 from shapely.geometry import mapping, LineString
