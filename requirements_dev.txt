@@ -4,4 +4,4 @@ sphinxcontrib-bibtex
 nbsphinx
 nbstripout
 testipynb
-nose
+pytest

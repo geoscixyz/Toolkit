@@ -1,0 +1,54 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+jobs:
+  setup-build:
+    name: Testing in 3.8 on ubuntu-latest
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+
+    steps:
+    - name: Setup Miniconda
+      # You may pin to the exact commit or the version.
+      # uses: conda-incubator/setup-miniconda@35d1405e78aa3f784fe3ce9a2eb378d5eeb62169
+      uses: conda-incubator/setup-miniconda@v2.1.1
+      with:
+        environment-file: environment.yml # optional, default is
+        activate-environment: geotoolkit
+        python-version: 3.8
+        channels: conda-forge
+
+    - name: Install package
+      shell: bash
+      run: |
+        pip install pytest
+        pip install .
+
+    - name: Run Tests
+      shell: bash
+      run: |
+        pytest -s -v tests
+
+    - name: Build Doc
+      if: github.ref == 'refs/heads/main'
+      shell: bash
+      run: |
+        cd docs
+        make html
+        cd ..
+
+    - name: GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: crazy-max/ghaction-github-pages@v2.5.0
+      with:
+        build_dir: docs/_build/html
+        jekyll: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
