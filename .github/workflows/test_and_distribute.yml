@@ -24,6 +24,8 @@ jobs:
     - name: Install package
       shell: bash
       run: |
+        pwd
+        ls -al
         conda env update --file environment.yml --prune
         pip install pytest
         pip install .
