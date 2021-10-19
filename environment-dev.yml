@@ -10,7 +10,6 @@ dependencies:
   - numpy
   - scipy
   - pip:
-    - git+https://github.com/geoscixyz/Toolkit.git@main
     - sphinx
     - sphinx_rtd_theme
     - sphinxcontrib-bibtex
@@ -19,6 +18,8 @@ dependencies:
     - numpydoc
     - download
     - tqdm
+    - testipynb
+    - pytest
   - matplotlib
   - ipywidgets
   - geopandas

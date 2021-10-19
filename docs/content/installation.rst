@@ -28,7 +28,7 @@ Step 1: Anaconda (Python)
 Step 2: GeoToolkit
 ^^^^^^^^^^^^^^^^^^
 
-- `Download Geotoolkit <https://github.com/geoscixyz/Toolkit/archive/master.zip>`_
+- `Download Geotoolkit <https://github.com/geoscixyz/Toolkit/zipball/main/>`_
 
 - Save the zipped file on your computer and extract the GeoToolkit folder.
 
@@ -77,4 +77,3 @@ Alternatively you can run the entire Notebook by selecting the ``Run All`` optio
     .. figure:: ../images/RunAllCells.png
         :align: center
         :width: 300
-

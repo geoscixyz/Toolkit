@@ -52,6 +52,8 @@ templates_path = ['_templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
+bibtex_bibfiles = ['content/references.bib']
+
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
@@ -141,7 +143,7 @@ pygments_style = 'sphinx'
 # -- Edit on Github Extension ---------------------------------------------
 
 edit_on_github_project = 'geoscixyz/Toolkit'
-edit_on_github_branch = 'master'
+edit_on_github_branch = 'main'
 edit_on_github_directory = 'docs'
 
 # -- Options for HTML output ----------------------------------------------

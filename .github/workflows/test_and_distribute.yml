@@ -1,0 +1,55 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+jobs:
+  setup-build:
+    name: Testing in 3.8 on ubuntu-latest
+    runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v2.1.1
+      with:
+        environment-file: environment-dev.yml
+        activate-environment: geotoolkit
+        channels: conda-forge
+
+    - name: Install package
+      run: |
+        conda info
+        pip install .
+
+    - name: Run Tests
+      run: |
+        pytest -s -v tests
+
+    - name: Build Doc
+      if: github.ref == 'refs/heads/main'
+      run: |
+        cd docs
+        make html
+        cd ..
+
+    - name: GitHub Pages
+      if: github.ref == 'refs/heads/main'
+      uses: crazy-max/ghaction-github-pages@v2.5.0
+      with:
+        build_dir: docs/_build/html
+        jekyll: false
+        # Write the given domain name to the CNAME file
+        fqdn: toolkit.geosci.xyz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

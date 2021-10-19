@@ -18,11 +18,11 @@ Click below on the **'launch binder'** button or on the image to access an inter
 
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_2_1_Search_Mag_Data_Visualization.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F2_2_1_Search_Mag_Data_Visualization.ipynb
     :align: center
 
 .. image:: ./images/search_vis_notebook_snapshot.PNG
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F2_2_1_Search_Mag_Data_Visualization.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F2_2_1_Search_Mag_Data_Visualization.ipynb
     :align: center
 
 
