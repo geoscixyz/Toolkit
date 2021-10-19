@@ -10,11 +10,11 @@ manipulate, and export your own magnetic data.
 
 
 .. image:: https://mybinder.org/badge.svg
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F3_1_UserData.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F3_1_UserData.ipynb
     :align: center
 
 .. image:: ./../../images/UserDefine_GE.png
-    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/master?filepath=.%2FNotebooks%2F3_1_UserData.ipynb
+    :target: https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F3_1_UserData.ipynb
     :align: center
 
 
