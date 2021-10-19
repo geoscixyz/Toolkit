@@ -19,14 +19,13 @@ jobs:
     - name: Setup Miniconda
       uses: conda-incubator/setup-miniconda@v2.1.1
       with:
-        environment-file: environment.yml
+        environment-file: environment-dev.yml
         activate-environment: geotoolkit
         channels: conda-forge
 
     - name: Install package
       shell: bash
       run: |
-        pip install pytest
         pip install .
 
     - name: Run Tests
