@@ -16,6 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup Miniconda
       uses: conda-incubator/setup-miniconda@v2.1.1
       with:
@@ -24,22 +25,20 @@ jobs:
         channels: conda-forge
 
     - name: Install package
-      shell: bash
+      shell: bash -l {0}
       run: |
-        conda activate geotoolkit
+        conda info
         pip install .
 
     - name: Run Tests
-      shell: bash
+      shell: bash -l {0}
       run: |
-        conda activate geotoolkit
         pytest -s -v tests
 
     - name: Build Doc
       # if: github.ref == 'refs/heads/main'
-      shell: bash
+      shell: bash -l {0}
       run: |
-        conda activate geotoolkit
         cd docs
         make html
         cd ..
