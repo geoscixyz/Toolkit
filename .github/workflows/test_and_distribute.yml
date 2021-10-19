@@ -13,6 +13,9 @@ jobs:
     runs-on: "ubuntu-latest"
     strategy:
       fail-fast: false
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
     - uses: actions/checkout@v2
@@ -25,19 +28,16 @@ jobs:
         channels: conda-forge
 
     - name: Install package
-      shell: bash -l {0}
       run: |
         conda info
         pip install .
 
     - name: Run Tests
-      shell: bash -l {0}
       run: |
         pytest -s -v tests
 
     - name: Build Doc
       # if: github.ref == 'refs/heads/main'
-      shell: bash -l {0}
       run: |
         cd docs
         make html
