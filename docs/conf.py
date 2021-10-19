@@ -52,6 +52,8 @@ templates_path = ['_templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
+bibtex_bibfiles = ['content/references.bib']
+
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
