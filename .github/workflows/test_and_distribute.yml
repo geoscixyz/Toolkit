@@ -49,5 +49,7 @@ jobs:
       with:
         build_dir: docs/_build/html
         jekyll: false
+        # Write the given domain name to the CNAME file
+        fqdn: toolkit.geosci.xyz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
