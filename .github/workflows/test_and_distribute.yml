@@ -37,7 +37,7 @@ jobs:
         pytest -s -v tests
 
     - name: Build Doc
-      # if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main'
       run: |
         cd docs
         make html
