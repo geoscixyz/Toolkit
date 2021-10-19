@@ -26,17 +26,20 @@ jobs:
     - name: Install package
       shell: bash
       run: |
+        conda activate geotoolkit
         pip install .
 
     - name: Run Tests
       shell: bash
       run: |
+        conda activate geotoolkit
         pytest -s -v tests
 
     - name: Build Doc
-      if: github.ref == 'refs/heads/main'
+      # if: github.ref == 'refs/heads/main'
       shell: bash
       run: |
+        conda activate geotoolkit
         cd docs
         make html
         cd ..
