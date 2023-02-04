@@ -1,0 +1,339 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>2.1. Analysis of Simple Bodies &mdash; GeoToolkit 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.1.1. Synthetic - Magnetic Data Response" href="SyntheticMagResponse.html" />
+    <link rel="prev" title="2. Magnetic Data Analysis - Case Studies" href="demos.html" />
+ 
+
+<meta name="description" content="open source tools for geologists using geophysics in their interpretation">
+<meta name="author" content="GeoSci.xyz Developers">
+<meta name="keywords" content="geoscience, geophysics, applied geophysics, education, python, SimPEG">
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-77166836-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> GeoToolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Magnetics/Mag_index.html">1. Magnetic Data - Background</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="demos.html">2. Magnetic Data Analysis - Case Studies</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2.1. Analysis of Simple Bodies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticMagResponse.html">2.1.1. Synthetic - Magnetic Data Response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticGrid.html">2.1.2. Synthetic - Data Gridding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticVis.html">2.1.3. Synthetic - Magnetic Data Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticFilters.html">2.1.4. Synthetic - 2D Magnetic Data Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticTiltDepth.html">2.1.5. Synthetic - Edge Detection and Depth to Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="SearchExample.html">2.2. Case Study Using Geoscience BC Search II Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apps.html">The Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GeoToolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="demos.html">2. Magnetic Data Analysis - Case Studies</a> &raquo;</li>
+        
+      <li>2.1. Analysis of Simple Bodies</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            <a href="https://github.com/geoscixyz/Toolkit/edit/main/docs/content/Demos/SyntheticExample.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="analysis-of-simple-bodies">
+<span id="synth-example-intro"></span><h1>2.1. Analysis of Simple Bodies<a class="headerlink" href="#analysis-of-simple-bodies" title="Permalink to this heading">¶</a></h1>
+<a class="reference internal image-reference" href="../../_images/SyntheticModel.png"><img alt="../../_images/SyntheticModel.png" class="align-right" src="../../_images/SyntheticModel.png" style="width: 40%;" /></a>
+<p>As a primer to interpreting magnetic data, let’s get familiar with the
+magnetic responses of some simple geologic bodies. We will then grid the
+magnetic data, and investigate different visual enhancements of the data, and
+apply several tools that will aid us in our geological interpretation of the
+magnetic data.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SyntheticMagResponse.html">2.1.1. Synthetic - Magnetic Data Response</a></li>
+</ul>
+</div>
+<a class="reference internal image-reference" href="../../_images/synthProfile.PNG"><img alt="../../_images/synthProfile.PNG" class="align-right" src="../../_images/synthProfile.PNG" style="width: 40%;" /></a>
+<p>Here we explore the magnetic response over our synthetic geologic model. We
+can view profiles through the data, and also investigate how the magnetic
+response varies depending on the location of the magnetic survey and the
+magnetic field orientation.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SyntheticGrid.html">2.1.2. Synthetic - Data Gridding</a></li>
+</ul>
+</div>
+<a class="reference internal image-reference" href="../../_images/synthGridding.png"><img alt="../../_images/synthGridding.png" class="align-right" src="../../_images/synthGridding.png" style="width: 30%;" /></a>
+<p>This section discusses data gridding, whereby survey data are interpolated onto a regular 2D grid. This is an important initial data processing step required prior to applying filters and enhancements to magnetic data. Several gridding methods can be explored here using the data calculated from the synthetic geologic model.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SyntheticVis.html">2.1.3. Synthetic - Magnetic Data Visualization</a></li>
+</ul>
+</div>
+<a class="reference internal image-reference" href="../../_images/synth_vis_viridis_shaded_contours.PNG"><img alt="../../_images/synth_vis_viridis_shaded_contours.PNG" class="align-right" src="../../_images/synth_vis_viridis_shaded_contours.PNG" style="width: 30%;" /></a>
+<p>This section discusses image enhancement and visualization of magnetic data,
+and demonstrates effects of this type of processing using the magnetic data
+from the synthetic 3D geologic model. The applied filters and enhancements
+reflect the initial processing steps an interpreter might take toward building
+an understanding of their magnetic data and of the geology it is responding
+to.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SyntheticFilters.html">2.1.4. Synthetic - 2D Magnetic Data Filters</a></li>
+</ul>
+</div>
+<a class="reference internal image-reference" href="../../_images/Filters_synth_TotHoriz.PNG"><img alt="../../_images/Filters_synth_TotHoriz.PNG" class="align-right" src="../../_images/Filters_synth_TotHoriz.PNG" style="width: 28%;" /></a>
+<p>Total field magnetic data, viewed with sun-shading or various color
+enhancements, is a great approach to initially exploring a magnetic dataset.
+Subtle variations within the magnetic data can be obscured however, usually by
+larger or deeper magnetic bodies. Deeper or shallower sources, and more subtle
+features in the magnetic data can be emphasized through the use of magnetic
+data filters. This section describes and demonstrates the effect of several
+commonly used magnetic data filters, including upward continuation, horizontal
+and vertical derivatives, analytic signal, and tilt angle.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="SyntheticTiltDepth.html">2.1.5. Synthetic - Edge Detection and Depth to Source</a></li>
+</ul>
+</div>
+<a class="reference internal image-reference" href="../../_images/tilt_synthetic_edges_depths_grey.PNG"><img alt="../../_images/tilt_synthetic_edges_depths_grey.PNG" class="align-right" src="../../_images/tilt_synthetic_edges_depths_grey.PNG" style="width: 33%;" /></a>
+<p>Interpretation of magnetic data is ideally done by geoscientists with
+knowledge of the geology, lithology, and physical rock properties of typical
+rock types within a project area. Commonly this is done manually, through
+analysis of various magnetic data products discussed in the two previous
+notebooks, and alongside other available geoscientific data. There are
+however, some quick tools at our disposal to automatically pick ‘edges’ within
+magnetic data, and help us to approximate source depth. The resulting products
+can provide further guidance for geologic interpretations. This section
+explains and applies one such edge and depth detection method to magnetic data
+calculated from the synthetic 3D model.</p>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="SyntheticMagResponse.html" class="btn btn-neutral float-right" title="2.1.1. Synthetic - Magnetic Data Response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="demos.html" class="btn btn-neutral float-left" title="2. Magnetic Data Analysis - Case Studies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+
+ 
+
+<div role="contentinfo" font-size="11px">
+    <div class="row">
+        <div class="col-md-4" align="left" font-size="11px">
+            <a href="/">Toolkit Home</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz">GeoSci.xyz</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz/contact">Contact</a>
+        </div>
+        <br>
+<!--         <div class="col-md-8" align="left" font-size="11px">
+            <a href="https://github.com/geoscixyz/Toolkit/releases/tag/0.0.1">Version 0.0.1</a>
+        </div> -->
+        <br>
+        <div class="col-md-8" align="left" font-size="11px">
+            <div class="row">
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" width="60px"; style="float:right;height:3em;line-height:3em;padding:10px 0 0 1em;">
+                    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+                </a>
+                2017,
+                <a href="http://geosci.xyz">GeoSci Developers.</a><br />
+                Except where noted, this work is licensed under a <br />
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License
+                </a>
+            </div>
+        <br>
+        <div class="row">
+            Built with
+                <a href="http://sphinx-doc.org/">Sphinx</a>
+                using a
+                <a href="https://github.com/snide/sphinx_rtd_theme">theme</a>
+                provided by
+                <a href="https://readthedocs.org">Read the Docs</a>.
+        </div>
+    </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

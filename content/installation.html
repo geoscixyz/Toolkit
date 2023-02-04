@@ -1,0 +1,336 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Installation &mdash; GeoToolkit 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="References" href="references.html" />
+    <link rel="prev" title="The Apps" href="apps.html" />
+ 
+
+<meta name="description" content="open source tools for geologists using geophysics in their interpretation">
+<meta name="author" content="GeoSci.xyz Developers">
+<meta name="keywords" content="geoscience, geophysics, applied geophysics, education, python, SimPEG">
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-77166836-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> GeoToolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Magnetics/Mag_index.html">1. Magnetic Data - Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Demos/demos.html">2. Magnetic Data Analysis - Case Studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="apps.html">The Apps</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-anaconda-python">Step 1: Anaconda (Python)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-geotoolkit">Step 2: GeoToolkit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-run-the-notebooks">Step 3: Run the notebooks</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GeoToolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Installation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            <a href="https://github.com/geoscixyz/Toolkit/edit/main/docs/content/installation.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
+<p>Please install the following packages to run all of the presented apps locally.
+A local installation is recommended for faster data processing, and also so that private data can be worked with locally. A local installation is also required if you plan to work with Geosoft .grd files (note: .grd file use only available to Windows users).</p>
+<section id="step-1-anaconda-python">
+<h2>Step 1: Anaconda (Python)<a class="headerlink" href="#step-1-anaconda-python" title="Permalink to this heading">¶</a></h2>
+<p>(New Python users) <a class="reference external" href="https://www.anaconda.com/download/">Download Anaconda</a></p>
+<ul>
+<li><p>Launch the installation</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/MinicondaInstaller.png"><img alt="../_images/MinicondaInstaller.png" src="../_images/MinicondaInstaller.png" style="width: 400px;" /></a>
+</figure>
+</div></blockquote>
+</li>
+<li><p>For new users, it is recommended to let Anaconda set the Environment Path</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/AnacondaPath.png"><img alt="../_images/AnacondaPath.png" src="../_images/AnacondaPath.png" style="width: 400px;" /></a>
+</figure>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="step-2-geotoolkit">
+<h2>Step 2: GeoToolkit<a class="headerlink" href="#step-2-geotoolkit" title="Permalink to this heading">¶</a></h2>
+<ul>
+<li><p><a class="reference external" href="https://github.com/geoscixyz/Toolkit/zipball/main/">Download Geotoolkit</a></p></li>
+<li><p>Save the zipped file on your computer and extract the GeoToolkit folder.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Double+Click</span></code> on the <code class="docutils literal notranslate"><span class="pre">Install_Environment.bat</span></code> file to launch the installation:</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/ClickInstall.png"><img alt="../_images/ClickInstall.png" src="../_images/ClickInstall.png" style="width: 200px;" /></a>
+</figure>
+</div></blockquote>
+</li>
+</ul>
+<p>Full installation time <span class="math notranslate nohighlight">\(\approx 15\)</span> min.</p>
+</section>
+<section id="step-3-run-the-notebooks">
+<h2>Step 3: Run the notebooks<a class="headerlink" href="#step-3-run-the-notebooks" title="Permalink to this heading">¶</a></h2>
+<ul>
+<li><p>Open a Command Terminal (or ‘Open PowerShell Window’) in the <code class="docutils literal notranslate"><span class="pre">Notebooks</span></code> directory (<code class="docutils literal notranslate"><span class="pre">Shift+RightClick</span></code>) and enter:</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/OpenCommand.png"><img alt="../_images/OpenCommand.png" src="../_images/OpenCommand.png" style="width: 200px;" /></a>
+</figure>
+</div></blockquote>
+</li>
+</ul>
+<p>Enter&gt;&gt; <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">geotoolkit</span></code></p>
+<p>Enter&gt;&gt; <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">notebook</span></code></p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/LaunchNotebook.png"><img alt="../_images/LaunchNotebook.png" src="../_images/LaunchNotebook.png" style="width: 600px;" /></a>
+</figure>
+</div></blockquote>
+<p>You will see the list of notebooks available similar to the image below. Just click on the one you wish to work with.</p>
+<p>Once in a notebook, you can run cells with <code class="docutils literal notranslate"><span class="pre">Shift+Enter</span></code>.</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/Notebook_full_list.PNG"><img alt="../_images/Notebook_full_list.PNG" src="../_images/Notebook_full_list.PNG" style="width: 300px;" /></a>
+</figure>
+</div></blockquote>
+<p>Alternatively you can run the entire Notebook by selecting the <code class="docutils literal notranslate"><span class="pre">Run</span> <span class="pre">All</span></code> option from the <code class="docutils literal notranslate"><span class="pre">Cell</span></code> menu</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="../_images/RunAllCells.png"><img alt="../_images/RunAllCells.png" src="../_images/RunAllCells.png" style="width: 300px;" /></a>
+</figure>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="apps.html" class="btn btn-neutral float-left" title="The Apps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+
+ 
+
+<div role="contentinfo" font-size="11px">
+    <div class="row">
+        <div class="col-md-4" align="left" font-size="11px">
+            <a href="/">Toolkit Home</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz">GeoSci.xyz</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz/contact">Contact</a>
+        </div>
+        <br>
+<!--         <div class="col-md-8" align="left" font-size="11px">
+            <a href="https://github.com/geoscixyz/Toolkit/releases/tag/0.0.1">Version 0.0.1</a>
+        </div> -->
+        <br>
+        <div class="col-md-8" align="left" font-size="11px">
+            <div class="row">
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" width="60px"; style="float:right;height:3em;line-height:3em;padding:10px 0 0 1em;">
+                    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+                </a>
+                2017,
+                <a href="http://geosci.xyz">GeoSci Developers.</a><br />
+                Except where noted, this work is licensed under a <br />
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License
+                </a>
+            </div>
+        <br>
+        <div class="row">
+            Built with
+                <a href="http://sphinx-doc.org/">Sphinx</a>
+                using a
+                <a href="https://github.com/snide/sphinx_rtd_theme">theme</a>
+                provided by
+                <a href="https://readthedocs.org">Read the Docs</a>.
+        </div>
+    </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

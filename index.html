@@ -1,0 +1,356 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Geophysical Toolkit for Geologists &mdash; GeoToolkit 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. Magnetic Data - Background" href="content/Magnetics/Mag_index.html" />
+ 
+
+<meta name="description" content="open source tools for geologists using geophysics in their interpretation">
+<meta name="author" content="GeoSci.xyz Developers">
+<meta name="keywords" content="geoscience, geophysics, applied geophysics, education, python, SimPEG">
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-77166836-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> GeoToolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="content/Magnetics/Mag_index.html">1. Magnetic Data - Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/Demos/demos.html">2. Magnetic Data Analysis - Case Studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/apps.html">The Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">GeoToolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Geophysical Toolkit for Geologists</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            <a href="https://github.com/geoscixyz/Toolkit/edit/main/docs/index.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <a class="reference internal image-reference" href="_images/ToolkitLogo.png"><img alt="_images/ToolkitLogo.png" class="align-center" src="_images/ToolkitLogo.png" style="width: 50%;" /></a>
+<section id="geophysical-toolkit-for-geologists">
+<h1>Geophysical Toolkit for Geologists<a class="headerlink" href="#geophysical-toolkit-for-geologists" title="Permalink to this heading">¶</a></h1>
+<p>Welcome geoscientists looking to get more from your magnetic data!</p>
+<figure class="align-right" style="width: 40%">
+<img alt="_images/draped_mag_search1.PNG" src="_images/draped_mag_search1.PNG" />
+</figure>
+<p>The <strong>Geophysical Toolkit for Geologists</strong> was developed to provide guidance and an easy entryway for geoscientists to explore magnetic data.</p>
+<p>This site provides a portal to a suite of basic geophysical tools or applications that can aid geological interpretation of magnetic data. The content and applications here were assembled as part of a project initiated between UBC’s <a class="reference external" href="https://www.mdru.ubc.ca/">Mineral Deposit Research Unit</a> and the <a class="reference external" href="https://gif.eos.ubc.ca/">Geophysical Inversion Facility</a>. Magnetic data was focused on for this particular Toolkit, due to the usefulness and common availability of this type of geophysical data. However, applications for analysis of other geophysical data types may be added in the future.</p>
+<figure class="align-right" style="width: 40%">
+<img alt="_images/tilt_depth_over_tmi.PNG" src="_images/tilt_depth_over_tmi.PNG" />
+</figure>
+<p><strong>Magnetic data can provide great insight into geology at and below the Earth’s surface</strong>. Magnetic data is of particular use where geology is concealed by weathering or overburden, as this cover material is often magnetically ‘transparent’. The distribution of lithological units, and geologic structure can be interpreted helping geoscientists piece together a more complete picture of the Earth’s subsurface.</p>
+<p>Some <a class="reference internal" href="content/Magnetics/Mag_index.html#mag-index"><span class="std std-ref">background information</span></a> related to the Earth’s magnetic field,
+magnetic response of rocks, and magnetic data collection are provided.</p>
+<figure class="align-right" id="id1" style="width: 40%">
+<img alt="_images/UserDefine_GE.png" src="_images/UserDefine_GE.png" />
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text"><a class="reference external" href="https://www.google.com/earth/download/gep/agree.html">Google Earth Pro</a> overlay prepared from the <a class="reference external" href="https://data.noaa.gov//metaview/page?xml=NOAA/NESDIS/NGDC/MGG/Geophysical_Models/iso/xml/EMAG2.xml&amp;view=getDataView&amp;header=none">EMAG2: Earth Magnetic Anomaly Grid (2-arc-minute)</a> .</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>To get initiated with the <strong>geophysical data analysis tools</strong> in the
+<strong>Geophysical Toolkit</strong>, we have set up both
+<a class="reference internal" href="content/Demos/SyntheticExample.html#synth-example-intro"><span class="std std-ref">synthetic</span></a> and <a class="reference internal" href="content/Demos/SearchExample.html#search-example-intro"><span class="std std-ref">real-
+life</span></a> examples that can be walked through by interested
+geoscientists looking to understand how the tools function. <a class="reference internal" href="content/Tools/tools.html#usertools"><span class="std std-ref">Users can
+also directly upload their own data</span></a> to apply and explore the same
+applications.</p>
+<p>Geological knowledge is vital to meaningful interpretation of geophysical
+data. Therefore, geophysicists and geologists must work together to gain the
+maximum value from geophysical data! Neither the geophysicist nor the
+geologist needs to be an expert in the other’s field, they simply need to
+bring their respective skills and knowledge to the table and start a
+conversation.</p>
+<section id="contents">
+<h2>Contents:<a class="headerlink" href="#contents" title="Permalink to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="content/Magnetics/Mag_index.html">1. Magnetic Data - Background</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/Demos/demos.html">2. Magnetic Data Analysis - Case Studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/apps.html">The Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/references.html">References</a></li>
+</ul>
+</div>
+</section>
+<section id="feedback">
+<h2>Feedback:<a class="headerlink" href="#feedback" title="Permalink to this heading">¶</a></h2>
+<p>Have comments or suggestions? Submit feedback <a class="reference external" href="https://docs.google.com/forms/d/1Bv43lKncKaTQY3_J_B1DrPQr0ft0Qt1x6IjqM7iDbnc/viewform?usp=send_form&gt;`.">here</a>.</p>
+<p>All the content can be found on our <a class="reference external" href="https://github.com/geoscixyz/Toolkit">github</a> repository.</p>
+</section>
+<section id="contributors">
+<h2>Contributors:<a class="headerlink" href="#contributors" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Dianne Mitchinson, (<a class="reference external" href="https://github.com/demitch/">&#64;demitch</a>)</p></li>
+<li><p>Dom Fournier, (<a class="reference external" href="https://github.com/fourndo/">&#64;fourndo</a>)</p></li>
+<li><p>Lindsey Heagy, (<a class="reference external" href="https://github.com/lheagy/">&#64;lheagy</a>)</p></li>
+<li><p>Seogi Kang, (<a class="reference external" href="https://github.com/sgkang/">&#64;sgkang</a>)</p></li>
+</ul>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><a class="reference external image-reference" href="https://www.mdru.ubc.ca"><img alt="_images/MDRU.png" class="align-center" src="_images/MDRU.png" style="width: 203.0px; height: 61.0px;" /></a>
+</td>
+<td><a class="reference external image-reference" href="https://gif.eos.ubc.ca"><img alt="_images/GIF.png" class="align-center" src="_images/GIF.png" style="width: 154.0px; height: 95.0px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+<p>And with the generous contribution of the open-source community:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><a class="reference external image-reference" href="http://www.numpy.org"><img alt="_images/numpy.png" class="align-center" src="_images/numpy.png" style="width: 300.0px; height: 118.75px;" /></a>
+</td>
+<td><a class="reference external image-reference" href="https://www.matplotlib.org"><img alt="_images/matplotlib.png" class="align-center" src="_images/matplotlib.png" style="width: 271.0px; height: 65.0px;" /></a>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference external image-reference" href="https://www.scipy.org"><img alt="_images/scipy.png" class="align-center" src="_images/scipy.png" style="width: 325.0px; height: 200.0px;" /></a>
+</td>
+<td><a class="reference external image-reference" href="http://www.simpeg.xyz"><img alt="_images/simpeg.png" class="align-center" src="_images/simpeg.png" style="width: 300.0px; height: 108.0px;" /></a>
+</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external image-reference" href="https://scikit-learn.org"><img alt="_images/scikitlearn.png" class="align-center" src="_images/scikitlearn.png" style="width: 240.0px; height: 129.20000000000002px;" /></a>
+</td>
+<td><a class="reference external image-reference" href="https://gdal.org/"><img alt="_images/gdal.png" class="align-center" src="_images/gdal.png" style="width: 107.0px; height: 118.0px;" /></a>
+</td>
+</tr>
+<tr class="row-even"><td><a class="reference external image-reference" href="http://jupyter.org"><img alt="_images/jupyter.png" class="align-center" src="_images/jupyter.png" style="width: 180.0px; height: 180.0px;" /></a>
+</td>
+<td><a class="reference external image-reference" href="http://www.sphinx-doc.org"><img alt="_images/sphinx.png" class="align-center" src="_images/sphinx.png" style="width: 165.0px; height: 165.0px;" /></a>
+</td>
+</tr>
+<tr class="row-odd"><td colspan="2"><a class="reference external image-reference" href="https://www.fatiando.org/"><img alt="_images/fatiando.png" class="align-center" src="_images/fatiando.png" style="width: 414.0px; height: 75.0px;" /></a>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="content/Magnetics/Mag_index.html" class="btn btn-neutral float-right" title="1. Magnetic Data - Background" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+
+ 
+
+<div role="contentinfo" font-size="11px">
+    <div class="row">
+        <div class="col-md-4" align="left" font-size="11px">
+            <a href="/">Toolkit Home</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz">GeoSci.xyz</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz/contact">Contact</a>
+        </div>
+        <br>
+<!--         <div class="col-md-8" align="left" font-size="11px">
+            <a href="https://github.com/geoscixyz/Toolkit/releases/tag/0.0.1">Version 0.0.1</a>
+        </div> -->
+        <br>
+        <div class="col-md-8" align="left" font-size="11px">
+            <div class="row">
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" width="60px"; style="float:right;height:3em;line-height:3em;padding:10px 0 0 1em;">
+                    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+                </a>
+                2017,
+                <a href="http://geosci.xyz">GeoSci Developers.</a><br />
+                Except where noted, this work is licensed under a <br />
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License
+                </a>
+            </div>
+        <br>
+        <div class="row">
+            Built with
+                <a href="http://sphinx-doc.org/">Sphinx</a>
+                using a
+                <a href="https://github.com/snide/sphinx_rtd_theme">theme</a>
+                provided by
+                <a href="https://readthedocs.org">Read the Docs</a>.
+        </div>
+    </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

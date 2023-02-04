@@ -1,0 +1,457 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>1. Magnetic Data - Background &mdash; GeoToolkit 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2. Magnetic Data Analysis - Case Studies" href="../Demos/demos.html" />
+    <link rel="prev" title="Geophysical Toolkit for Geologists" href="../../index.html" />
+ 
+
+<meta name="description" content="open source tools for geologists using geophysics in their interpretation">
+<meta name="author" content="GeoSci.xyz Developers">
+<meta name="keywords" content="geoscience, geophysics, applied geophysics, education, python, SimPEG">
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-77166836-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> GeoToolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Magnetic Data - Background</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#magnetic-susceptibility-of-rocks-and-minerals">Magnetic Susceptibility of Rocks and Minerals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#earth-s-magnetic-field">Earth’s Magnetic Field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#magnetization">Magnetization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#magnetic-response">Magnetic Response</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#magnetic-remanence">Magnetic Remanence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-processing">Data Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Demos/demos.html">2. Magnetic Data Analysis - Case Studies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apps.html">The Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GeoToolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+      <li>1. Magnetic Data - Background</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            <a href="https://github.com/geoscixyz/Toolkit/edit/main/docs/content/Magnetics/Mag_index.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="magnetic-data-background">
+<span id="mag-index"></span><h1>1. Magnetic Data - Background<a class="headerlink" href="#magnetic-data-background" title="Permalink to this heading">¶</a></h1>
+<p>This page will provide some basic background information on magnetism and magnetic data, concepts that must be broadly understood before embarking on interpretation or modelling of magnetic data.</p>
+<p>The material presented here are extracted from UBC-GIF’s <a class="reference external" href="https://gpg.geosci.xyz/index.html">Geophysics for Practicing Geoscientists</a> (GPG) Website. It provides a summary of the fundamentals of magnetic data and modelling, including information on Earth’s magnetic field, magnetic induction, and magnetic remanence. More detailed reviews on these topics can be found on the GPG website. Follow the embedded links in each section for expanded discussions.</p>
+<p>Measurements of the magnetic field contain information about subsurface
+variations in <a class="reference internal" href="#magnetic-susceptibility-rocks"><span class="std std-ref">magnetic susceptibility</span></a>. Data can
+be acquired in the air (planes, satellites), on the ground (stationary, moving
+platforms, marine) and underground (boreholes, tunnels). The measurements record the sum of
+Earth’s field and fields induced in magnetic materials. More magnetic (i.e.
+susceptible) materials have stronger induced fields. Removing Earth’s field
+from the observations yields anomalous fields that can be interpreted in terms
+of where magnetic material lies and also its susceptiblity and shape. Processed data are
+presented as maps or profiles, and advanced processing such as inversion can provide 3D models of subsurface magnetic susceptibility
+distributions.</p>
+<figure class="align-center" id="mag-response" style="width: 50%">
+<img alt="../../_images/Intro_Response.png" src="../../_images/Intro_Response.png" />
+</figure>
+<section id="magnetic-susceptibility-of-rocks-and-minerals">
+<span id="magnetic-susceptibility-rocks"></span><h2>Magnetic Susceptibility of Rocks and Minerals<a class="headerlink" href="#magnetic-susceptibility-of-rocks-and-minerals" title="Permalink to this heading">¶</a></h2>
+<p>From the GPG <a class="reference external" href="https://gpg.geosci.xyz/content/physical_properties/magnetics_susceptibility_duplicate.html">magnetic susceptibility page</a></p>
+<p>Interpretation of magnetic data cannot be successful without an understanding of the magnetic susceptibility of the rock types common within a given project area. Ideally, a suite of rock samples from the project area are collected and susceptibility measured to provide confidence in interpretations of the magnetic data and related models.</p>
+<p>Magnetic susceptibility (<span class="math notranslate nohighlight">\(\kappa\)</span>) quantifies the magnetization (<span class="math notranslate nohighlight">\(\vec M\)</span>) a rock or mineral experiences when it is subjected to an applied magnetic field (<span class="math notranslate nohighlight">\(\vec H\)</span>). This relationship takes the form:</p>
+<div class="math notranslate nohighlight">
+\[\vec M = \kappa \vec H\]</div>
+<p>The SI unit is the current preferred unit of measurement for susceptibility among most geophysicists, but you will find cgs (centimeter, grams, seconds) units used in older references and texts. This can cause great confusion so be careful! The conversion is:</p>
+<div class="math notranslate nohighlight">
+\[\kappa \; \textrm{(SI)} = 4 \pi \kappa \; \textrm{(cgs)}\]</div>
+<p><strong>Magnetic Minerals</strong></p>
+<p>The magnetic susceptibility of a rock depends on the type and abundance of magnetic minerals it contains. Magnetic minerals are generally part of the iron-titanium-oxide or iron-sulphide mineral groups. The most important magnetic mineral in rock magnetism is magnetite. This mineral is common in igneous and metamorphic rocks, and is present at least in trace amounts in most sediments. Ore-bearing sulphides can be susceptible if the monoclinic form of pyrrhotite is present.</p>
+<p><strong>Susceptibility of Common Rocks</strong></p>
+<p>A chart showing the range of magnetic susceptibility values for common rock types are shown below. Note that the scale is logarithmic, indicating a large variability in magnetic susceptibility among rocks.</p>
+<a class="reference internal image-reference" href="../../_images/susceptibility_chart.gif" id="magnetic-susceptibility-chart"><img alt="../../_images/susceptibility_chart.gif" class="align-center" id="magnetic-susceptibility-chart" src="../../_images/susceptibility_chart.gif" style="width: 537.0px; height: 375.0px;" /></a>
+<p>(adapted from <span id="id1">[<a class="reference internal" href="../references.html#id10" title="D A Clark and D W Emerson. Notes on rock magnetization characteristics in applied geophysical studies. Exploration Geophysics, 01 1991.">CE91</a>]</span>)</p>
+<p>The very large range in mag sus per rock type means that magnetic susceptibility values cannot be assumed based on lithology, which is why collecting and measuring mag sus data from representative field samples is so important.</p>
+<p>other references:</p>
+</section>
+<section id="earth-s-magnetic-field">
+<h2>Earth’s Magnetic Field<a class="headerlink" href="#earth-s-magnetic-field" title="Permalink to this heading">¶</a></h2>
+<p>From the GPG section on <a class="reference external" href="https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#earth-s-magnetic-field-source">Earth’s magnetic field</a>.</p>
+<a class="reference internal image-reference" href="../../_images/Geodynamo_Between_Reversals.gif"><img alt="../../_images/Geodynamo_Between_Reversals.gif" class="align-right" src="../../_images/Geodynamo_Between_Reversals.gif" style="width: 215.1px; height: 236.1px;" /></a>
+<p>All magnetic fields arise from currents. This is also true for the magnetic field of the earth. The outer core of the earth is molten and in a state of convection and a geomagnetic dynamo creates magnetic fields. Close to the surface of the core the magnetic fields are very complicated but as we move outward the magnetic field resembles that of a large bar magnetic which is often referred to as a magnetic dipole.</p>
+<a class="reference internal image-reference" href="../../_images/earthfield.gif"><img alt="../../_images/earthfield.gif" class="align-left" src="../../_images/earthfield.gif" style="width: 149.0px; height: 165.0px;" /></a>
+<p>To a first approximation, Earth’s magnetic field resembles a large dipolar source with a negative pole in the northern hemisphere and a positive pole in the southern hemisphere. The dipole is offset from the center of the earth and also tilted. The north magnetic pole at the surface of the earth is approximately at Melville Island.</p>
+<a class="reference internal image-reference" href="../../_images/components.gif"><img alt="../../_images/components.gif" class="align-right" src="../../_images/components.gif" style="width: 250.0px; height: 222.0px;" /></a>
+<p>The field at any location on (or above or within) the Earth are generally described in terms described of magnitude (<span class="math notranslate nohighlight">\(\mathbf{|B|}\)</span>), declination (<span class="math notranslate nohighlight">\(\mathbf{D}\)</span>) and inclination (<span class="math notranslate nohighlight">\(\mathbf{I}\)</span>) as illustrated in the above figure</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathbf{|B|}\)</span>: The magnitude of the vector representing Earth’s magnetic field.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{D}\)</span>: Declination is the angle that <em>H</em> makes with respect to geographic north (positive angle clockwise).</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathbf{I}\)</span>: Inclination is the angle between <strong>B</strong> and the horizontal. It can vary between -90° and +90° (positive angle down).</p></li>
+</ul>
+<p>Earth’s field at any location is approximately that provided by a global reference model called the IGRF or International Geomagnetic Reference Field. The IGRF is a mathematical model that describes the field and its secular changes, that is, how it changes with time. The IGRF is a product of the International Association of Geomagnetism and Aeronomy (<a class="reference external" href="http://www.ngdc.noaa.gov/IAGA/vmod/">IAGA</a>), and the original version was defined in 1968. It is updated every five years, and later versions may re-define the field at earlier times. This is important to remember if you are comparing old maps to new ones.
+Earth’s field has a strength of approximately 70,000 nanoTeslas (nT) at the magnetic poles and approximately 25,000 nT at the magnetic equator. Field orientation and strength varies around the world.</p>
+<a class="reference internal image-reference" href="../../_images/earths_field.png"><img alt="../../_images/earths_field.png" class="align-right" src="../../_images/earths_field.png" style="width: 754.5px; height: 503.0px;" /></a>
+<p>Slow changes in the exact location of the magnetic north pole occur over long periods (months-years). These changes are thought to be caused by internal changes in mantle convection. Knowing the acquisition date of a magnetic survey is important in order to understand the observed magnetic anomalies.</p>
+<p>Details about Earth’s field can be found at government geoscience websites such as the <a class="reference external" href="http://www.ngdc.noaa.gov/geomag/geomag.shtml">NOAA</a> geomagnetism home page, or the <a class="reference external" href="http://www.geomag.nrcan.gc.ca/index-eng.php">Canadian National Geomagnetism Program</a> home page. An overview of Earth’s magnetic field (with good images, graphs, etc.) can be found on the British Geological Survey’s <a class="reference external" href="http://www.geomag.bgs.ac.uk/">geomagnetics website</a>.</p>
+</section>
+<section id="magnetization">
+<h2>Magnetization<a class="headerlink" href="#magnetization" title="Permalink to this heading">¶</a></h2>
+<p>From the GPG section on <a class="reference external" href="https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#magnetization">magnetization</a></p>
+<p>When the source field is applied to earth materials it causes the to become
+magnetized. Magnetization is the dipole moment
+per unit volume. This is a vector quantity because a dipole has
+a strength and a direction. For many cases of interest the relationship between
+magnetization <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> and the source
+<span class="math notranslate nohighlight">\(\mathbf{H}\)</span> (earth’s magnetic field) is given by</p>
+<div class="math notranslate nohighlight" id="equation-mkappah">
+<span class="eqno">(1)<a class="headerlink" href="#equation-mkappah" title="Permalink to this equation">¶</a></span>\[\mathbf{M} = \kappa \mathbf{H}.\]</div>
+<p>where <span class="math notranslate nohighlight">\(\kappa\)</span> is the magnetic susceptibility. Thus the magnetization has the
+same direction as the earth’s field. Because Earth’s field is different
+at different locations on the earth, then the same object gets magnetized
+differently depending upon where it is situated.</p>
+<p>The final net magnetization of an object, when it is buried at any location on the earth will be the sum of the induced and remanent magnetizations. Remanence is an important topic and it is further investigated <a class="reference internal" href="#magnetic-remanence"><span class="std std-ref">here</span></a>.</p>
+</section>
+<section id="magnetic-response">
+<h2>Magnetic Response<a class="headerlink" href="#magnetic-response" title="Permalink to this heading">¶</a></h2>
+<p>From the GPG section on <a class="reference external" href="https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#responses-data">magnetic response</a>.</p>
+<p>The magnetic field that results from the magnetized earth commonly referred to as the “secondary” field or sometimes the “anomalous” field. For geological or engineering problems, these anomalous fields are the data to be interpreted, and this is what we seek to measure. Unfortunately, for a field survey we measure the anomalous field plus Earth’s field. (More correctly it is the anomalous field plus any other magnetic fields that are present, but we ignore that complexity for the present). Thus the observed field is:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{B}^{obs} = \mathbf{B}_0 + \mathbf{B}_A\;,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{B}^{obs}\)</span> is the combined signal from the Earth’s field <span class="math notranslate nohighlight">\(\mathbf{B}_0\)</span> and from the ground <span class="math notranslate nohighlight">\(\mathbf{B}_A\)</span>.</p>
+<p>The basic ideas behind the induced magnetization process, going from source to data, are illustrated below.</p>
+<blockquote>
+<div><script type="text/javascript">
+<!--
+function MM_swapImgRestore() { //v3.0
+var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+function MM_preloadImages() { //v3.0
+var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_findObj(n, d) { //v4.01
+var p,i,x; if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+
+</script>
+
+        <tr>
+            <td>
+                <p align="left">
+                    <font size="-1">
+                        <img width="200" height="188" name="burieddipole" src="../../_images/no_field.gif"></img>
+                    </font>
+                </p>
+                <form action="" method="post" name="form2">
+
+                    <input type="radio" onclick="MM_swapImage('burieddipole','','../../_images/no_field.gif',1)" checked="checked" value="radiobutton" name="radiobutton"></input>
+                    <b>
+
+                        1.
+
+                    </b>
+
+                     No incident magnetic field.
+
+                    <br></br>
+                    <input type="radio" onclick="MM_swapImage('burieddipole','','../../_images/inducing_field.gif',1)" value="radiobutton" name="radiobutton"></input>
+                    <b>
+
+                        2.
+
+                    </b>
+
+                    Earth's field causes material to become magnetized.
+
+                    <br></br>
+                    <input type="radio" onclick="MM_swapImage('burieddipole','','../../_images/magnetic_anomaly.gif',1)" value="radiobutton" name="radiobutton"></input>
+                    <b>
+
+                        3.
+
+                    </b>
+
+                     Plotting these measurements produces a map of this magnetic anomaly.
+
+                    <br></br>
+                    <input type="radio" value="radiobutton" onclick="MM_swapImage('burieddipole','','../../_images/measurements.gif',1)" name="radiobutton"></input>
+                    <strong>
+
+                        4.
+
+                    </strong>
+
+                      Often measurements are made along lines and the anomaly is plotted as a graph.
+
+                </form>
+            </td>
+        </tr>
+        <br>
+</div></blockquote>
+</section>
+<section id="magnetic-remanence">
+<span id="id5"></span><h2>Magnetic Remanence<a class="headerlink" href="#magnetic-remanence" title="Permalink to this heading">¶</a></h2>
+<p>From the GPG section on <a class="reference external" href="https://gpg.geosci.xyz/content/magnetics/magnetics_basic_principles.html#remanent-magnetization">magnetic remanence</a>.</p>
+<p>A toy bar magnet is a quintessential example of an object that has a remanent magnetization. If taken to outer space where there is no inducing field, it still possesses a magnetic field like that of a dipole. The acquisition of remanence occurs when a body with magnetic minerals cools through its Curie temperature. Above the Curie temperature thermal agitation prevents the elementary dipoles from aligning with the ambient magnetic field. As the material cools the magnetic particles can stay aligned and eventually lock into place in a domain structure. Each domain has all of its constituent dipoles locked into a single direction. This structure stays in place after the ambient field is removed and the object will have a net remanent magnetism. Some elements of the process are portrayed in the figure below:</p>
+<a class="reference internal image-reference" href="../../_images/Magnetization_Domain.png"><img alt="../../_images/Magnetization_Domain.png" class="align-right" src="../../_images/Magnetization_Domain.png" style="width: 360.0px; height: 360.0px;" /></a>
+<p>Magnetization is thus composed of two parts: (a) An induced portion (<span class="math notranslate nohighlight">\(\mathbf{M_I}\)</span>)  and (b) remanent portion  (<span class="math notranslate nohighlight">\(\mathbf{M_R}\)</span>). The
+net magnetization is:</p>
+<div class="math notranslate nohighlight" id="equation-total-magnetization">
+<span class="eqno">(2)<a class="headerlink" href="#equation-total-magnetization" title="Permalink to this equation">¶</a></span>\[\mathbf{M = M_I + M_r} \;.\]</div>
+<p>Note that the remanent component is independent of the inducing direction and it can substantially distort the magnetic data compared to the purely induced response. Interpreting magnetic data affected by remanence remains a key challenge in exploration geophysics.</p>
+</section>
+<section id="data-processing">
+<h2>Data Processing<a class="headerlink" href="#data-processing" title="Permalink to this heading">¶</a></h2>
+<p>Prior to interpretation, magnetic data may have several corrections applied. In most cases, these processing steps are completed by the geophysical data acquisition team, providing both the raw and processed data as a final product, however some may need to be applied by the geoscientist working with the data. Some of these corrections are listed below:</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/inducing_field.gif"><img alt="../../_images/inducing_field.gif" src="../../_images/inducing_field.gif" style="width: 0.0px; height: 0.0px;" /></a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/magnetic_anomaly.gif"><img alt="../../_images/magnetic_anomaly.gif" src="../../_images/magnetic_anomaly.gif" style="width: 0.0px; height: 0.0px;" /></a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/measurements.gif"><img alt="../../_images/measurements.gif" src="../../_images/measurements.gif" style="width: 0.0px; height: 0.0px;" /></a>
+</figure>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../../_images/no_field.gif"><img alt="../../_images/no_field.gif" src="../../_images/no_field.gif" style="width: 0.0px; height: 0.0px;" /></a>
+</figure>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../Demos/demos.html" class="btn btn-neutral float-right" title="2. Magnetic Data Analysis - Case Studies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../../index.html" class="btn btn-neutral float-left" title="Geophysical Toolkit for Geologists" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+
+ 
+
+<div role="contentinfo" font-size="11px">
+    <div class="row">
+        <div class="col-md-4" align="left" font-size="11px">
+            <a href="/">Toolkit Home</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz">GeoSci.xyz</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz/contact">Contact</a>
+        </div>
+        <br>
+<!--         <div class="col-md-8" align="left" font-size="11px">
+            <a href="https://github.com/geoscixyz/Toolkit/releases/tag/0.0.1">Version 0.0.1</a>
+        </div> -->
+        <br>
+        <div class="col-md-8" align="left" font-size="11px">
+            <div class="row">
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" width="60px"; style="float:right;height:3em;line-height:3em;padding:10px 0 0 1em;">
+                    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+                </a>
+                2017,
+                <a href="http://geosci.xyz">GeoSci Developers.</a><br />
+                Except where noted, this work is licensed under a <br />
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License
+                </a>
+            </div>
+        <br>
+        <div class="row">
+            Built with
+                <a href="http://sphinx-doc.org/">Sphinx</a>
+                using a
+                <a href="https://github.com/snide/sphinx_rtd_theme">theme</a>
+                provided by
+                <a href="https://readthedocs.org">Read the Docs</a>.
+        </div>
+    </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

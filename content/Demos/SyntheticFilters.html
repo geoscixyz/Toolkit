@@ -1,0 +1,355 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>2.1.4. Synthetic - 2D Magnetic Data Filters &mdash; GeoToolkit 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.1.5. Synthetic - Edge Detection and Depth to Source" href="SyntheticTiltDepth.html" />
+    <link rel="prev" title="2.1.3. Synthetic - Magnetic Data Visualization" href="SyntheticVis.html" />
+ 
+
+<meta name="description" content="open source tools for geologists using geophysics in their interpretation">
+<meta name="author" content="GeoSci.xyz Developers">
+<meta name="keywords" content="geoscience, geophysics, applied geophysics, education, python, SimPEG">
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-77166836-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> GeoToolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Magnetics/Mag_index.html">1. Magnetic Data - Background</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="demos.html">2. Magnetic Data Analysis - Case Studies</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="SyntheticExample.html">2.1. Analysis of Simple Bodies</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="SyntheticMagResponse.html">2.1.1. Synthetic - Magnetic Data Response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticGrid.html">2.1.2. Synthetic - Data Gridding</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticVis.html">2.1.3. Synthetic - Magnetic Data Visualization</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">2.1.4. Synthetic - 2D Magnetic Data Filters</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#upward-continuation">Upward continuation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#x-and-y-derivatives-of-the-magnetic-response">X and Y derivatives of the magnetic response</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#vertical-derivative">Vertical derivative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#total-horizontal-derivative">Total horizontal derivative</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tilt-angle">Tilt angle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#analytic-signal">Analytic signal</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticTiltDepth.html">2.1.5. Synthetic - Edge Detection and Depth to Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="SearchExample.html">2.2. Case Study Using Geoscience BC Search II Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apps.html">The Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GeoToolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="demos.html">2. Magnetic Data Analysis - Case Studies</a> &raquo;</li>
+        
+          <li><a href="SyntheticExample.html">2.1. Analysis of Simple Bodies</a> &raquo;</li>
+        
+      <li>2.1.4. Synthetic - 2D Magnetic Data Filters</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            <a href="https://github.com/geoscixyz/Toolkit/edit/main/docs/content/Demos/SyntheticFilters.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="synthetic-2d-magnetic-data-filters">
+<span id="synth-filters"></span><h1>2.1.4. Synthetic - 2D Magnetic Data Filters<a class="headerlink" href="#synthetic-2d-magnetic-data-filters" title="Permalink to this heading">¶</a></h1>
+<p>2D magnetic data filters are commonly applied to magnetic data to allow us to view that data in different ways. They can highlight shallower or deeper magnetic sources, and can emphasize gradients in the magnetic data that occur at geological contacts and in association with structure.</p>
+<p>We use the same synthetic model here as in the previous notebook to demonstrate the effects of various 2D magnetic filters.</p>
+<p>Short descriptions of select filters are provided in the sections below. Summaries of various filters and their role in gravity and magnetic data interpretation can be found in <span id="id1">[<a class="reference internal" href="../references.html#id21" title="Misac N Nabighian. The analytic signal of two-dimensional magnetic bodies with polygonal cross-section: its properties and use for automated anomaly interpretation. Geophysics, 37(3):507-517, 1972. doi:10.1190/1.1440276.">Nab72</a>]</span>, <span id="id2">[<a class="reference internal" href="../references.html#id20" title="Walter R. Roest, Jacob Verhoef, and Mark Pilkington. Magnetic interpretation using the 3-d analytic signal. GEOPHYSICS, 57(1):116-125, 1992. doi:10.1190/1.1443174.">RVP92</a>]</span>, <span id="id3">[<a class="reference internal" href="../references.html#id6" title="Ian N Macleod, Keith Jones, and Ting Fan Dai. 3-d analytic signal in the interpretation of total magnetic field data at low magnetic latitudes. Exploration Geophysics, 01 1993.">MJD93</a>]</span>, <span id="id4">[<a class="reference internal" href="../references.html#id19" title="Hugh G. Miller and Vijay Singh. Potential field tilt—a new concept for location of potential field sources. Journal of Applied Geophysics, 32(2):213 - 217, 1994. URL: http://www.sciencedirect.com/science/article/pii/0926985194900221.">MS94</a>]</span>, <span id="id5">[<a class="reference internal" href="../references.html#id5" title="P R Milligan and P J Gunn. Enhancement and presentation of airborne geophysical data. AGSO Journal of Australian Geology and Geophysics, 17:63-75, 01 1997.">MG97</a>]</span>, <span id="id6">[<a class="reference internal" href="../references.html#id22" title="Bruno Verduzco, Derek J Fairhead, Chris M Green, and Chris MacKenzie. New insights into magnetic derivatives for structural mapping. The Leading Edge, 23(2):116, 2004. doi:10.1190/1.1651454.">VFGM04</a>]</span>, <span id="id7">[<a class="reference internal" href="../references.html#id18" title="Ahmed Salem. Interpretation of magnetic data using analytic signal derivatives. Geophysical Prospecting, 53(1):75-82, 2005. doi:10.1111/j.1365-2478.2005.00434.x.">Sal05</a>]</span>, <span id="id8">[<a class="reference internal" href="../references.html#id8" title="David J. Isles and Leigh R. Rankin. Geological Interpretation of Aeromagnetic Data. CSIRO Publishing, 2013.">IR13</a>]</span>, <span id="id9">[<a class="reference internal" href="../references.html#id7" title="Michael Dentith and Stephen T. Mudge. Geophysics for the Mineral Exploration Geoscientist. Cambridge University Press, 2014.">DM14</a>]</span>.</p>
+<p>Click on the <strong>‘launch binder’</strong> button below (or right-click and choose ‘Open link in new tab’) to go to the interactive magnetic data filtering notebook, and try applying the various filters discussed below.</p>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F2_1_4_Synthetic_Mag_Data_Filters.ipynb"><img alt="https://mybinder.org/badge.svg" class="align-center" src="https://mybinder.org/badge.svg" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F2_1_4_Synthetic_Mag_Data_Filters.ipynb"><img alt="../../_images/synth_filter_notebook_snapshot.PNG" class="align-center" src="../../_images/synth_filter_notebook_snapshot.PNG" /></a>
+<section id="upward-continuation">
+<h2>Upward continuation<a class="headerlink" href="#upward-continuation" title="Permalink to this heading">¶</a></h2>
+<p>Upward continuation can be considered a ‘wavelength’ filter. <strong>Upward continuation simulates the magnetic response that would be observed if data were collected at a greater height above the Earth’s surface than it was actually collected</strong>. The result is that longer-wavelength, deeper features are emphasized over shorter-wavelength, near-surface features. It is effective for interpretation of deeper geology, or for reducing noise that may be found in data collected very close to the ground.</p>
+<p>In our synthetic example, the small magnetic anomaly and the narrow fault feature quickly become indistinct with increased survey height (upward continued to 50 m), however the larger deeper magnetic body persists in the data. The left image below shows the TMI, and the right image shows the upward continued magnetic data.</p>
+<figure class="align-center" style="width: 100%">
+<img alt="../../_images/Filters_synth_TMI_upcontin50.png" src="../../_images/Filters_synth_TMI_upcontin50.png" />
+</figure>
+</section>
+<section id="x-and-y-derivatives-of-the-magnetic-response">
+<span id="synthfilters-xy-deriv"></span><h2>X and Y derivatives of the magnetic response<a class="headerlink" href="#x-and-y-derivatives-of-the-magnetic-response" title="Permalink to this heading">¶</a></h2>
+<p>Calculating horizontal and vertical derivatives of the magnetic response gives us a way to better visualize local gradients in the data that can be obscured by larger and deeper features in the total field response. <strong>X and Y derivatives are calculated based on the difference observed in the magnetic response between adjacent points</strong>, or grid cells, in the X and Y directions, respectively:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial B}{\partial x}(x_n,y_n)= \frac{B_{(x_{n+1},y_n)}-B_{(x_{n-1},y_n)}}{2\Delta x}\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{\partial B}{\partial y}(x_n,y_n)= \frac{B_{(x_n,y_{n+1})}-B_{(x_n,y_{n-1})}}{2\Delta y}\]</div>
+<p>where B is the magnetic field. <strong>Steep gradients usually occur at geologic contacts, faults, or fractures, where there is a distinct contrast in magnetic susceptibility</strong>. Interpreters should not consider X and Y derivative results independently, and should be sure to evaluate both, since visualizing gradients in one direction will de-emphasize features trending in the perpendicular direction. The X and Y derivatives are also used in the calculation of several other magnetic data filters.</p>
+<p>Grids showing the X (left image) and Y (right image) derivatives are shown below. Note the emphases on east and west geological boundaries using the X derivative, and on the north and south geological boundaries using the Y derivative (best seen in relation to the smaller magnetic anomaly).</p>
+<figure class="align-center" style="width: 100%">
+<img alt="../../_images/Filters_synth_XY_Deriv.png" src="../../_images/Filters_synth_XY_Deriv.png" />
+</figure>
+</section>
+<section id="vertical-derivative">
+<span id="synthfilters-vert-deriv"></span><h2>Vertical derivative<a class="headerlink" href="#vertical-derivative" title="Permalink to this heading">¶</a></h2>
+<p>A very commonly used magnetic filter is the first vertical derivative. This process <strong>considers the change in the magnetic response when calculated at two different heights above the ground</strong>.</p>
+<p>The effect is to emphasize near-surface features where the difference between the responses calculated at two different heights will be largest. <strong>First vertical derivative anomalies will highlight edges of magnetic sources, and appear over the top of the source if the contact or feature is vertical</strong>.</p>
+<p>Notice how the first vertical derivative peaks directly over the small magnetic body from the synthetic geologic model. It also highlights the edge, and main body, of the large eastern magnetic block. The de-magnetized NW-trending fault inside the eastern block appears offset in the data as a result of it’s north-easterly dip.</p>
+<figure class="align-center" style="width: 50%">
+<img alt="../../_images/Filters_synth_VertDeriv.PNG" src="../../_images/Filters_synth_VertDeriv.PNG" />
+</figure>
+</section>
+<section id="total-horizontal-derivative">
+<span id="synthfilters-tot-horiz-deriv"></span><h2>Total horizontal derivative<a class="headerlink" href="#total-horizontal-derivative" title="Permalink to this heading">¶</a></h2>
+<p>The total horizontal derivative combines the X and Y derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial B}{\partial r}(x_n,y_n) = \sqrt{\left({\frac{\partial B}{\partial x}}\right)^2 + \left({\frac{\partial B}{\partial y}}\right)^2}\]</div>
+<p>Gradients in both directions are now accounted for in a single map. <strong>The highest total horizontal derivative values occur at the edges or boundaries of magnetic sources</strong>. It does not detect narrow sources as effectively as the vertical derivative.</p>
+<p>The total horizonal derivative can be seen to peak here over the edges of the small magnetic body, and along the margin of the large magnetic block in the east. Again, the magnetic patterns internal to the eastern block are complicated due to the dipping nature of the demagnetized fault.</p>
+<figure class="align-center" style="width: 50%">
+<img alt="../../_images/Filters_synth_TotHoriz.PNG" src="../../_images/Filters_synth_TotHoriz.PNG" />
+</figure>
+</section>
+<section id="tilt-angle">
+<span id="synthfilters-tilt-angle"></span><h2>Tilt angle<a class="headerlink" href="#tilt-angle" title="Permalink to this heading">¶</a></h2>
+<p>The tilt derivative, or tilt angle, <strong>normalizes the vertical derivative by the horizontal derivatives</strong>:</p>
+<div class="math notranslate nohighlight">
+\[TDR(x,y) = tan^{-1}\left[\frac{\partial B}{\partial z}\Bigg/{\sqrt{\left({\frac{\partial B}{\partial x}}\right)^2 + \left({\frac{\partial B}{\partial y}}\right)^2}}\right]\]</div>
+<p>A magnetic source exhibiting a strong contrast with surrounding rocks (e.g. a large, near surface, magnetic unit) will yield both high vertical and horizontal gradients, and a more weakly contrasting body will yield proportionally smaller vertical and horizontal gradients. <strong>Normalizing the vertical by horizontal derivatives means different amplitude responses are assigned equivalent values. This is a very useful filter for enhancing more subtle features in the magnetic data</strong>. The tilt angle ranges from -90 to +90 degrees, is <strong>positive over the magnetic source, and negative outside the source, with the body’s edge delimited by the 0 degree contour</strong>.</p>
+<p>It is helpful to view the tilt angle using a color map that highlights the middle, or near-zero tilt angle values, which should trace source edges. For example, the red-blue color map (RdBu).</p>
+<p>In the grid image below, you can see that zero values trace the edge of the small magnetic body, with positive tilt angle values directly over the top of (inside) the body and negative values outside the magnetic body. Zero values also mark the edge of the large eastern magnetic block.</p>
+<figure class="align-center" style="width: 50%">
+<img alt="../../_images/Filters_synth_TiltAngle.PNG" src="../../_images/Filters_synth_TiltAngle.PNG" />
+</figure>
+</section>
+<section id="analytic-signal">
+<span id="synthfilters-an-sig"></span><h2>Analytic signal<a class="headerlink" href="#analytic-signal" title="Permalink to this heading">¶</a></h2>
+<p>Analytic signal is also known as the total gradient. It is calculated from the vertical and horizontal derivatives:</p>
+<div class="math notranslate nohighlight">
+\[AS(x,y) = \sqrt{\left({\frac{\partial B}{\partial x}}\right)^2 + \left({\frac{\partial B}{\partial y}}\right)^2 + \left({\frac{\partial B}{\partial z}}\right)^2}\]</div>
+<p>The advantage is that we now capture gradients in all three directions, further enhancing detection of geologic boundaries and structures. <strong>The analytic signal peaks above narrow bodies and along the edges of larger geologic features that are in magnetic contrast to their surroundings</strong>. <strong>The analytic signal is a very useful interpretation product in areas where magnetic remanence is suspected, and in areas of low latitude since it is not affected by magnetisation direction</strong>.</p>
+<p>The analytic signal from the synthetic model looks similar to the first vertical derivative since an anomaly is mapped directly over the smaller magnetic body, however it differs in that it maps the edge of the larger eastern magnetic block but not the top.</p>
+<figure class="align-center" style="width: 50%">
+<img alt="../../_images/Filters_synth_AnSig.PNG" src="../../_images/Filters_synth_AnSig.PNG" />
+</figure>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="SyntheticTiltDepth.html" class="btn btn-neutral float-right" title="2.1.5. Synthetic - Edge Detection and Depth to Source" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SyntheticVis.html" class="btn btn-neutral float-left" title="2.1.3. Synthetic - Magnetic Data Visualization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+
+ 
+
+<div role="contentinfo" font-size="11px">
+    <div class="row">
+        <div class="col-md-4" align="left" font-size="11px">
+            <a href="/">Toolkit Home</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz">GeoSci.xyz</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz/contact">Contact</a>
+        </div>
+        <br>
+<!--         <div class="col-md-8" align="left" font-size="11px">
+            <a href="https://github.com/geoscixyz/Toolkit/releases/tag/0.0.1">Version 0.0.1</a>
+        </div> -->
+        <br>
+        <div class="col-md-8" align="left" font-size="11px">
+            <div class="row">
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" width="60px"; style="float:right;height:3em;line-height:3em;padding:10px 0 0 1em;">
+                    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+                </a>
+                2017,
+                <a href="http://geosci.xyz">GeoSci Developers.</a><br />
+                Except where noted, this work is licensed under a <br />
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License
+                </a>
+            </div>
+        <br>
+        <div class="row">
+            Built with
+                <a href="http://sphinx-doc.org/">Sphinx</a>
+                using a
+                <a href="https://github.com/snide/sphinx_rtd_theme">theme</a>
+                provided by
+                <a href="https://readthedocs.org">Read the Docs</a>.
+        </div>
+    </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

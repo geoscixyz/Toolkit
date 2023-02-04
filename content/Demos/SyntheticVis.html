@@ -1,0 +1,318 @@
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>2.1.3. Synthetic - Magnetic Data Visualization &mdash; GeoToolkit 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2.1.4. Synthetic - 2D Magnetic Data Filters" href="SyntheticFilters.html" />
+    <link rel="prev" title="2.1.2. Synthetic - Data Gridding" href="SyntheticGrid.html" />
+ 
+
+<meta name="description" content="open source tools for geologists using geophysics in their interpretation">
+<meta name="author" content="GeoSci.xyz Developers">
+<meta name="keywords" content="geoscience, geophysics, applied geophysics, education, python, SimPEG">
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-77166836-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> GeoToolkit
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Magnetics/Mag_index.html">1. Magnetic Data - Background</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="demos.html">2. Magnetic Data Analysis - Case Studies</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="SyntheticExample.html">2.1. Analysis of Simple Bodies</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="SyntheticMagResponse.html">2.1.1. Synthetic - Magnetic Data Response</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticGrid.html">2.1.2. Synthetic - Data Gridding</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">2.1.3. Synthetic - Magnetic Data Visualization</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-visualization-and-image-enhancement">Data visualization and image enhancement</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticFilters.html">2.1.4. Synthetic - 2D Magnetic Data Filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="SyntheticTiltDepth.html">2.1.5. Synthetic - Edge Detection and Depth to Source</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="SearchExample.html">2.2. Case Study Using Geoscience BC Search II Data</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Tools/tools.html">3. Load and Explore Your Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Interp/interp.html">4. Magnetic Data Interpretation - Considerations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apps.html">The Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">GeoToolkit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="demos.html">2. Magnetic Data Analysis - Case Studies</a> &raquo;</li>
+        
+          <li><a href="SyntheticExample.html">2.1. Analysis of Simple Bodies</a> &raquo;</li>
+        
+      <li>2.1.3. Synthetic - Magnetic Data Visualization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            <a href="https://github.com/geoscixyz/Toolkit/edit/main/docs/content/Demos/SyntheticVis.rst" class="fa fa-github"> Edit on GitHub</a>
+        
+      </li>
+    
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="synthetic-magnetic-data-visualization">
+<span id="synth-vis"></span><h1>2.1.3. Synthetic - Magnetic Data Visualization<a class="headerlink" href="#synthetic-magnetic-data-visualization" title="Permalink to this heading">¶</a></h1>
+<section id="data-visualization-and-image-enhancement">
+<h2>Data visualization and image enhancement<a class="headerlink" href="#data-visualization-and-image-enhancement" title="Permalink to this heading">¶</a></h2>
+<p>Simple enhancements to the image can help an interpreter better visualize features within magnetic data. Applying sun-shading from various angles, experimenting with different colour maps, and colour stretches are a simple means to explore the data initially.</p>
+<p>Click on the <strong>‘launch binder’</strong> button to try out various image enhancement schemes using the synthetic magnetic data. To launch the notebook in a new tab, right-click on the <strong>‘launch binder’</strong> button and choose <strong>‘Open link in new tab’</strong>. Some details on image and colour enhancements and examples are given below.</p>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F2_1_3_Synthetic_Mag_Data_Visualization.ipynb"><img alt="https://mybinder.org/badge.svg" class="align-center" src="https://mybinder.org/badge.svg" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/geoscixyz/Toolkit/main?filepath=.%2FNotebooks%2F2_1_3_Synthetic_Mag_Data_Visualization.ipynb"><img alt="../../_images/synth_vis_notebook_snapshot.PNG" class="align-center" src="../../_images/synth_vis_notebook_snapshot.PNG" /></a>
+<p><strong>Sun-shading</strong>. Sun-shading (<span id="id1">[<a class="reference internal" href="../references.html#id24" title="Berthold Horn. Hill shading and the reflectance map. Proceedings of the IEEE, 69:14 - 47, 02 1981.">Hor81</a>]</span>, <span id="id2">[<a class="reference internal" href="../references.html#id9" title="Gordon Cooper. Feature detection using sun shading. Computers and Geosciences, 29:941-948, 10 2003.">Coo03</a>]</span>), or hill-shading can be used to emphasize highs and lows in the magnetic data - magnetic highs appear as topographic highs, and magnetic lows as topographic lows. This can help interpreters see more subtle variations in the data. Sun-shading can be oriented in any azimuth, and at any angle from 0 to 90 degrees. It helps to choose an aziumth that is perpendicular to the overall geological strike of the study area, and an angle that is neither too shallow or deep.</p>
+<p>The left and right images show the synthetic magnetic data without and with sun-shading applied.</p>
+<figure class="align-center" style="width: 100%">
+<img alt="../../_images/no_shading_vs_shading.png" src="../../_images/no_shading_vs_shading.png" />
+</figure>
+<p><strong>Color maps</strong>. Some color maps will do an obviously better job of enhancing a large range of features (color maps with a larger color range for example), while others may be used to highlight specific ranges of data, and yet others used simply because of an interpreter’s personal preference. Choice of color map is an often-debated topic in geophysics and in other fields requiring image analysis (e.g. <span id="id3">[<a class="reference internal" href="../references.html#id15" title="Adam Light and Patrick J. Bartlein. The end of the rainbow? color schemes for improved data graphics. Eos, Transactions American Geophysical Union, 85(40):385-391, 2004. doi:10.1029/2004EO400002.">LB04</a>]</span>, <span id="id4">[<a class="reference internal" href="../references.html#id17" title="David Borland and Russell M Taylor. Rainbow color map (still) considered harmful. IEEE computer graphics and applications, 27:14-7, 03 2007.">BT07</a>]</span>, <span id="id5">[<a class="reference internal" href="../references.html#id14" title="M Niccoli and Lynch S. A more perceptual color palette for structure maps. In GeoConvention 2012: Vision. 2012.">NS12</a>]</span>, <span id="id6">[<a class="reference internal" href="../references.html#id16" title="B Froner, S Purves, J Lowell, and J Henderson. Perception of visual information: the role of colour in seismic interpretation. First Break, 04 2013.">FPLH13</a>]</span>). An important point to consider is that some color maps have the ‘brightest’ colors at the top of the scale, for example, grey scale and viridis:</p>
+<figure class="align-default">
+<img alt="../../_images/gray_15per_ppt.PNG" src="../../_images/gray_15per_ppt.PNG" />
+</figure>
+<figure class="align-default">
+<img alt="../../_images/viridis_15per_ppt.PNG" src="../../_images/viridis_15per_ppt.PNG" />
+</figure>
+<p>whereas others have the brightest color in the mid-ranges, for example, rainbow, jet, and red-blue:</p>
+<figure class="align-default">
+<img alt="../../_images/rainbow_15per_ppt.PNG" src="../../_images/rainbow_15per_ppt.PNG" />
+</figure>
+<figure class="align-default">
+<img alt="../../_images/jet_15per_ppt.PNG" src="../../_images/jet_15per_ppt.PNG" />
+</figure>
+<figure class="align-default">
+<img alt="../../_images/redblue_15per_ppt.PNG" src="../../_images/redblue_15per_ppt.PNG" />
+</figure>
+<p>This color ordering can be deceptive to the eye of an interpreter who is sensitive to color contrast. A color map with the brightest color in the mid-ranges and may cause problems if a map is printed in greyscale - suddenly mid-range values are the most brightest and seemingly anomalous features. Having bright colors in the mid-range however, may be useful for visually separating areas of high versus low magnetic response.</p>
+<p>The upper right image below displays the data using the red-blue colour map, and the upper right image displays the data using the viridis colour map. The two lower images show how these upper images look with a grayscale applied. You can see how the features in the data are differently emphasized depending on their original colour map.</p>
+<figure class="align-center" style="width: 100%">
+<img alt="../../_images/color_maps_and_grayscale.png" src="../../_images/color_maps_and_grayscale.png" />
+</figure>
+<p><strong>Color stretch</strong>. Using a linear stretch, the values within a range of magnetic data are mapped to 256 classes or bins within a chosen color map in a linear manner, meaning if there are few anomalously high values (outliers) in the range, the ‘strongest’ color values will be mapped rarely. If there are many middle-range values, the image may be flooded with mid range color values. While a linear color stretch will highlight the most anomalous values, it can wash out subtler features in the data. Histogram equialization will vary the color bin sizes to map an equal number of data points per bin, essentially giving equal weight to low, mid-range, and high magnetic values.</p>
+<p>The left image shows the data displayed using a linear colour stretch, and the right image shows the data displayed using a histogram equalized colour stretch.</p>
+<figure class="align-center" style="width: 100%">
+<img alt="../../_images/linear_histoeq.png" src="../../_images/linear_histoeq.png" />
+</figure>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="SyntheticFilters.html" class="btn btn-neutral float-right" title="2.1.4. Synthetic - 2D Magnetic Data Filters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="SyntheticGrid.html" class="btn btn-neutral float-left" title="2.1.2. Synthetic - Data Gridding" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+
+    </p>
+  </div>
+
+ 
+
+<div role="contentinfo" font-size="11px">
+    <div class="row">
+        <div class="col-md-4" align="left" font-size="11px">
+            <a href="/">Toolkit Home</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz">GeoSci.xyz</a> &nbsp; <span class="divider">|</span> &nbsp;
+            <a href="http://geosci.xyz/contact">Contact</a>
+        </div>
+        <br>
+<!--         <div class="col-md-8" align="left" font-size="11px">
+            <a href="https://github.com/geoscixyz/Toolkit/releases/tag/0.0.1">Version 0.0.1</a>
+        </div> -->
+        <br>
+        <div class="col-md-8" align="left" font-size="11px">
+            <div class="row">
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/" width="60px"; style="float:right;height:3em;line-height:3em;padding:10px 0 0 1em;">
+                    <img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+                </a>
+                2017,
+                <a href="http://geosci.xyz">GeoSci Developers.</a><br />
+                Except where noted, this work is licensed under a <br />
+                <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+                    Creative Commons Attribution 4.0 International License
+                </a>
+            </div>
+        <br>
+        <div class="row">
+            Built with
+                <a href="http://sphinx-doc.org/">Sphinx</a>
+                using a
+                <a href="https://github.com/snide/sphinx_rtd_theme">theme</a>
+                provided by
+                <a href="https://readthedocs.org">Read the Docs</a>.
+        </div>
+    </div>
+</div>
+
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
