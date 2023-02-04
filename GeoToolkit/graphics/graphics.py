@@ -134,8 +134,10 @@ def equalizeColormap(cmap,bins,cdf,name='EqualizedMap'):
     # first retrieve the color table (lists of RGB values) behind the input colormap
     if cmap in colors.datad: # one of the additional colormaps in colors module
         cmList = colors.datad[cmap]
-    elif cmap in cm.cmap_d: # matplotlib colormaps + plus the new ones (viridis, inferno, etc.)
-        cmList = cmap_to_array(cm.cmap_d[cmap])
+    elif getattr(cm, cmap, "None") is not None:
+        cmList = cmap_to_array(getattr(cm, cmap))
+    # elif cmap in cm.cmap_d: # matplotlib colormaps + plus the new ones (viridis, inferno, etc.)
+    #     cmList = cmap_to_array(cm.cmap_d[cmap])
     else:
         try:
             # in case cmap is a colormap object
@@ -144,7 +146,7 @@ def equalizeColormap(cmap,bins,cdf,name='EqualizedMap'):
             raise ValueError('Colormap {} has not been recognised'.format(cmap))
 
     # normalize the input bins to interval (0,1)
-    bins_norm = (bins - bins.min())/np.float(bins.max() - bins.min())
+    bins_norm = (bins - bins.min())/(bins.max() - bins.min())
 
     # calculate new indices by applying the cdf as a function on the old indices
     # which are initially regularly spaced.
