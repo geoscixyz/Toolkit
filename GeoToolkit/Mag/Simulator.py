@@ -237,7 +237,7 @@ def ViewMagSurveyWidget(survey, shapeFile=None):
         North=widgets.FloatSlider(min=cntr[1]-Ly, max=cntr[1]+Ly, step=10, value=cntr[1],continuous_update=False),
         Azimuth=widgets.FloatSlider(min=0, max=180, step=5, value=90, continuous_update=False),
         Length=widgets.FloatSlider(min=20, max=diag, step=20, value=diag/2., continuous_update=False),
-        Sampling=widgets.BoundedFloatText(min=10, max=1000, step=5, value=100, continuous_update=False)
+        Sampling=widgets.BoundedIntText(min=10, max=1000, step=5, value=100, continuous_update=False)
         # ColorMap=widgets.Dropdown(
         #           options=cmaps(),
         #           value='Spectral_r',
@@ -922,6 +922,7 @@ def plotProfile2D(x, y, data, a, b, npts,
         data = [data]
 
     for ii, d in enumerate(data):
+        d = d.astype("float64")
         if d.ndim == 1:
             dline = griddata(np.c_[x, y], d, (xLine, yLine), method='linear')
 
@@ -993,7 +994,7 @@ def dataHillsideWidget(
                     )
 
         # Parse contour values
-        if Contours is not "":
+        if Contours != "":
             vals = re.split(',', Contours)
             cntrs = []
             for val in vals:
@@ -1002,7 +1003,7 @@ def dataHillsideWidget(
                     cntrs += [np.arange(param[0], param[2], param[1])]
 
                 else:
-                    cntrs += [np.float(val)]
+                    cntrs += [float(val)]
             Contours = np.unique(np.sort(np.hstack(cntrs)))
         else:
             Contours = None
@@ -1014,7 +1015,7 @@ def dataHillsideWidget(
             saveAs, EPSGcode, SaveGrid, dpi=dpi
         )
 
-        if Contours is not "":
+        if Contours != "":
 
             if SaveShape:
 
@@ -1257,7 +1258,7 @@ def gridFiltersWidget(
                     )
 
                 # Parse contour values
-        if Contours is not "":
+        if Contours != "":
             vals = re.split(',', Contours)
             cntrs = []
             for val in vals:
@@ -1266,7 +1267,7 @@ def gridFiltersWidget(
                     cntrs += [np.arange(param[0], param[2], param[1])]
 
                 else:
-                    cntrs += [np.float(val)]
+                    cntrs += [float(val)]
 
             Contours = np.unique(np.sort(np.hstack(cntrs)))
         else:
@@ -1279,7 +1280,7 @@ def gridFiltersWidget(
             saveAs, EPSGcode, SaveGrid, dpi=dpi
         )
 
-        if Contours is not "":
+        if Contours != "":
 
             if SaveShape:
 

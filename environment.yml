@@ -4,11 +4,17 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.10
   - git
   - pip
   - numpy
   - scipy
+  - matplotlib
+  - ipywidgets
+  - geopandas
+  - scikit-image
+  - jupyterlab
+  - simpeg
   - pip:
     - git+https://github.com/geoscixyz/Toolkit.git@main
     - sphinx
@@ -19,7 +25,3 @@ dependencies:
     - numpydoc
     - download
     - tqdm
-  - matplotlib
-  - ipywidgets
-  - geopandas
-  - scikit-image
